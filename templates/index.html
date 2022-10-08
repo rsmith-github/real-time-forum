@@ -1,0 +1,45 @@
+{{define "index"}}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index</title>
+    <link rel="stylesheet" href="static/styles.css">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="logo-container">
+            <a class="navbar-brand" href="/"><img src="" class="logo" /></a>
+        </div>
+
+        <!-- <div class="navitems" style="display: flexbox;!important"> -->
+
+            <div class="welcome">
+                <a class="nav-link" href="/" data-name="homepage"><strong>Welcome</strong></a>
+            </div>
+            <div class="logreg">
+                <div id="loginBtn">
+                    <a class="nav-link" href="/login" data-name="login">Log In</a>
+                </div>
+                <div id="registerBtn">
+                    <a class="nav-link" href="/register" data-name="register">Register</a>
+                </div>
+    
+            </div>
+    </nav>
+
+
+    <div id="homepage" class="page"></div>
+    <div id="login" class="page"></div>
+    <div id="register" class="page"></div>
+    
+</body>
+<script type="text/javascript" src="static/forum.js"></script>
+
+</html>
+
+{{end}}

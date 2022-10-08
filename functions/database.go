@@ -1,0 +1,115 @@
+package functions
+
+import (
+	"database/sql"
+	"encoding/json"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+func OpenDB() *sql.DB {
+	db, err := sql.Open("sqlite3", "forum.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	// defer db.Close()
+
+	return db
+
+}
+
+func CreateSqlTables() {
+	// Initialize database.
+	db := OpenDB()
+	// Create user table if it doen't exist.
+	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
+	CheckErr(usrTblErr)
+
+	// Create sessions table if doesn't exist.
+	var _, sessTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sessionUUID` VARCHAR(255) NOT NULL UNIQUE, `userID` VARCHAR(64) NOT NULL UNIQUE)")
+	CheckErr(sessTblErr)
+
+	// Create posts table if doesn't exist.
+	var _, postTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user_ID` VARCHAR(64) NOT NULL, `username` VARCHAR(64) NOT NULL, `content` TEXT NOT NULL, `time_posted` TEXT NOT NULL, `likes_count` INTEGER NOT NULL, `category` VARCHAR(64), `category_2` VARCHAR(64), `image` VARCHAR(64))")
+	CheckErr(postTblErr)
+
+	// Create comments table if not exists
+	var _, commentError = db.Exec("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64), `comment` TEXT NOT NULL, `post_ID` INTEGER NOT NULL, likes_count INTEGER DEFAULT 0 NOT NULL )")
+	CheckErr(commentError)
+
+	db.Close()
+}
+
+func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
+	// Variables for line after for rows.Next(), based on 'posts' table column names.
+	var id, likes_count int
+	var user_ID, username, content, time_posted, img string
+	var category, category_2 interface{}
+
+	var posts []map[string]interface{}
+	// Scan all the data from that row.
+	for rows.Next() {
+		err = rows.Scan(&id, &user_ID, &username, &content, &time_posted, &likes_count, &category, &category_2, &img)
+		posts = append(posts, map[string]interface{}{
+			// Words in double quote are the keys.
+			"postID":      id,
+			"userID":      user_ID,
+			"username":    username,
+			"content":     content,
+			"time_posted": time_posted,
+			"likes_count": likes_count,
+			"category":    category,
+			"category_2":  category_2,
+			"image":       img,
+		})
+		// currentUser = &username
+		CheckErr(err)
+	}
+	rows.Close() //good habit to close
+
+	return posts
+}
+
+// Function that queryies database and returns list of bytes to unmarshal.
+func executeSQL(queryStr string) []byte {
+	db := OpenDB()
+	defer db.Close()
+
+	rows, err := db.Query(queryStr)
+	if err != nil {
+		log.Fatal("Query failed:", err.Error())
+	}
+	defer rows.Close()
+
+	columns, _ := rows.Columns()
+	count := len(columns)
+
+	var v struct {
+		Data []interface{} // `json:"data"`
+	}
+
+	for rows.Next() {
+		values := make([]interface{}, count)
+		valuePtrs := make([]interface{}, count)
+		for i := range columns {
+			valuePtrs[i] = &values[i]
+		}
+		if err := rows.Scan(valuePtrs...); err != nil {
+			log.Fatal(err)
+		}
+
+		//Created a map to handle the issue
+		var m map[string]interface{}
+		m = make(map[string]interface{})
+		for i := range columns {
+			m[columns[i]] = values[i]
+		}
+		v.Data = append(v.Data, m)
+	}
+
+	// Put into list.
+	data := v.Data
+	jsonMsg, err := json.Marshal(data)
+	return jsonMsg
+}
