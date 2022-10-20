@@ -17,6 +17,7 @@ func main() {
 	http.HandleFunc("/new", functions.NewPost)
 	http.HandleFunc("/api/allposts", functions.PostsApi)
 	http.HandleFunc("/api/sessions", functions.SessionsApi)
+	http.HandleFunc("/api/comments", functions.CommentsApi)
 
 	// Api endpoints
 	http.HandleFunc("/api/content", functions.LoadContent)
@@ -25,8 +26,8 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 
-	fmt.Printf("Starting server at http://localhost:8080\n")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	fmt.Printf("Starting server at http://localhost:8081\n")
+	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatal(err)
 	}
 }

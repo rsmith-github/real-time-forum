@@ -15,8 +15,14 @@ func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
 	// 	return
 	// }
-
-	RenderTemplate(w, r, GetTemplates(), "index", nil)
+	// CheckSessionQueryPosts(w, r)
+	c, er := r.Cookie("session")
+	if er != nil {
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		return
+	}
+	usr := GetCurrentUser(w, r, c)
+	RenderTemplate(w, r, GetTemplates(), "index", usr)
 	return
 }
 
@@ -54,7 +60,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-
 	// Slice containing all template names.
 	RenderTemplate(w, r, GetTemplates(), "index", nil)
 }
@@ -68,7 +73,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Slice with all template files
 
-	message := ""
+	// message := ""
 
 	if r.Method == "POST" {
 		userToValidate := GetUser(r)
@@ -114,13 +119,13 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			}
 
 			db := OpenDB()
-			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID) values(?,?)", cookie.Value, foundId)
+			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID, username) values(?,?,?)", cookie.Value, foundId, foundUser)
 			CheckErr(err2)
 			defer db.Close()
-			r.SetBasicAuth(foundUser, foundHash)
+			// r.SetBasicAuth(foundUser, foundHash)
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		} else {
-			message = "User details invalid."
+			// message = "User details invalid."
 		}
 
 	}
@@ -128,7 +133,8 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// If user's cookie expires, delete the cookie from the database.
 	// Del_C_If_Exp(cookie)
 	// Render template if get request.
-	RenderTemplate(w, r, GetTemplates(), "index", message)
+
+	RenderTemplate(w, r, GetTemplates(), "index", nil)
 
 }
 
@@ -183,14 +189,11 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 		category := r.FormValue("category")
 		category2 := r.FormValue("postType")
 
-		// Open the database, insert user's post's data, and close the database.
-		img := UploadFile(w, r)
-
 		// Prevent empty posts.
 		blank := strings.TrimSpace(newPost) == ""
 		if blank == false {
 			db := OpenDB()
-			db.Exec("INSERT INTO posts(user_ID, username, content, time_posted, likes_count, category, category_2, image) values(?,?,?,datetime('now','localtime'),?,?,?,?)", userId, userName, newPost, 0, category, category2, img)
+			db.Exec("INSERT INTO posts(user_ID, username, content, time_posted, category, category_2) values(?,?,?,datetime('now','localtime'),?,?)", userId, userName, newPost, category, category2)
 			db.Close()
 
 		}

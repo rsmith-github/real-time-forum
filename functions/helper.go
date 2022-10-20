@@ -60,9 +60,6 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request, c *http.Cookie) User
 	db := OpenDB()
 	defer db.Close()
 
-	// If user's cookie expires, delete the cookie from the database.
-	// Del_C_If_Exp(c)
-
 	// Query sessions table for specific UUID
 	rows, err := db.Query("SELECT * FROM sessions WHERE sessionUUID=?;", c.Value)
 	sess := QuerySession(rows, err)
@@ -126,15 +123,16 @@ func CheckErr(err error) {
 func QuerySession(rows *sql.Rows, err error) Session {
 	// Variables for line after for rows.Next()
 	var id int
-	var sessionID, userID string
+	var sessionID, userID, username string
 
 	var sess Session
 	// Scan all the data from that row.
 	for rows.Next() {
-		err = rows.Scan(&id, &sessionID, &userID)
+		err = rows.Scan(&id, &sessionID, &userID, &username)
 		temp := Session{
 			sessionUUID: *&sessionID,
 			userID:      *&userID,
+			username:    *&username,
 		}
 		// currentUser = &username
 		CheckErr(err)

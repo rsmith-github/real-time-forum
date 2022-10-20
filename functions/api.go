@@ -2,8 +2,11 @@ package functions
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
 func LoadContent(w http.ResponseWriter, r *http.Request) {
@@ -61,10 +64,10 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
         <form enctype="multipart/form-data" action="/new" method="POST" class="newpostall">
             <div class="newpost" id="newpost">
                 <div class="radiospacing">
-                    <label for="category_2">Question</label>
-                    <input id="radios" type="radio" name="postType" id="category_2" value="Question" checked>
+                    <label for="category_1">Question</label>
+                    <input type="radio" name="postType" id="category_1" value="Question" checked>
                     <label for="category_2">Resource</label>
-                    <input id="radios" type="radio" name="postType" id="category_2" value="Resource">
+                    <input type="radio" name="postType" id="category_2" value="Resource">
                 </div>
                 <textarea class="newposttxt" id="newposttxt" name="new-post" contenteditable></textarea>
                 <div class="catandpost">
@@ -73,7 +76,6 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
                         <option value="JavaScript">JavaScript</option>
                         <option value="Rust">Rust</option>
                     </select>
-                    <input style="width: 172px;" type="file" name="file-upload"/>
                     <input id="postbttn" class="postbttn" type="submit" value="Post"/>
                 </div>
             </div>
@@ -85,8 +87,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 	// Get user's cookie.
 	_, er := r.Cookie("session")
 	if er != nil {
-		homePage.Content = "<h1>Please <a href='/login'>login</a></h1>"
-
+		homePage.Content = `<h1>Please <a id="loginredirect" href="/login" data-name="login">login</a></h1>`
 	}
 
 	var jsnList = []DOMcontent{loginContent, registerContent, homePage}
@@ -107,6 +108,44 @@ func PostsApi(writer http.ResponseWriter, request *http.Request) {
 // Use for client side user authentication.
 func SessionsApi(writer http.ResponseWriter, request *http.Request) {
 	createApi("sessions", writer, request)
+}
+func CommentsApi(writer http.ResponseWriter, request *http.Request) {
+
+	if request.Method == "POST" {
+		db := OpenDB()
+		defer db.Close()
+		var comment Comment
+		decoder := json.NewDecoder(request.Body)
+		err := decoder.Decode(&comment)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println("comment.Post_ID:", comment.Post_ID)
+		fmt.Println("comment.Comment:", comment.Comment)
+		fmt.Println("comment.Username:", comment.Username)
+
+		// Prevent empty comments.
+		blank := strings.TrimSpace(comment.Comment) == ""
+		if blank == false {
+			// Convert post ID to integer. It was initially string from javascript.
+			var conv, err = strconv.Atoi(comment.Post_ID)
+			if err != nil {
+				fmt.Println("Could not convert Post_ID to integer")
+			}
+			var _, commentError = db.Exec(`INSERT INTO comments(username, comment, post_ID) values(?,?,?)`, comment.Username, comment.Comment, conv)
+			if commentError != nil {
+				fmt.Println(commentError.Error())
+				CheckErr(commentError)
+				// ReturnCode500(writer, request)
+				return
+			}
+		}
+
+	} else {
+		createApi("comments", writer, request)
+	}
+
 }
 
 func createApi(table string, writer http.ResponseWriter, request *http.Request) {

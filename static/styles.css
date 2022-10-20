@@ -1,7 +1,53 @@
+body {
+    background: rgb(42, 31, 31);
+}
+
 .page {
     display: none;
+    width: 100%;
+
 }
 
 #homepage {
     display: block;
+}
+
+.postDiv {
+    border: 1px solid salmon;
+    margin-bottom: 10px;
+}
+
+.logo-container {
+    width: 20%;
+}
+
+.logo {
+    width: 100%;
+}
+
+.navbar {
+    display: flex;
+    justify-content: flex-start; 
+}
+
+.navGroup {
+    display: flex;
+    width: 40%;
+    justify-content: space-evenly;
+}
+
+.comment-section {
+    display: none;
+}
+
+main {
+    display: flex;
+}
+
+h2, em, label {
+    color: white;
+}
+
+a {
+    color:steelblue;
 }

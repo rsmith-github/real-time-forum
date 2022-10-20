@@ -16,10 +16,11 @@ type authUser struct {
 type Session struct {
 	sessionUUID string
 	userID      string
+	username    string
 }
 
 type Post struct {
-	postID      int
+	id          int
 	userID      string
 	username    string
 	content     string
@@ -28,10 +29,10 @@ type Post struct {
 }
 
 type Comment struct {
-	Id       int    `json:"id"`
+	// Id       int    `json:"id"`
 	Username string `json:"username"`
 	Comment  string `json:"comment"`
-	Post_ID  int    `json:"post_ID"`
+	Post_ID  string `json:"post_ID"`
 }
 
 type DOMcontent struct {

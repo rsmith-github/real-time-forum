@@ -27,15 +27,15 @@ func CreateSqlTables() {
 	CheckErr(usrTblErr)
 
 	// Create sessions table if doesn't exist.
-	var _, sessTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sessionUUID` VARCHAR(255) NOT NULL UNIQUE, `userID` VARCHAR(64) NOT NULL UNIQUE)")
+	var _, sessTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sessionUUID` VARCHAR(255) NOT NULL UNIQUE, `userID` VARCHAR(64) NOT NULL UNIQUE, `username` VARCHAR(255) NOT NULL UNIQUE)")
 	CheckErr(sessTblErr)
 
 	// Create posts table if doesn't exist.
-	var _, postTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user_ID` VARCHAR(64) NOT NULL, `username` VARCHAR(64) NOT NULL, `content` TEXT NOT NULL, `time_posted` TEXT NOT NULL, `likes_count` INTEGER NOT NULL, `category` VARCHAR(64), `category_2` VARCHAR(64), `image` VARCHAR(64))")
+	var _, postTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user_ID` VARCHAR(64) NOT NULL, `username` VARCHAR(64) NOT NULL, `content` TEXT NOT NULL, `time_posted` TEXT NOT NULL, `category` VARCHAR(64), `category_2` VARCHAR(64))")
 	CheckErr(postTblErr)
 
 	// Create comments table if not exists
-	var _, commentError = db.Exec("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64), `comment` TEXT NOT NULL, `post_ID` INTEGER NOT NULL, likes_count INTEGER DEFAULT 0 NOT NULL )")
+	var _, commentError = db.Exec("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64), `comment` TEXT NOT NULL, `post_ID` INTEGER NOT NULL )")
 	CheckErr(commentError)
 
 	db.Close()
@@ -43,14 +43,14 @@ func CreateSqlTables() {
 
 func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
 	// Variables for line after for rows.Next(), based on 'posts' table column names.
-	var id, likes_count int
-	var user_ID, username, content, time_posted, img string
+	var id int
+	var user_ID, username, content, time_posted string
 	var category, category_2 interface{}
 
 	var posts []map[string]interface{}
 	// Scan all the data from that row.
 	for rows.Next() {
-		err = rows.Scan(&id, &user_ID, &username, &content, &time_posted, &likes_count, &category, &category_2, &img)
+		err = rows.Scan(&id, &user_ID, &username, &content, &time_posted, &category, &category_2)
 		posts = append(posts, map[string]interface{}{
 			// Words in double quote are the keys.
 			"postID":      id,
@@ -58,10 +58,8 @@ func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
 			"username":    username,
 			"content":     content,
 			"time_posted": time_posted,
-			"likes_count": likes_count,
 			"category":    category,
 			"category_2":  category_2,
-			"image":       img,
 		})
 		// currentUser = &username
 		CheckErr(err)

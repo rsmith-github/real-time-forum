@@ -1,5 +1,4 @@
 {{define "index"}}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -10,32 +9,49 @@
     <link rel="stylesheet" href="static/styles.css">
 </head>
 <body>
-
-    <nav class="navbar">
-        <div class="logo-container">
-            <a class="navbar-brand" href="/"><img src="" class="logo" /></a>
-        </div>
-
-        <!-- <div class="navitems" style="display: flexbox;!important"> -->
-
-            <div class="welcome">
-                <a class="nav-link" href="/" data-name="homepage"><strong>Welcome</strong></a>
+    
+    {{ if not .Username }} 
+        <nav class="navbar">
+            <div class="logo-container">
+                <a class="navbar-brand" href="/"><img src="https://static.dezeen.com/uploads/2021/11/meta-facebook-rebranding-name-news_dezeen_2364_col_hero2.jpg" class="logo" /></a>
             </div>
-            <div class="logreg">
+            
+            <div class="navGroup">
                 <div id="loginBtn">
                     <a class="nav-link" href="/login" data-name="login">Log In</a>
                 </div>
                 <div id="registerBtn">
                     <a class="nav-link" href="/register" data-name="register">Register</a>
                 </div>
-    
             </div>
-    </nav>
+        </nav>
+        
+    {{ else }}
+    <div style="display: none;" id="username">{{.Username}}</div>
+        <nav class="navbar">
+            <div class="logo-container">
+                <a class="navbar-brand" href="/"><img src="https://static.dezeen.com/uploads/2021/11/meta-facebook-rebranding-name-news_dezeen_2364_col_hero2.jpg" class="logo" /></a>
+            </div>
+            <div class="navGroup">
+                <div class="welcome">
+                    <a class="nav-link" href="/" data-name="homepage"><strong>Welcome</strong>&nbsp;{{.Username}}</a>
+                </div>
+                <div id="logoutBtn">
+                    <a class="" href="/logout">Logout</a>
+                </div>
+            </div>
+        </nav>
+    {{ end }}
 
 
-    <div id="homepage" class="page"></div>
+
+
+    <main>
+        <div id="homepage" class="page"></div>
+    </main>
     <div id="login" class="page"></div>
     <div id="register" class="page"></div>
+    <div id="messenger" class="page"><h2>Message your friends!!</h2></div>
     
 </body>
 <script type="text/javascript" src="static/forum.js"></script>
