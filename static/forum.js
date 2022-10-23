@@ -33,25 +33,34 @@ window.onpopstate = function (event) {
     showPage(event.state.name)
 }
 
-
-
+// Global variables (arrays) to store api data.
 var content = [];
 var posts = [];
 var comments = [];
-var sessions = []
+var sessions = [];
 async function fetchData(name) {
+    // Get api key
+    let apiKey = await getApiKey()
+
+    const headers = {
+        'Token': apiKey
+    };
+
     switch (name) {
         case "allposts":
-            // Fetch posts
-            posts = await fetch("/api/allposts")
-            posts = await posts.json()
+
+            // Fetch postss
+            posts = await fetch('/api/allposts', { headers });
+            posts = await posts.json();
             break;
         case "comments":
-            comments = await fetch("/api/comments")
+            // Fetch comments.
+            comments = await fetch("/api/comments", { headers })
             comments = await comments.json()
             break;
         case "sessions":
-            sessions = await fetch("/api/sessions")
+            // Fetch sessions.
+            sessions = await fetch("/api/sessions", { headers })
             sessions = await sessions.json()
             break;
         default:
@@ -62,10 +71,30 @@ async function fetchData(name) {
     }
 }
 
+async function getApiKey() {
+    // Get api key
+    let JWTheaders = new Headers();
+    JWTheaders.append('Content-Type', 'text/plain');
+    JWTheaders.append('Access', '1234');
+
+    const JWTrequest = new Request('/jwt', {
+        method: 'GET',
+        headers: JWTheaders,
+        mode: 'cors',
+        cache: 'default',
+    });
+
+    let file = await fetch(JWTrequest);
+    let apiKey = await file.text();
+    return apiKey
+}
+
 // Nav bar
 let loginBtn = document.getElementById("loginBtn")
 let registerBtn = document.getElementById("registerBtn")
 
+
+// Check url endpoint for each link that is clicked.
 function handleNav() {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", checkLink)
@@ -73,22 +102,29 @@ function handleNav() {
 }
 
 
+// Split URL to access last parameter.
 let url = window.location.href.split("/");
 function checkLink(event) {
     // update on each click
-    event.preventDefault()
-    hidePages();
-    showPage(this.dataset.name)
+    event.preventDefault() // prevent page reload.
+    hidePages(); // Hide all pages.
+    showPage(this.dataset.name) // show specific page. I.e. Homepage, login, register. The page name is stored as data attribute in HTML thus this.dataset.name.
 }
 
+// Function to hide all pages. Needed when chosing any page.
 function hidePages() {
     document.querySelectorAll(".page").forEach(page => {
         page.style.display = "none";
     });
 }
 
+// Show specific page based on name.
 function showPage(name) {
-    document.getElementById(name).style.display = "block";
+    // Select page div.
+    let page = document.getElementById(name)
+
+    // Display div which will be populated with HTML from /api/content.
+    page.style.display = "block";
 
     // Add to url history
     if (name == "homepage") {
@@ -99,16 +135,11 @@ function showPage(name) {
         history.pushState({ name: name }, "", `${name}`);
     }
 
-    // Update url variable after updating client url.
+    // Update url variable globally after updating client url.
     url = window.location.href.split("/");
 
-    let page = document.getElementById(name)
 
-    // Bool to avoid nested if statements
-    let ok = false;
-    if (content) ok = true;
-
-    if (ok) {
+    if (!!content) {
         content.forEach(object => {
             if (object.Endpoint == name) {
                 page.innerHTML = object.Content
@@ -133,6 +164,7 @@ async function displayPosts(callBack) {
     await fetchData("allposts")
     await fetchData("comments")
     posts = posts.reverse();
+    comments = comments.reverse();
 
 
 
@@ -196,15 +228,40 @@ function OpenCommentSection(e) {
     console.log("Comment section with id:", `"${e.target.id}"`, "pressed");
 
     let slicedId = e.target.id.slice(9, e.target.id.length)
-    document.getElementById(`cmnt-sec-${slicedId}`).style.display = "block"
+
+    // Display comment section
+    let commentSection = document.getElementById(`cmnt-sec-${slicedId}`);
+    commentSection.style.display = "block";
+
+    // Put comments into correct section.
+    comments.forEach(comment => {
+        let newComment = document.createElement("div");
+        newComment.append(comment.username);
+        newComment.append(comment.comment);
+
+        // Display comments
+        if (comment.post_ID == slicedId) {
+            commentSection.append(newComment)
+        }
+
+
+
+    })
+
 }
 
 // Send edited comment to views.
 async function sendCommentToView(postId, cmnt, usr) {
+
+    // Get api key
+    let apiKey = await getApiKey()
+
     const response = await fetch("/api/comments", {
         method: "POST",
         headers: {
             "X-CSRFToken": getCookie("csrftoken"),
+            'Token': apiKey,
+
         },
         body: JSON.stringify({
             username: usr,
@@ -250,17 +307,7 @@ function loggedIn() {
 }
 
 
-// // If user is logged in, display the chat box.
-// function chatBox() {
-//     let chatParent = document.createElement("div");
-//     chatParent.style.border = "1px solid salmon"
-//     chatParent.style.width = "35%"
-//     chatParent.style.height = "100% !important"
-//     chatParent.style.marginTop = "82px"
-
-//     document.querySelector("main").append(chatParent)
-// }
-
+// Display chat app on bottom right of the screen
 async function chatApp() {
     await fetchData("sessions");
     let chatParent = document.createElement("div");
@@ -279,22 +326,36 @@ async function chatApp() {
     document.querySelector("body").append(chatParent)
 
     showUsers()
-
 }
 
 chatApp();
 
+// Show online users
 function showUsers() {
     let messengerPage = document.getElementById("messenger")
 
+
     sessions.forEach(session => {
+
         let div = document.createElement("div")
+        // Skip current user. Should not chat with yourself.
+        if (session.username == document.getElementById("username").innerHTML) {
+            return;
+        }
         div.innerHTML = `
         <h2>${session.username}</h2>
         <em>Click to chat</em>
-        `
-        div.style.border = "1px solid green"
-        div.style.marginBottom = "5px"
-        messengerPage.append(div)
+        `;
+        div.style.border = "1px solid green";
+        div.style.marginBottom = "5px";
+        messengerPage.append(div);
     });
+
+}
+
+
+// Display comments from API in corresponding section.
+function showComments() {
+
+    console.log(comments)
 }

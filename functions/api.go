@@ -99,10 +99,17 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", "application/text")
 	w.Write(new)
+
 }
 
 func PostsApi(writer http.ResponseWriter, request *http.Request) {
-	createApi("posts", writer, request)
+
+	if request.Method == "POST" {
+
+	} else {
+
+		createApi("posts", writer, request)
+	}
 }
 
 // Use for client side user authentication.
@@ -120,10 +127,6 @@ func CommentsApi(writer http.ResponseWriter, request *http.Request) {
 		if err != nil {
 			fmt.Println(err)
 		}
-
-		fmt.Println("comment.Post_ID:", comment.Post_ID)
-		fmt.Println("comment.Comment:", comment.Comment)
-		fmt.Println("comment.Username:", comment.Username)
 
 		// Prevent empty comments.
 		blank := strings.TrimSpace(comment.Comment) == ""
@@ -155,6 +158,7 @@ func createApi(table string, writer http.ResponseWriter, request *http.Request) 
 		str := "SELECT * FROM " + table + ";"
 		jsn := executeSQL(str)
 		json.Unmarshal(jsn, &listOfPosts)
+		// Secure endpoint
 		writer.Write(jsn)
 	}
 }

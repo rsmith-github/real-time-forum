@@ -155,10 +155,11 @@ func QueryUser(rows *sql.Rows, err error) User {
 	for rows.Next() {
 		err = rows.Scan(&id, &username, &email, &password, &superuser)
 		temp := User{
-			id:       id,
-			Username: username,
-			Email:    email,
-			Password: password,
+			id:        id,
+			Username:  username,
+			Email:     email,
+			Password:  password,
+			Superuser: superuser,
 		}
 		// currentUser = &username
 		CheckErr(err)
@@ -232,4 +233,17 @@ func CheckSessionQueryPosts(w http.ResponseWriter, r *http.Request) (map[string]
 		"Posts":    posts,
 	}
 	return data, files
+}
+
+func CheckAdmin(writer http.ResponseWriter, request *http.Request) bool {
+	c, err := request.Cookie("session")
+	if err != nil {
+		http.Redirect(writer, request, "/login", http.StatusSeeOther)
+		return false
+	}
+	// Get current user. If user is not admin, i.e. superuser, return access denied.
+	var user User = GetCurrentUser(writer, request, c)
+
+	// If user is not admin, return access denied.
+	return user.Superuser == 1
 }

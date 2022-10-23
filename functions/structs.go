@@ -1,10 +1,13 @@
 package functions
 
+import "database/sql"
+
 type User struct {
-	id       int
-	Username string
-	Email    string
-	Password string
+	id        int
+	Username  string
+	Email     string
+	Password  string
+	Superuser int
 }
 
 type authUser struct {
@@ -38,4 +41,8 @@ type Comment struct {
 type DOMcontent struct {
 	Endpoint string
 	Content  string
+}
+
+type Database struct {
+	db *sql.DB
 }
