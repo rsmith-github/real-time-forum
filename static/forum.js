@@ -190,11 +190,11 @@ async function displayPosts(callBack) {
 
         <div class="commentsContainer">
             <div class="commentbox">
-            <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
-                <textarea class="commenttxtbox" name="comment" id="comment-${post.id}" cols="30" rows="2"></textarea>
-                <button onclick="Comment(event)" class="commentbttn" name="submitComment" id="cmnt-btn-${post.id}">Comment</button>
-                <input type="hidden" name="comment-id" value="${post.id}">
-            </form>
+                <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
+                    <textarea class="commenttxtbox" name="comment" id="comment-${post.id}" cols="30" rows="2"></textarea>
+                    <button onclick="Comment(event)" class="commentbttn" name="submitComment" id="cmnt-btn-${post.id}">Comment</button>
+                    <input type="hidden" name="comment-id" value="${post.id}">
+                </form>
             </div>
             
             <a href="/" class="comment-link" id="cmnt-lnk-${post.id}">Comments</a>
@@ -222,36 +222,59 @@ async function displayPosts(callBack) {
 
 function OpenCommentSection(e) {
 
-    e.preventDefault();
-    console.log("Comment section with id:", `"${e.target.id}"`, "pressed");
+    // Fech comments
+    fetchData("comments")
 
+    // Prevent reload
+    e.preventDefault();// This is logging an error when clicking on comment button because event is not passed as argument.
 
+    // Slice the id to get numeric value.
     let slicedId = e.target.id.slice(9, e.target.id.length)
 
-    // Display comment section
+    // Get comment section
     let commentSection = document.getElementById(`cmnt-sec-${slicedId}`);
 
-
+    // If comment section is open, close it.
     if (commentSection.innerHTML != "" && !e.target.id.includes("btn")) {
         commentSection.innerHTML = "";
-        commentSection.style.display = "none"
-        document.querySelector(`#comment-${slicedId}`).value = "";
-    } else if (e.target.id.includes("btn")) {
-        document.querySelector(`#comment-${slicedId}`).value = "";
+        commentSection.style.display = "none";
     } else {
+        commentSection.innerHTML = "";
+
         commentSection.style.display = "block";
         // Put comments into correct section.
         comments.forEach(comment => {
             let newComment = document.createElement("div");
-            newComment.append(comment.username);
+            newComment.append(comment.username, ": ");
             newComment.append(comment.comment);
 
-            // Display comments. Testing git changes.
+            // Display comments.
             if (comment.post_ID == slicedId) {
-                commentSection.append(newComment)
+                commentSection.append(newComment);
             }
         })
+
+        // Get text area.
+        let textArea = document.getElementById(`comment-${slicedId}`)
+
+
+        if (textArea.value != "") {
+            // Create new div to put a new comment.
+            let commentDiv = document.createElement("div")
+
+            // Get current user.
+            let username = document.getElementById("username")
+
+            // Append username and comment.
+            commentDiv.append(username.innerHTML + ": " + textArea.value)
+
+            commentSection.append(commentDiv)
+        }
+
+        textArea.value = "";
+
     }
+
 
 }
 
@@ -278,15 +301,16 @@ async function sendCommentToView(postId, cmnt, usr) {
 
 // NOTE: This function is called in the HTML.
 function Comment(e) {
-    let slicedId = e.target.id.slice(9, e.target.id.length)
-    let content = document.getElementById(`comment-${slicedId}`).value
-    let cmntSect = document.getElementById(`cmnt-sec-${slicedId}`)
+    let slicedId = e.target.id.slice(9, e.target.id.length);
+    let textArea = document.getElementById(`comment-${slicedId}`);
 
-    let commentDiv = document.createElement("div")
+    let username = document.getElementById("username")
+    // Send the comment to API.
+    sendCommentToView(slicedId, textArea.value, username.innerText)
 
+    // Open comment section
+    OpenCommentSection()
 
-    cmntSect.append(commentDiv)
-    sendCommentToView(slicedId, content, document.querySelector("#username").innerText)
 }
 
 
