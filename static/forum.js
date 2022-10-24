@@ -246,7 +246,7 @@ function OpenCommentSection(e) {
             newComment.append(comment.username);
             newComment.append(comment.comment);
 
-            // Display comments
+            // Display comments ????????????????????????????????????
             if (comment.post_ID == slicedId) {
                 commentSection.append(newComment)
             }
