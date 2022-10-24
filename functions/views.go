@@ -10,16 +10,28 @@ import (
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
 	CreateSqlTables()
-	// _, err := r.Cookie("session")
-	// if err != nil {
-	// 	http.Redirect(w, r, "/login", http.StatusSeeOther)
-	// 	return
-	// }
-	// CheckSessionQueryPosts(w, r)
+
 	c, er := r.Cookie("session")
 	if er != nil {
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 		return
+	} else {
+		// Multiple browser login issue.
+		db := OpenDB()
+
+		// Try to find old session from database.
+		rows, _ := db.Query("SELECT * FROM sessions WHERE sessionUUID=?", c.Value)
+		var id int
+		var sessionUUID, userID, usernm string
+
+		// Scan the row.
+		for rows.Next() {
+			rows.Scan(&id, &sessionUUID, &userID, &usernm)
+		}
+		// If session was not found in the database, log the user out from the browser.
+		if len(sessionUUID) < 1 {
+			http.Redirect(w, r, "/logout", http.StatusSeeOther)
+		}
 	}
 	usr := GetCurrentUser(w, r, c)
 	RenderTemplate(w, r, GetTemplates(), "index", usr)

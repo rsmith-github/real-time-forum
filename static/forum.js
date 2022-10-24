@@ -164,9 +164,6 @@ async function displayPosts(callBack) {
     await fetchData("allposts")
     await fetchData("comments")
     posts = posts.reverse();
-    comments = comments.reverse();
-
-
 
     posts.forEach(post => {
         let postDiv = document.createElement('div')
@@ -177,7 +174,7 @@ async function displayPosts(callBack) {
         <div class="posts" id="post-${post.id}">
         <div class="usercat">
         <div>
-        <h2><a href="#" class="userpost">${post.username}</a></h2>
+        <h2><a href="" class="userpost">${post.username}</a></h2>
         </div>
         <div class="joincattop">
         <div class="typestyle">
@@ -202,7 +199,7 @@ async function displayPosts(callBack) {
             
             <a href="/" class="comment-link" id="cmnt-lnk-${post.id}">Comments</a>
             
-            <div class="comment-section" id="cmnt-sec-${post.id}" style="display: none">-----------</div>
+            <div class="comment-section" id="cmnt-sec-${post.id}" style="display: none"></div>
         
         </div>
         </div>
@@ -224,29 +221,37 @@ async function displayPosts(callBack) {
 }
 
 function OpenCommentSection(e) {
+
     e.preventDefault();
     console.log("Comment section with id:", `"${e.target.id}"`, "pressed");
+
 
     let slicedId = e.target.id.slice(9, e.target.id.length)
 
     // Display comment section
     let commentSection = document.getElementById(`cmnt-sec-${slicedId}`);
-    commentSection.style.display = "block";
-
-    // Put comments into correct section.
-    comments.forEach(comment => {
-        let newComment = document.createElement("div");
-        newComment.append(comment.username);
-        newComment.append(comment.comment);
-
-        // Display comments
-        if (comment.post_ID == slicedId) {
-            commentSection.append(newComment)
-        }
 
 
+    if (commentSection.innerHTML != "" && !e.target.id.includes("btn")) {
+        commentSection.innerHTML = "";
+        commentSection.style.display = "none"
+        document.querySelector(`#comment-${slicedId}`).value = "";
+    } else if (e.target.id.includes("btn")) {
+        document.querySelector(`#comment-${slicedId}`).value = "";
+    } else {
+        commentSection.style.display = "block";
+        // Put comments into correct section.
+        comments.forEach(comment => {
+            let newComment = document.createElement("div");
+            newComment.append(comment.username);
+            newComment.append(comment.comment);
 
-    })
+            // Display comments
+            if (comment.post_ID == slicedId) {
+                commentSection.append(newComment)
+            }
+        })
+    }
 
 }
 
@@ -271,23 +276,22 @@ async function sendCommentToView(postId, cmnt, usr) {
     });
 }
 
+// NOTE: This function is called in the HTML.
 function Comment(e) {
     let slicedId = e.target.id.slice(9, e.target.id.length)
     let content = document.getElementById(`comment-${slicedId}`).value
     let cmntSect = document.getElementById(`cmnt-sec-${slicedId}`)
 
     let commentDiv = document.createElement("div")
-    commentDiv.innerText = content
+
 
     cmntSect.append(commentDiv)
-
     sendCommentToView(slicedId, content, document.querySelector("#username").innerText)
 }
 
 
 // Add event listeners to elements added by ".innerHTML"
 function eventListeners() {
-
     // HOW TO MAKE THIS DRY ?????????
     let comment_links = document.querySelectorAll(".comment-link")
     comment_links.forEach(element => {

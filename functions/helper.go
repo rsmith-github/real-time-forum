@@ -68,6 +68,8 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request, c *http.Cookie) User
 	// If the sessionUUID is not the same, redirect. Return value could be null, or other.
 	// Could be an error here.
 	if sess.sessionUUID != c.Value {
+
+		fmt.Println("Logged in from another browser, thus:")
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 	}
 
