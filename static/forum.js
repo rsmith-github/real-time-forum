@@ -11,6 +11,7 @@ window.addEventListener(
 window.addEventListener(
     "load",
     async function () {
+        hidePages();
         // Show page based on url parameter.
         let endpoint = url[url.length - 1]
         if (endpoint == "") {
@@ -33,11 +34,18 @@ window.onpopstate = function (event) {
     showPage(event.state.name)
 }
 
+
+
+// ********************************************************************************************
+// Api helper functions
+
+
 // Global variables (arrays) to store api data.
-var content = [];
-var posts = [];
-var comments = [];
-var sessions = [];
+let content = [];
+let posts = [];
+let comments = [];
+let sessions = [];
+let chats = [];
 async function fetchData(name) {
     // Get api key
     let apiKey = await getApiKey()
@@ -62,6 +70,11 @@ async function fetchData(name) {
             // Fetch sessions.
             sessions = await fetch("/api/sessions", { headers })
             sessions = await sessions.json()
+            break;
+        case "chats":
+            // Fetch chats.
+            chats = await fetch("/api/chats", { headers })
+            chats = await chats.json()
             break;
         default:
             // Fetch html content for each page in the single page app.
@@ -88,6 +101,10 @@ async function getApiKey() {
     let apiKey = await file.text();
     return apiKey
 }
+
+
+// ***********************************************************************************
+// General routes/navbar handling.
 
 // Nav bar
 let loginBtn = document.getElementById("loginBtn")
@@ -157,18 +174,21 @@ function getCookie(name) {
 }
 
 
-var comment_sections = []
-// Get posts and put them in the homepage.
-let homepage = document.getElementById("homepage")
+// ************************************************************************************************************************************
+// Posts and homepage HTML.
+
+let comment_sections = [];
+// Get posts from API and put them in the homepage.
+let homepage = document.getElementById("homepage");
 async function displayPosts(callBack) {
-    await fetchData("allposts")
-    await fetchData("comments")
+    await fetchData("allposts");
+    await fetchData("comments");
     posts = posts.reverse();
 
     posts.forEach(post => {
-        let postDiv = document.createElement('div')
-        postDiv.className = "postDiv"
-        homepage.appendChild(postDiv)
+        let postDiv = document.createElement('div');
+        postDiv.className = "postDiv";
+        homepage.appendChild(postDiv);
 
         let postBody = `
         <div class="posts" id="post-${post.id}">
@@ -219,6 +239,10 @@ async function displayPosts(callBack) {
 
     callBack();
 }
+
+
+// **********************************************************************************
+// Comment section
 
 function OpenCommentSection(e) {
 
@@ -278,25 +302,43 @@ function OpenCommentSection(e) {
 
 }
 
-// Send edited comment to views.
-async function sendCommentToView(postId, cmnt, usr) {
+// Send JSON data to backend "views" in order to save to database.
+async function sendJsonToBackend(endpoint, arg1, arg2, arg3) {
 
     // Get api key
     let apiKey = await getApiKey()
 
-    const response = await fetch("/api/comments", {
-        method: "POST",
-        headers: {
-            "X-CSRFToken": getCookie("csrftoken"),
-            'Token': apiKey,
-
-        },
-        body: JSON.stringify({
-            username: usr,
-            comment: cmnt,
-            post_ID: postId,
-        }),
-    });
+    switch (endpoint) {
+        case "comments":
+            await fetch(`/api/${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    'Token': apiKey,
+                },
+                body: JSON.stringify({
+                    username: arg3,
+                    comment: arg2,
+                    post_ID: arg1,
+                }),
+            });
+            break;
+        case "chats":
+            await fetch(`/api/${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    'Token': apiKey,
+                },
+                body: JSON.stringify({
+                    user1: arg1,
+                    user2: arg2,
+                }),
+            });
+            break;
+        default:
+            break;
+    }
 }
 
 // NOTE: This function is called in the HTML.
@@ -306,7 +348,7 @@ function Comment(e) {
 
     let username = document.getElementById("username")
     // Send the comment to API.
-    sendCommentToView(slicedId, textArea.value, username.innerText)
+    sendJsonToBackend("comments", slicedId, textArea.value, username.innerText)
 
     // Open comment section
     OpenCommentSection()
@@ -335,9 +377,14 @@ function loggedIn() {
 }
 
 
+// *************************************************************************
+// Chat app front end
+
+
 // Display chat app on bottom right of the screen
 async function chatApp() {
     await fetchData("sessions");
+    await fetchData("chats");
     let chatParent = document.createElement("div");
     let button = document.createElement("button");
     button.innerText = "Messenger";
@@ -358,18 +405,31 @@ async function chatApp() {
 
 chatApp();
 
-// Show online users
-function showUsers() {
-    let messengerPage = document.getElementById("messenger")
 
+
+let chatWindow = document.querySelector(".chatWindow");
+let messengerPage = document.getElementById("messenger")
+let chatScreen = document.createElement("div");
+let chatForm = document.createElement("form");
+let input = document.createElement("textarea");
+
+// Show online users for chat app.
+function showUsers() {
 
     sessions.forEach(session => {
 
+        // Long bar with username to click on.
         let div = document.createElement("div")
+        let currentUser = document.getElementById("username").innerText
         // Skip current user. Should not chat with yourself.
-        if (session.username == document.getElementById("username").innerHTML) {
+        if (session.username == currentUser) {
             return;
         }
+
+        div.className = "chatRoom"
+        // Id is user displayed and current user.
+        div.id = `${currentUser}<->${session.username}`
+
         div.innerHTML = `
         <h2>${session.username}</h2>
         <em>Click to chat</em>
@@ -377,13 +437,182 @@ function showUsers() {
         div.style.border = "1px solid green";
         div.style.marginBottom = "5px";
         messengerPage.append(div);
+        div.addEventListener("click", () => {
+
+
+            if (chatWindow.querySelector("button") == null) {
+                showChatWindow(div.id);
+            } else {
+                chatWindow.style.display = "block";
+
+                connectToChatserver([currentUser, session.username]);
+
+                // Blur background page.
+                messengerPage.style.opacity = "0.5"
+                messengerPage.style.pointerEvents = "none";
+            }
+        });
     });
 
 }
 
+// Show chat window pop up with id of user-user
+function showChatWindow(id) {
 
-// Display comments from API in corresponding section.
-function showComments() {
 
-    console.log(comments)
+    // Get users in chat
+    let usersInChat = id.split("<->");
+
+    // Append different components to chat window.
+
+    // Style and append components
+    chatWindowStyles();
+
+    // Show other user on front end.
+    document.querySelector("#friend").innerText = usersInChat[1]
+
+    // Set correct id
+    chatWindow.id = `window: ${id}`
+
+
+    let sendMsgButton = document.createElement("button");
+    sendMsgButton.innerText = "Send"
+
+    chatForm.append(sendMsgButton)
+
+    // sendMsgButton.addEventListener("click", (ev) => {
+    //     ev.preventDefault()
+    // })
+
+    connectToChatserver(usersInChat);
+    let title = document.createElement("h2");
+    title.innerText = `Chat between ${usersInChat[0]} and ${usersInChat[1]}`
+    chatWindow.append(title);
+
+    // Auto focus message form.
+    input.focus();
+
+    sendJsonToBackend("chats", usersInChat[0], usersInChat[1])
+
+}
+
+function chatWindowStyles() {
+    // Styling
+    chatWindow.style.height = window.innerHeight / 1.4 + "px";
+    chatWindow.style.display = "block";
+    chatWindow.style.padding = "5px 20px 20px 20px"
+    chatWindow.style.width = "50%";
+    chatWindow.style.position = "absolute";
+    chatWindow.style.filter = "drop-shadow(30px 10px 50px #AAAAAA)";
+
+    // Create close chatbox button.
+    let close = document.createElement("span");
+    close.innerText = "X";
+    close.style.position = "absolute";
+    close.style.left = "99%"
+    close.style.top = "-4%"
+    close.style.cursor = "pointer";
+    close.style.fontWeight = "bold";
+    close.style.border = "2px solid black"
+    close.style.borderRadius = "50%"
+    close.addEventListener("click", () => {
+        messengerPage.style.opacity = "1"
+        messengerPage.style.pointerEvents = "auto";
+        chatWindow.style.display = "none";
+        leaveChat();
+        return;
+    })
+
+    chatWindow.append(close)
+
+    // Blur background page.
+    messengerPage.style.opacity = "0.5"
+    messengerPage.style.pointerEvents = "none";
+
+    // Chat "screen"/box styles.
+    chatScreen.style.width = "70%";
+    chatScreen.style.height = "70%";
+    chatScreen.style.backgroundColor = "white";
+    chatScreen.style.border = "1px solid black";
+    chatScreen.style.margin = "10px 10px 10px 0px";
+
+    chatForm.id = "chatForm"
+
+
+    // Append different components to chat window.
+    chatWindow.append(chatScreen);
+    chatForm.append(input);
+    chatWindow.append(chatForm);
+
+
+}
+
+
+function leaveChat() {
+    wSocket.close();
+}
+
+let wSocket;
+var ServiceLocation = "ws://" + document.location.host + "/chat/";
+
+
+
+
+function connectToChatserver(usersInChat) {
+    console.log("connected: " + usersInChat[0] + " and " + usersInChat[1]);
+
+    fetchData(chats);
+
+    console.log("All chats: ", chats);
+
+    let chatExists = false;
+    chats.forEach((chat) => {
+        if (chat.user1 == usersInChat[0]) {
+            chatExists = true;
+        }
+    })
+
+    // If chat between the two users already exists, connect to the one that already exists.
+    if (chatExists === true) {
+        wSocket = new WebSocket(ServiceLocation + usersInChat[1] + "~" + usersInChat[0]);
+    } else {
+        // Otherwise create a new one.
+        wSocket = new WebSocket(ServiceLocation + usersInChat[0] + "~" + usersInChat[1]);
+
+    }
+
+
+
+
+
+    wSocket.addEventListener("message", (ev) => {
+        OnMessageReceived(ev);
+    })
+
+}
+
+
+chatForm.addEventListener("submit", (ev) => {
+    ev.preventDefault()
+    SendMessage()
+})
+
+function SendMessage() {
+    var msg = '{"message":"' + input.value + '", "sender":"'
+        + document.querySelector("#username").innerText + '", "received":""}';
+    wSocket.send(msg);
+    input.value = ""
+}
+
+
+function OnMessageReceived(evt) {
+    var msg = JSON.parse(evt.data); // native API
+    console.log(msg);
+
+    let messageCointainer = document.createElement("div");
+    let messageHTML = '<p>' + msg.sender + ':' + msg.message + '</p>';
+    messageCointainer.innerHTML = messageHTML;
+
+    chatScreen.append(messageCointainer);
+
 }

@@ -46,3 +46,8 @@ type DOMcontent struct {
 type Database struct {
 	db *sql.DB
 }
+
+type Chat struct {
+	User1 string `json:"user1"`
+	User2 string `json:"user2"`
+}

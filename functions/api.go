@@ -153,12 +153,58 @@ func CommentsApi(writer http.ResponseWriter, request *http.Request) {
 
 func createApi(table string, writer http.ResponseWriter, request *http.Request) {
 	if request.Method == "GET" {
-		var listOfPosts map[string][]Post
+		// var listOfApiData []interface{}
 		// Built query string.
 		str := "SELECT * FROM " + table + ";"
-		jsn := executeSQL(str)
-		json.Unmarshal(jsn, &listOfPosts)
+		jsn := ExecuteSQL(str)
+
+		// // This is redundant.
+		// er := json.Unmarshal(jsn, &listOfApiData)
+		// if er != nil {
+		// 	fmt.Println(er)
+		// }
+		// fmt.Println(listOfApiData)
+
 		// Secure endpoint
 		writer.Write(jsn)
 	}
+}
+
+func ChatsApi(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		db := OpenDB()
+		defer db.Close()
+		var chat Chat
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&chat)
+		if err != nil {
+			fmt.Println("Around line 181 in api.go: ", err)
+		}
+
+		var _, delErr = db.Exec(`DELETE FROM chats WHERE user1=? AND user2=?`, chat.User1, chat.User2)
+
+		if delErr != nil {
+			fmt.Println(delErr.Error())
+		}
+
+		var _, chatError = db.Exec(`INSERT INTO chats(user1, user2) values(?,?)`, chat.User1, chat.User2)
+		if chatError != nil {
+			fmt.Println(chatError.Error())
+			CheckErr(chatError)
+			// ReturnCode500(writer, request)
+			return
+		}
+
+		// Delete existing chats
+		var _, chatError1 = db.Exec(`DELETE FROM chats WHERE user1=? AND user2=?`, chat.User2, chat.User1)
+		if chatError1 != nil {
+			fmt.Println(chatError1.Error())
+			CheckErr(chatError1)
+			// ReturnCode500(writer, request)
+			return
+		}
+	} else {
+		createApi("chats", w, r)
+	}
+
 }

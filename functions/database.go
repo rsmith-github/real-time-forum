@@ -29,6 +29,10 @@ func CreateSqlTables() {
 	var _, sessTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sessionUUID` VARCHAR(255) NOT NULL UNIQUE, `userID` VARCHAR(64) NOT NULL UNIQUE, `username` VARCHAR(255) NOT NULL UNIQUE)")
 	CheckErr(sessTblErr)
 
+	// Create sessions table if doesn't exist.
+	var _, chatsTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `chats` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user1` VARCHAR(255) NOT NULL, `user2` VARCHAR(255) NOT NULL)")
+	CheckErr(chatsTblErr)
+
 	// Create posts table if doesn't exist.
 	var _, postTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user_ID` VARCHAR(64) NOT NULL, `username` VARCHAR(64) NOT NULL, `content` TEXT NOT NULL, `time_posted` TEXT NOT NULL, `category` VARCHAR(64), `category_2` VARCHAR(64))")
 	CheckErr(postTblErr)
@@ -69,7 +73,7 @@ func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
 }
 
 // Function that queryies database and returns list of bytes to unmarshal.
-func executeSQL(queryStr string) []byte {
+func ExecuteSQL(queryStr string) []byte {
 	db := OpenDB()
 	defer db.Close()
 

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"real-time-forum/chat"
 	"real-time-forum/functions"
 	"time"
 
@@ -82,6 +83,7 @@ func main() {
 	http.HandleFunc("/logout", functions.LogoutHandler)
 	http.HandleFunc("/register", functions.RegisterHandler)
 	http.HandleFunc("/new", functions.NewPost)
+	http.HandleFunc("/api/chats", functions.ChatsApi)
 	http.Handle("/api/allposts", ValidateJWT(functions.PostsApi))
 	http.Handle("/api/sessions", ValidateJWT(functions.SessionsApi))
 	http.Handle("/api/comments", ValidateJWT(functions.CommentsApi))
@@ -94,8 +96,11 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images"))))
 
-	fmt.Printf("Starting server at http://localhost:1234\n")
-	if err := http.ListenAndServe(":1234", nil); err != nil {
+	// run chat app
+	go chat.RunRoutine()
+
+	fmt.Printf("Starting server at http://localhost:8081\n")
+	if err := http.ListenAndServe(":8081", nil); err != nil {
 		log.Fatal(err)
 	}
 }

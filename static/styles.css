@@ -36,18 +36,32 @@ body {
     justify-content: space-evenly;
 }
 
-.comment-section {
+.comment-section{
     display: none;
 }
 
 main {
     display: flex;
+    justify-content: center;
 }
 
 h2, em, label {
-    color: white;
+    color: black;
 }
 
 a {
     color:steelblue;
+}
+
+
+/* Chat rooms */
+
+.chatRoom:hover {
+    cursor: pointer;
+}
+
+.chatWindow  {
+    display: none;
+    background-color: azure;
+    border-radius: 45px;
 }

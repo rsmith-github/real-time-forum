@@ -214,3 +214,6 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 	// Redirect to index.
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
+
+
+
