@@ -51,7 +51,7 @@ func RunRoutine() {
 			listOfStrings = append(listOfStrings, obj["user1"]+"~"+obj["user2"])
 		}
 
-		// Don't need to be calling so many times.
+		// Don't need to be calling so many times
 		time.Sleep(1 * time.Second)
 		// fmt.Println(listOfStrings)
 		for _, name := range listOfStrings {
