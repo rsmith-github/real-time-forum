@@ -1,5 +1,7 @@
 body {
-    background: rgb(208, 208, 208);
+    background: #d7d7d7;
+    background: -webkit-linear-gradient(0deg, #d7d7d7 0%, #eeeeee 100%);
+    background: linear-gradient(0deg, #d7d7d7 0%, #eeeeee 100%);
 }
 
 .page {

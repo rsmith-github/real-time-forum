@@ -411,7 +411,7 @@ let chatWindow = document.querySelector(".chatWindow");
 let messengerPage = document.getElementById("messenger")
 let chatScreen = document.createElement("div");
 let chatForm = document.createElement("form");
-let input = document.createElement("textarea");
+let input = document.createElement("input");
 
 // Show online users for chat app.
 function showUsers() {
@@ -535,6 +535,7 @@ function chatWindowStyles() {
     chatScreen.style.backgroundColor = "white";
     chatScreen.style.border = "1px solid black";
     chatScreen.style.margin = "10px 10px 10px 0px";
+    chatScreen.style.overflow = "auto";
 
     chatForm.id = "chatForm"
 
@@ -544,6 +545,9 @@ function chatWindowStyles() {
     chatForm.append(input);
     chatWindow.append(chatForm);
 
+    // Input
+    input.type = "text";
+
 
 }
 
@@ -551,6 +555,8 @@ function chatWindowStyles() {
 function leaveChat() {
     wSocket.close();
 }
+
+
 
 let wSocket;
 var ServiceLocation = "ws://" + document.location.host + "/chat/";
@@ -566,11 +572,14 @@ function connectToChatserver(usersInChat) {
     console.log("All chats: ", chats);
 
     let chatExists = false;
-    chats.forEach((chat) => {
-        if (chat.user1 == usersInChat[0]) {
-            chatExists = true;
-        }
-    })
+
+    if (!!chats) {
+        chats.forEach((chat) => {
+            if (chat.user1 === usersInChat[0] || chat.user2 === usersInChat[1]) {
+                chatExists = true;
+            }
+        })
+    }
 
     // If chat between the two users already exists, connect to the one that already exists.
     if (chatExists === true) {
@@ -578,7 +587,6 @@ function connectToChatserver(usersInChat) {
     } else {
         // Otherwise create a new one.
         wSocket = new WebSocket(ServiceLocation + usersInChat[0] + "~" + usersInChat[1]);
-
     }
 
 

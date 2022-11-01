@@ -61,6 +61,12 @@ func RunRoutine() {
 			// If not registered, append to map and register.
 			_, ok := registered[name]
 
+			// Checking reverse order.
+
+			// for k, v := range registered {
+			// 	fmt.Println(k, v)
+			// }
+
 			if !ok {
 				registered[name] = room.topic
 				http.Handle("/chat/"+name, room)
