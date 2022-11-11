@@ -99,8 +99,8 @@ func main() {
 	// run chat app
 	go chat.RunRoutine()
 
-	fmt.Printf("Starting server at http://localhost:8081\n")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	fmt.Printf("Starting server at http://localhost:8080\n")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }

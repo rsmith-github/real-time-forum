@@ -31,7 +31,7 @@ main {
     min-width: 100%;
 }
 
-h2, em, label {
+h2, h3, em, label {
     color: white;
 }
 
@@ -77,9 +77,15 @@ a {
 .chatWindow  {
     display: none;
     background-color: azure;
-    border-radius: 45px;
 }
 
+#chatwith {
+    color: black;
+}
+
+.chatForm > input {
+    width: 60% !important;
+}
 
 /* Login page */
 
@@ -108,3 +114,9 @@ a {
     margin-right: 5px;
 }
 
+/* dropdown */ 
+
+.categorydd {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}

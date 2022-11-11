@@ -527,8 +527,10 @@ function showChatWindow(id) {
     let usersInChat = id.split("<->");
 
     // Create title.
-    let title = document.createElement("h2");
-    title.innerText = `Chat with: ${usersInChat[1]}`
+    let title = document.createElement("div");
+    title.className = "h5 m-0";
+    title.id = "chatwith"
+    title.innerText = `Chat with: @${usersInChat[1]}`
     chatWindow.append(title);
 
     // Style and append components
@@ -551,22 +553,17 @@ function chatWindowStyles(id) {
     chatWindow.style.height = "434.714px";
     chatWindow.style.marginTop = "100px";
     chatWindow.style.display = "block";
-    chatWindow.style.padding = "5px 20px 20px 20px"
+    chatWindow.style.padding = "25px 0px 0px 50px"
     chatWindow.style.width = "50%";
     chatWindow.style.position = "absolute";
-    chatWindow.style.filter = "drop-shadow(30px 10px 50px #AAAAAA)";
+    chatWindow.style.filter = "drop-shadow(0px 0px 10px #AAAAAA)";
 
     // Create close chatbox button.
     let close = document.createElement("i");
-    close.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
-    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
-    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
-  </svg>`;
-    close.style.fontWeight = "bolder";
+    close.innerHTML = `<button type="button" class="btn-close" aria-label="Close"></button>`;
     close.style.position = "absolute";
-    close.style.left = "99%"
-    close.style.top = "-4%"
-    close.style.cursor = "pointer";
+    close.style.left = "95%"
+    close.style.top = "2%"
     close.addEventListener("click", () => {
         messengerPage.style.opacity = "1"
         messengerPage.style.pointerEvents = "auto";
@@ -596,6 +593,8 @@ function chatWindowStyles(id) {
 
     chatForm.id = "chatForm";
 
+
+    input.style.width = "60%";
 
     // Append different components to chat window.
     chatWindow.append(chatScreen);

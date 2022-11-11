@@ -79,12 +79,12 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
                 </div>
                 <textarea class="newposttxt" id="newposttxt" name="new-post" contenteditable></textarea>
                 <div class="catandpost">
-                    <select class="categorydd" name="category" id="">
+                    <select class="categorydd btn btn-secondary dropdown-toggle" name="category" id="">
                         <option value="Golang">Golang</option>
                         <option value="JavaScript">JavaScript</option>
                         <option value="Rust">Rust</option>
                     </select>
-                    <input id="postbttn" class="postbttn btn btn-outline-primary" type="submit" value="Post"/>
+                    <input id="postbttn" class="postbttn btn btn-primary" type="submit" value="Post"/>
                 </div>
             </div>
         </form>
