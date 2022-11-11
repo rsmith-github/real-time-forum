@@ -32,7 +32,7 @@ window.addEventListener(
             selector: '.background',
             connectParticles: true,
             maxParticles: 101,
-
+            color: "#FFFFFF"
 
         });
     }

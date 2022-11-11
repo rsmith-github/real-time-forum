@@ -20,8 +20,10 @@ html, body {
     z-index: -10;
     min-height: 100% !important;
     min-width: 100% !important;
+    background-color: black;
     
 }
+
 
 main {
     display: flex;
@@ -30,7 +32,7 @@ main {
 }
 
 h2, em, label {
-    color: black;
+    color: white;
 }
 
 a {
