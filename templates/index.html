@@ -7,41 +7,102 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>index</title>
     <link rel="stylesheet" href="static/styles.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+
 
 </head>
 <body>
-    
     {{ if not .Username }} 
-        <nav class="navbar">
-            <div class="logo-container">
-                <a class="navbar-brand" href="/"><img src="https://static.dezeen.com/uploads/2021/11/meta-facebook-rebranding-name-news_dezeen_2364_col_hero2.jpg" class="logo" /></a>
-            </div>
-            
-            <div class="navGroup">
-                <div id="loginBtn">
-                    <a class="nav-link" href="/login" data-name="login">Log In</a>
+        <nav class="navbar navbar-dark bg-dark fixed-top">
+            <div class="container-fluid">
+              <a class="navbar-brand" href="/">Real Time Forum</a>
+              <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+                <div class="offcanvas-header">
+                  <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Please login</h5>
+                  <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
                 </div>
-                <div id="registerBtn">
-                    <a class="nav-link" href="/register" data-name="register">Register</a>
+                <div class="offcanvas-body">
+                  <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                    <li class="nav-item" id="loginBtn">
+                        <a class="nav-link" href="/login" data-name="login">Log In</a>
+                    </li>
+                    <li class="nav-item" id="loginBtn">
+                        <a class="nav-link" href="/register" data-name="register">Register</a>
+                    </li>
+                    <li class="nav-item dropdown" id="registerBtn">
+                      <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Dropdown
+                      </a>
+                      <ul class="dropdown-menu dropdown-menu-dark">
+                        <li><a class="dropdown-item" href="#">Action</a></li>
+                        <li><a class="dropdown-item" href="#">Another action</a></li>
+                        <li>
+                          <hr class="dropdown-divider">
+                        </li>
+                        <li><a class="dropdown-item" href="#">Something else here</a></li>
+                      </ul>
+                    </li>
+                  </ul>
+                  <form class="d-flex mt-3" role="search">
+                    <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                    <button class="btn btn-success" type="submit">Search</button>
+                  </form>
                 </div>
+              </div>
             </div>
-        </nav>
+          </nav>
+        
         
     {{ else }}
+
     <div style="display: none;" id="username">{{.Username}}</div>
-        <nav class="navbar">
-            <div class="logo-container">
-                <a class="navbar-brand" href="/"><img src="https://static.dezeen.com/uploads/2021/11/meta-facebook-rebranding-name-news_dezeen_2364_col_hero2.jpg" class="logo" /></a>
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+          <a class="navbar-brand nav-link" href="/" data-name="homepage">Real Time Forum</a>
+          <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+            <div class="offcanvas-header">
+              <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel"><strong>Welcome</strong>&nbsp;{{.Username}}</h5>
+              <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
             </div>
-            <div class="navGroup">
-                <div class="welcome">
-                    <a class="nav-link" href="/" data-name="homepage"><strong>Welcome</strong>&nbsp;{{.Username}}</a>
-                </div>
-                <div id="logoutBtn">
-                    <a class="" href="/logout">Logout</a>
-                </div>
+            <div class="offcanvas-body">
+              <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item">
+                  <a class="nav-link" aria-current="page" href="/" data-name="homepage">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" id="messenger-link" href="/messenger" data-name="messenger">Messenger</a>
+                </li>
+                <li class="nav-item">
+                  <a class="logout-btn" href="/logout">Logout</a>
+                </li>
+                <li class="nav-item dropdown">
+                  <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown
+                  </a>
+                  <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li>
+                      <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                  </ul>
+                </li>
+              </ul>
+              <form class="d-flex mt-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-success" type="submit">Search</button>
+              </form>
             </div>
-        </nav>
+          </div>
+        </div>
+      </nav>
     {{ end }}
 
 
@@ -52,13 +113,30 @@
     <main>
         <div id="homepage" class="page"></div>
         <div id="messenger" class="page"><h2>Message your friends!!</h2></div>
-        <div class="chatWindow page">
-            <div><h1>Chat with:&nbsp; <span id="friend"></span></h1></div>
-        </div>
+        <div class="chatWindow page"></div>
     </main>
+
     
+    <canvas class="background"></canvas>
+    <script async src="https://cdn.jsdelivr.net/npm/es-module-shims@1/dist/es-module-shims.min.js" crossorigin="anonymous"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "@popperjs/core": "https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js",
+        "bootstrap": "https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.esm.min.js"
+      }
+    }
+    </script>
+    <script type="module">
+        import * as bootstrap from 'bootstrap'
+        
+        new bootstrap.Popover(document.getElementById('popoverButton'))
+        </script>
+    
+    <script type="text/javascript" src="static/forum.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></script>
 </body>
-<script type="text/javascript" src="static/forum.js"></script>
 
 </html>
 
