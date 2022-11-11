@@ -14,23 +14,31 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 	loginContent := DOMcontent{
 		Endpoint: "login",
 		Content: `
-		<h2 class="logintxt">Login</h2>
-		<form action="/login" method="post" class="formall">
-			<div class="form-group" id="user">
-				<input autofocus class="user" type="text" name="username" placeholder="Username">
+		<div class="container">
+		<div class="row vertical-offset-100">
+			<div class="col-md-4 col-md-offset-4">
+				<div class="panel panel-default">
+					  <div class="panel-heading">
+						<h3 class="panel-title">Please sign in</h3>
+					 </div>
+					  <div class="panel-body">
+						<form accept-charset="UTF-8" action="/login" method="post" class="formall">
+						<fieldset>
+							  <div class="form-group" id="user">
+								<input autofocus class="form-control" placeholder="Username / Nickname" name="username" type="text">
+							</div>
+							<div class="form-group" id="pass">
+								<input class="form-control" placeholder="Password" name="password" type="password" value="">
+							</div>
+							<input class="btn btn-lg btn-success btn-block" type="submit" value="Login">
+						</fieldset>
+						  </form>
+					</div>
+				</div>
 			</div>
-			<div class="form-group" id="pass">
-				<input class="pass" type="password" name="password" placeholder="Password">
-			</div>
-			<div class="form-group" id="submit">
-				<input class="submit" type="submit" value="Login">
-			</div>
-			<div class="lowbanner">
-				Don't have an account? <a class="reghere" href="/register"
-					style="color: rgb(6, 86, 235); text-decoration:underline;">Register here.</a>
-			</div>
-		</form>
-		</div> `,
+		</div>
+	</div> 
+	`,
 	}
 	registerContent := DOMcontent{
 		Endpoint: "register",
@@ -76,7 +84,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
                         <option value="JavaScript">JavaScript</option>
                         <option value="Rust">Rust</option>
                     </select>
-                    <input id="postbttn" class="postbttn" type="submit" value="Post"/>
+                    <input id="postbttn" class="postbttn btn btn-outline-primary" type="submit" value="Post"/>
                 </div>
             </div>
         </form>
@@ -181,28 +189,47 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Around line 181 in api.go: ", err)
 		}
 
-		var _, delErr = db.Exec(`DELETE FROM chats WHERE user1=? AND user2=?`, chat.User1, chat.User2)
+		// var _, delErr = db.Exec(`DELETE FROM chats WHERE user1=? AND user2=?`, chat.User1, chat.User2)
 
-		if delErr != nil {
-			fmt.Println(delErr.Error())
+		// if delErr != nil {
+		// 	fmt.Println(delErr.Error())
+		// }
+
+		// Only insert if chat doesn't already exist.
+
+		// Get all chats from database. They would have been updated through fetch API with http POST.
+		var chatsBytes []byte
+		chatsBytes = ExecuteSQL("SELECT * FROM chats;")
+
+		// Unmarshal data from database.
+		var readable []map[string]string
+		json.Unmarshal(chatsBytes, &readable)
+
+		var listOfStrings []string
+		// Loop through list of objects and return a new list with format user1~user2 for each element.
+		for _, obj := range readable {
+			listOfStrings = append(listOfStrings, obj["user1"]+"~"+obj["user2"])
 		}
 
-		var _, chatError = db.Exec(`INSERT INTO chats(user1, user2) values(?,?)`, chat.User1, chat.User2)
-		if chatError != nil {
-			fmt.Println(chatError.Error())
-			CheckErr(chatError)
-			// ReturnCode500(writer, request)
-			return
+		// Check if room already exists.
+		flag := 0
+		for _, el := range listOfStrings {
+			if strings.Index(el, chat.User1) != -1 && strings.Index(el, chat.User2) != -1 {
+				flag = 1
+			}
 		}
 
-		// Delete existing chats
-		var _, chatError1 = db.Exec(`DELETE FROM chats WHERE user1=? AND user2=?`, chat.User2, chat.User1)
-		if chatError1 != nil {
-			fmt.Println(chatError1.Error())
-			CheckErr(chatError1)
-			// ReturnCode500(writer, request)
-			return
+		// If room does not exist, create it.
+		if flag == 0 {
+			var _, chatError = db.Exec(`INSERT INTO chats(user1, user2) values(?,?)`, chat.User1, chat.User2)
+			if chatError != nil {
+				fmt.Println(chatError.Error())
+				CheckErr(chatError)
+				// ReturnCode500(writer, request)
+				return
+			}
 		}
+
 	} else {
 		createApi("chats", w, r)
 	}

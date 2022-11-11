@@ -1,50 +1,32 @@
-body {
-    background: #d7d7d7;
-    background: -webkit-linear-gradient(0deg, #d7d7d7 0%, #eeeeee 100%);
-    background: linear-gradient(0deg, #d7d7d7 0%, #eeeeee 100%);
-}
-
-.page {
-    display: none;
-    width: 100%;
-
-}
-
-#homepage {
+#homepage, #messenger {
+    padding: 5% 0 0 0.6%;
     display: block;
+    min-width: 100%;
+
 }
 
-.postDiv {
-    border: 1px solid salmon;
-    margin-bottom: 10px;
+
+html, body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-.logo-container {
-    width: 20%;
-}
-
-.logo {
-    width: 100%;
-}
-
-.navbar {
-    display: flex;
-    justify-content: flex-start; 
-}
-
-.navGroup {
-    display: flex;
-    width: 40%;
-    justify-content: space-evenly;
-}
-
-.comment-section{
-    display: none;
+.background {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    z-index: -10;
+    min-height: 100% !important;
+    min-width: 100% !important;
+    
 }
 
 main {
     display: flex;
     justify-content: center;
+    min-width: 100%;
 }
 
 h2, em, label {
@@ -53,6 +35,34 @@ h2, em, label {
 
 a {
     color:steelblue;
+}
+
+.postDiv {
+    margin: 20px 0 20px 0;
+}
+
+.inlinecategory {
+    display: inline-block;
+}
+.bold {
+    font-weight: bolder;
+}
+
+
+/* Logout button */
+
+.logout-btn {
+    display: block;
+    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    font-size: var(--bs-nav-link-font-size);
+    font-weight: var(--bs-nav-link-font-weight);
+    color: var(--bs-nav-link-color);
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+
+.logout-btn:focus, .logout-btn:hover {
+    color: var(--bs-nav-link-hover-color);
 }
 
 
@@ -67,3 +77,32 @@ a {
     background-color: azure;
     border-radius: 45px;
 }
+
+
+/* Login page */
+
+.container {
+
+    margin: 100px 0 0 0 !important;
+}
+
+
+/* Comment section */
+.comment-form {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.commenttxtbox, .commentbttn {
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+}
+
+.commenttxtbox {
+    border-radius: 2% ;
+    margin-right: 5px;
+}
+

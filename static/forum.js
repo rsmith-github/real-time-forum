@@ -23,8 +23,18 @@ window.addEventListener(
         // Show page based on endpoint.
         showPage(endpoint);
 
+        // Fix weird sectioning issue
+        document.querySelector("html").style.height = window.innerHeight;
+
         // Handle nav bar.
         handleNav();
+        Particles.init({
+            selector: '.background',
+            connectParticles: true,
+            maxParticles: 101,
+
+
+        });
     }
 
 );
@@ -190,41 +200,100 @@ async function displayPosts(callBack) {
         postDiv.className = "postDiv";
         homepage.appendChild(postDiv);
 
+        let POSTBODY = `
+        <div class="card gedf-card" id="post-${post.id}">
+                    <div class="card-header">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="mr-2">
+                                    <img class="rounded-circle" width="45" src="https://picsum.photos/50/50" alt="">
+                                </div>
+                                <div class="ml-2">
+                                    <div class="h5 m-0">@${post.username}</div>
+                                    <div class="h7 text-muted">Insert Bio Here</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="dropdown">
+                                    <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <i class="fa fa-ellipsis-h"></i>
+                                    </button>
+                                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+                                        <div class="h6 dropdown-header">Configuration</div>
+                                        <a class="dropdown-item" href="#">Save</a>
+                                        <a class="dropdown-item" href="#">Hide</a>
+                                        <a class="dropdown-item" href="#">Report</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="card-body">
+                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>10 min ago</div>
+                        <p class="inlinecategory">
+                          <span class="bold">Post type: </span>${post.category_2}
+                        </p>
+                        &nbsp;
+                        <p class="inlinecategory">
+                          <span class="bold"> Category: </span>${post.category}
+                        </p>
+
+                        <p class="card-text">
+                            ${post.content}
+                        </p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+                        <a href="/" class="comment-link" id="cmnt-lnk-${post.id}"><i class="fa fa-comment"></i> Comments</a>
+                        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
+                        <div class="commentbox">
+                            <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
+                                <input type="text" class="commenttxtbox" name="comment" id="comment-${post.id}"/>
+                                <button onclick="Comment(event)" class="commentbttn btn btn-outline-secondary" name="submitComment" id="cmnt-btn-${post.id}">Comment</button>
+                                <input type="hidden" name="comment-id" value="${post.id}">
+                            </form>
+                            <div class="comment-section" id="cmnt-sec-${post.id}" style="display: none"></div>
+                        </div>
+                    </div>
+                    </div>
+
+        `
+
         let postBody = `
         <div class="posts" id="post-${post.id}">
-        <div class="usercat">
-        <div>
-        <h2><a href="" class="userpost">${post.username}</a></h2>
-        </div>
-        <div class="joincattop">
-        <div class="typestyle">
-        <h2 id="typestyle">Type: ${post.category_2}</h2>
-        </div>
-        <div class="catstyle">
-        <h2 id="catstyle">Category: ${post.category}</h2>
-        </div>
-        </div>
-        </div>
-        <div class="postcontent">
-        <em> ${post.content} </em>
-
-        <div class="commentsContainer">
-            <div class="commentbox">
-                <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
-                    <textarea class="commenttxtbox" name="comment" id="comment-${post.id}" cols="30" rows="2"></textarea>
-                    <button onclick="Comment(event)" class="commentbttn" name="submitComment" id="cmnt-btn-${post.id}">Comment</button>
-                    <input type="hidden" name="comment-id" value="${post.id}">
-                </form>
+            <div class="usercat">
+            <div>
+            <h2><a href="" class="userpost">${post.username}</a></h2>
             </div>
-            
-            <a href="/" class="comment-link" id="cmnt-lnk-${post.id}">Comments</a>
-            
-            <div class="comment-section" id="cmnt-sec-${post.id}" style="display: none"></div>
-        
-        </div>
+            <div class="joincattop">
+            <div class="typestyle">
+            <h2 id="typestyle">Type: ${post.category_2}</h2>
+            </div>
+            <div class="catstyle">
+            <h2 id="catstyle">Category: ${post.category}</h2>
+            </div>
+            </div>
+            </div>
+            <div class="postcontent">
+            <em> ${post.content} </em>
+
+            <div class="commentsContainer">
+                <div class="commentbox">
+                    <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
+                        <input type="text" class="commenttxtbox" name="comment" id="comment-${post.id}"/>
+                        <button onclick="Comment(event)" class="commentbttn" name="submitComment" id="cmnt-btn-${post.id}">Comment</button>
+                        <input type="hidden" name="comment-id" value="${post.id}">
+                    </form>
+                </div>
+                <a href="/" class="comment-link" id="cmnt-lnk-${post.id}">Comments</a>
+                
+                <div class="comment-section" id="cmnt-sec-${post.id}" style="display: none"></div>
+
+            </div>
         </div>
         `
-        postDiv.innerHTML = postBody;
+        postDiv.innerHTML = POSTBODY;
     });
 
     // Login redirect button only shows up on homepage so handle the click event.
@@ -385,21 +454,12 @@ function loggedIn() {
 async function chatApp() {
     await fetchData("sessions");
     await fetchData("chats");
-    let chatParent = document.createElement("div");
-    let button = document.createElement("button");
-    button.innerText = "Messenger";
-    button.style.position = "fixed";
-    button.style.bottom = "0px";
-    button.style.right = "0px";
-    chatParent.appendChild(button);
+    let messengerLink = document.querySelector("#messenger-link");
 
-    button.addEventListener("click", () => {
+    messengerLink.addEventListener("click", () => {
         hidePages();
         showPage("messenger");
-        button.style.display = "none"
     });
-    document.querySelector("body").append(chatParent)
-
     showUsers()
 }
 
@@ -409,7 +469,6 @@ chatApp();
 
 let chatWindow = document.querySelector(".chatWindow");
 let messengerPage = document.getElementById("messenger")
-let chatScreen = document.createElement("div");
 let chatForm = document.createElement("form");
 let input = document.createElement("input");
 
@@ -437,12 +496,16 @@ function showUsers() {
         div.style.border = "1px solid green";
         div.style.marginBottom = "5px";
         messengerPage.append(div);
+
+        // Show chat box on click
         div.addEventListener("click", () => {
 
 
             if (chatWindow.querySelector("button") == null) {
                 showChatWindow(div.id);
+
             } else {
+
                 chatWindow.style.display = "block";
 
                 connectToChatserver([currentUser, session.username]);
@@ -463,31 +526,18 @@ function showChatWindow(id) {
     // Get users in chat
     let usersInChat = id.split("<->");
 
-    // Append different components to chat window.
+    // Create title.
+    let title = document.createElement("h2");
+    title.innerText = `Chat with: ${usersInChat[1]}`
+    chatWindow.append(title);
 
     // Style and append components
-    chatWindowStyles();
-
-    // Show other user on front end.
-    document.querySelector("#friend").innerText = usersInChat[1]
+    chatWindowStyles(id);
 
     // Set correct id
     chatWindow.id = `window: ${id}`
 
-
-    let sendMsgButton = document.createElement("button");
-    sendMsgButton.innerText = "Send"
-
-    chatForm.append(sendMsgButton)
-
-    // sendMsgButton.addEventListener("click", (ev) => {
-    //     ev.preventDefault()
-    // })
-
     connectToChatserver(usersInChat);
-    let title = document.createElement("h2");
-    title.innerText = `Chat between ${usersInChat[0]} and ${usersInChat[1]}`
-    chatWindow.append(title);
 
     // Auto focus message form.
     input.focus();
@@ -496,9 +546,10 @@ function showChatWindow(id) {
 
 }
 
-function chatWindowStyles() {
+function chatWindowStyles(id) {
     // Styling
-    chatWindow.style.height = window.innerHeight / 1.4 + "px";
+    chatWindow.style.height = "434.714px";
+    chatWindow.style.marginTop = "100px";
     chatWindow.style.display = "block";
     chatWindow.style.padding = "5px 20px 20px 20px"
     chatWindow.style.width = "50%";
@@ -506,18 +557,20 @@ function chatWindowStyles() {
     chatWindow.style.filter = "drop-shadow(30px 10px 50px #AAAAAA)";
 
     // Create close chatbox button.
-    let close = document.createElement("span");
-    close.innerText = "X";
+    let close = document.createElement("i");
+    close.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-x-circle" viewBox="0 0 16 16">
+    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"/>
+  </svg>`;
+    close.style.fontWeight = "bolder";
     close.style.position = "absolute";
     close.style.left = "99%"
     close.style.top = "-4%"
     close.style.cursor = "pointer";
-    close.style.fontWeight = "bold";
-    close.style.border = "2px solid black"
-    close.style.borderRadius = "50%"
     close.addEventListener("click", () => {
         messengerPage.style.opacity = "1"
         messengerPage.style.pointerEvents = "auto";
+        chatWindow.innerHTML = "";
         chatWindow.style.display = "none";
         leaveChat();
         return;
@@ -529,6 +582,8 @@ function chatWindowStyles() {
     messengerPage.style.opacity = "0.5"
     messengerPage.style.pointerEvents = "none";
 
+
+    let chatScreen = document.createElement("div");
     // Chat "screen"/box styles.
     chatScreen.style.width = "70%";
     chatScreen.style.height = "70%";
@@ -536,18 +591,26 @@ function chatWindowStyles() {
     chatScreen.style.border = "1px solid black";
     chatScreen.style.margin = "10px 10px 10px 0px";
     chatScreen.style.overflow = "auto";
+    chatScreen.className = "chatScreen";
+    chatScreen.id = "chatScreen:" + id;
 
-    chatForm.id = "chatForm"
+    chatForm.id = "chatForm";
 
 
     // Append different components to chat window.
     chatWindow.append(chatScreen);
     chatForm.append(input);
+    let sendMsgButton = document.createElement("button");
+    sendMsgButton.innerText = "Send"
+
+
+    if (chatForm.childElementCount === 1) {
+        chatForm.appendChild(sendMsgButton);
+    }
     chatWindow.append(chatForm);
 
     // Input
     input.type = "text";
-
 
 }
 
@@ -573,20 +636,26 @@ function connectToChatserver(usersInChat) {
 
     let chatExists = false;
 
+    console.log("array: ", usersInChat);
+
     if (!!chats) {
+        // Check f chat between the two users already exists.
+
         chats.forEach((chat) => {
-            if (chat.user1 === usersInChat[0] || chat.user2 === usersInChat[1]) {
+            if (chat.user1 === usersInChat[0] && chat.user2 === usersInChat[1]) {
                 chatExists = true;
             }
         })
     }
 
+    // console.log(chatExists);
+
     // If chat between the two users already exists, connect to the one that already exists.
     if (chatExists === true) {
-        wSocket = new WebSocket(ServiceLocation + usersInChat[1] + "~" + usersInChat[0]);
+        wSocket = new WebSocket(ServiceLocation + usersInChat[0] + "~" + usersInChat[1]);
     } else {
         // Otherwise create a new one.
-        wSocket = new WebSocket(ServiceLocation + usersInChat[0] + "~" + usersInChat[1]);
+        wSocket = new WebSocket(ServiceLocation + usersInChat[1] + "~" + usersInChat[0]);
     }
 
 
@@ -594,7 +663,7 @@ function connectToChatserver(usersInChat) {
 
 
     wSocket.addEventListener("message", (ev) => {
-        OnMessageReceived(ev);
+        OnMessageReceived(ev, usersInChat);
     })
 
 }
@@ -613,7 +682,7 @@ function SendMessage() {
 }
 
 
-function OnMessageReceived(evt) {
+function OnMessageReceived(evt, usersInChat) {
     var msg = JSON.parse(evt.data); // native API
     console.log(msg);
 
@@ -621,6 +690,14 @@ function OnMessageReceived(evt) {
     let messageHTML = '<p>' + msg.sender + ':' + msg.message + '</p>';
     messageCointainer.innerHTML = messageHTML;
 
-    chatScreen.append(messageCointainer);
+
+    // Append message to correct chat.
+    let chatScreens = document.querySelectorAll(".chatScreen")
+
+    chatScreens.forEach(chatscreen => {
+        if (chatscreen.id.includes(usersInChat[0]) && chatscreen.id.includes(usersInChat[1])) {
+            chatscreen.append(messageCointainer)
+        }
+    });
 
 }
