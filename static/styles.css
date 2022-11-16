@@ -1,56 +1,70 @@
-body {
-    background: rgb(208, 208, 208);
-}
-
-.page {
-    display: none;
-    width: 100%;
-
-}
-
-#homepage {
+#homepage, #messenger {
+    padding: 5% 0 0 0.6%;
     display: block;
+    min-width: 100%;
+
 }
 
-.postDiv {
-    border: 1px solid salmon;
-    margin-bottom: 10px;
+
+html, body {
+    min-height: 100%;
+    margin: 0;
+    padding: 0;
 }
 
-.logo-container {
-    width: 20%;
+.background {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    z-index: -10;
+    height: 100% !important;
+    width: 100% !important;
+    background-color: black;
+    
 }
 
-.logo {
-    width: 100%;
-}
-
-.navbar {
-    display: flex;
-    justify-content: flex-start; 
-}
-
-.navGroup {
-    display: flex;
-    width: 40%;
-    justify-content: space-evenly;
-}
-
-.comment-section{
-    display: none;
-}
 
 main {
     display: flex;
     justify-content: center;
+    min-width: 100%;
 }
 
-h2, em, label {
-    color: black;
+h2, h3, em, label {
+    color: white;
 }
 
 a {
     color:steelblue;
+}
+
+.postDiv {
+    margin: 20px 0 20px 0;
+}
+
+.inlinecategory {
+    display: inline-block;
+}
+.bold {
+    font-weight: bolder;
+}
+
+
+/* Logout button */
+
+.logout-btn {
+    display: block;
+    padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+    font-size: var(--bs-nav-link-font-size);
+    font-weight: var(--bs-nav-link-font-weight);
+    color: var(--bs-nav-link-color);
+    text-decoration: none;
+    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out;
+}
+
+.logout-btn:focus, .logout-btn:hover {
+    color: var(--bs-nav-link-hover-color);
 }
 
 
@@ -63,5 +77,59 @@ a {
 .chatWindow  {
     display: none;
     background-color: azure;
-    border-radius: 45px;
+}
+
+#chatwith {
+    color: black;
+}
+
+.chatForm > input {
+    width: 60% !important;
+}
+
+/* Login page */
+
+.container {
+
+    margin: 100px 0 0 0 !important;
+}
+
+
+/* Comment section */
+.comment-form {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+
+.commenttxtbox, .commentbttn {
+    height: 40px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+
+}
+
+.commenttxtbox {
+    border-radius: 2% ;
+    margin-right: 5px;
+}
+
+/* dropdown */ 
+
+.categorydd {
+    padding-right: 0px !important;
+    padding-left: 0px !important;
+}
+
+
+/* Responsive */ 
+
+@media (max-width: 876px) {
+
+    .background {
+        /* position: absolute; */
+        /* min-height: 100% !important; */
+
+    }
+    
 }

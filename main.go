@@ -83,6 +83,7 @@ func main() {
 	http.HandleFunc("/logout", functions.LogoutHandler)
 	http.HandleFunc("/register", functions.RegisterHandler)
 	http.HandleFunc("/new", functions.NewPost)
+	http.HandleFunc("/api/users", functions.UsersApi)
 	http.HandleFunc("/api/chats", functions.ChatsApi)
 	http.Handle("/api/allposts", ValidateJWT(functions.PostsApi))
 	http.Handle("/api/sessions", ValidateJWT(functions.SessionsApi))
@@ -99,8 +100,8 @@ func main() {
 	// run chat app
 	go chat.RunRoutine()
 
-	fmt.Printf("Starting server at http://localhost:8081\n")
-	if err := http.ListenAndServe(":8081", nil); err != nil {
+	fmt.Printf("Starting server at http://localhost:8080\n")
+	if err := http.ListenAndServe(":8080", nil); err != nil {
 		log.Fatal(err)
 	}
 }

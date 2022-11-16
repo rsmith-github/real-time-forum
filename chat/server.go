@@ -51,17 +51,22 @@ func RunRoutine() {
 			listOfStrings = append(listOfStrings, obj["user1"]+"~"+obj["user2"])
 		}
 
-		// Don't need to be calling so many times.
+		// Don't need to be calling so many times
 		time.Sleep(1 * time.Second)
+		
 		// fmt.Println(listOfStrings)
 		for _, name := range listOfStrings {
 
 			room := NewRoom(name)
 
-			// If not registered, append to map and register.
-			_, ok := registered[name]
+			// Checking reverse order.
 
-			if !ok {
+			// for k, v := range registered {
+			// 	fmt.Println(k, v)
+			// }
+
+			// If not registered, append to map and register.
+			if _, ok := registered[name]; !ok {
 				registered[name] = room.topic
 				http.Handle("/chat/"+name, room)
 				go room.Run()
