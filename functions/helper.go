@@ -67,11 +67,11 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request, c *http.Cookie) User
 
 	// If the sessionUUID is not the same, redirect. Return value could be null, or other.
 	// Could be an error here.
-	if sess.sessionUUID != c.Value {
+	// if sess.sessionUUID != c.Value {
 
-		fmt.Println("Logged in from another browser, thus:")
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-	}
+	// 	fmt.Println("error: helper.go line 72. Honestly not even an error.")
+	// http.Redirect(w, r, "/", http.StatusSeeOther)
+	// }
 
 	// Get current user username.
 	rows2, err2 := db.Query("SELECT * FROM users WHERE id=?;", sess.userID)

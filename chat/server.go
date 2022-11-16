@@ -53,13 +53,11 @@ func RunRoutine() {
 
 		// Don't need to be calling so many times
 		time.Sleep(1 * time.Second)
+		
 		// fmt.Println(listOfStrings)
 		for _, name := range listOfStrings {
 
 			room := NewRoom(name)
-
-			// If not registered, append to map and register.
-			_, ok := registered[name]
 
 			// Checking reverse order.
 
@@ -67,7 +65,8 @@ func RunRoutine() {
 			// 	fmt.Println(k, v)
 			// }
 
-			if !ok {
+			// If not registered, append to map and register.
+			if _, ok := registered[name]; !ok {
 				registered[name] = room.topic
 				http.Handle("/chat/"+name, room)
 				go room.Run()

@@ -7,9 +7,14 @@ window.addEventListener(
     false
 );
 
+
+let body = document.querySelector("body");
+
+// Split URL to access last parameter.
+let url = window.location.href.split("/");
 // On load event
-window.addEventListener(
-    "load",
+document.addEventListener(
+    "DOMContentLoaded",
     async function () {
         hidePages();
         // Show page based on url parameter.
@@ -28,19 +33,22 @@ window.addEventListener(
 
         // Handle nav bar.
         handleNav();
+
+        // Particles.js
         Particles.init({
             selector: '.background',
-            connectParticles: true,
-            maxParticles: 101,
-            color: "#FFFFFF"
-
+            connectParticles: false,
+            maxParticles: 50,
+            color: "#FF00FF"
         });
+
+        chatApp();
+
     }
 
 );
 
 window.onpopstate = function (event) {
-    hidePages()
     showPage(event.state.name)
 }
 
@@ -80,6 +88,7 @@ async function fetchData(name) {
             // Fetch sessions.
             sessions = await fetch("/api/sessions", { headers })
             sessions = await sessions.json()
+            return sessions
             break;
         case "chats":
             // Fetch chats.
@@ -117,9 +126,162 @@ async function getApiKey() {
 // General routes/navbar handling.
 
 // Nav bar
-let loginBtn = document.getElementById("loginBtn")
-let registerBtn = document.getElementById("registerBtn")
+let registerLink = document.getElementById("registerLink");
+let loginLink = document.getElementById("loginLink");
 
+async function Login() {
+    let loginBtn = document.getElementById("loginBtn")
+    if (!!loginBtn) {
+        loginBtn.addEventListener("click", async () => {
+            let username = document.getElementById("username-input").value;
+            let password = document.getElementById("password-input").value;
+
+            // send data to backend
+            sendJsonToBackend("users", username, password);
+
+
+
+            localStorage.setItem("username", username.toString())
+            // Only show page if user is validated.
+            let valid = false;
+
+            let validUser;
+
+            // Keep asking for a session from the backend until user is found.
+            let count = 0;
+            while (valid === false) {
+                count++
+                sessions = await fetchData("sessions");
+                validUser = sessions.filter((session) => {
+                    return session.username === username;
+                })
+                if (validUser.length === 1) {
+                    valid = true;
+                }
+                // If taking too long, assume that the password or username was incorrect.
+                if (count >= 30) {
+                    alert("Username or password incorrect.");
+                    break;
+                }
+            }
+
+
+            if (valid === true) {
+                showPage("homepage");
+                document.querySelector("#login").innerHTML = "";
+                console.log("user validated");
+            } else {
+                // loginBtn.click();
+                console.log("user not validated on client side");
+            }
+
+
+        })
+    } else {
+        console.log("Error, login button does not exist.")
+    }
+}
+
+// Update nav bar content each time a link is clicked in login/register page.
+function NavbarContent(cb) {
+    let endpoint = url[url.length - 1]
+
+    let navbar = document.querySelector("nav")
+    if (endpoint === "login" || endpoint === "register") {
+        navbar.innerHTML = `
+            <div class="container-fluid">
+            <a class="navbar-brand" href="/">Real Time Forum</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+            <div class="offcanvas-header">
+                <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel">Please login</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+            </div>
+            <div class="offcanvas-body">
+                <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+                <li class="nav-item" id="loginLink">
+                    <a class="nav-link" href="/login" data-name="login">Log In</a>
+                </li>
+                <li class="nav-item" id="registerLink">
+                    <a class="nav-link" href="/register" data-name="register">Register</a>
+                </li>
+                <li class="nav-item dropdown" id="registerLink">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Dropdown
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-dark">
+                    <li><a class="dropdown-item" href="#">Action</a></li>
+                    <li><a class="dropdown-item" href="#">Another action</a></li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li><a class="dropdown-item" href="#">Something else here</a></li>
+                    </ul>
+                </li>
+                </ul>
+                <form class="d-flex mt-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-success" type="submit">Search</button>
+                </form>
+            </div>
+            </div>
+        </div>
+        `
+        // Handle login after changing html. Event listener needs to be added each time after innerHTML is used.
+        // https://stackoverflow.com/questions/53273768/javascript-onclick-function-only-works-once-very-simple-code
+        Login();
+
+    } else {
+        navbar.innerHTML = `
+        <div class="container-fluid">
+        <a class="navbar-brand nav-link" href="/" data-name="homepage">Real Time Forum</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="offcanvas offcanvas-end text-bg-dark" tabindex="-1" id="offcanvasDarkNavbar" aria-labelledby="offcanvasDarkNavbarLabel">
+          <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="offcanvasDarkNavbarLabel"><strong>Welcome</strong>&nbsp; ${localStorage.getItem("username")}</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+          </div>
+          <div class="offcanvas-body">
+            <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="/" data-name="homepage">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" id="messenger-link" href="/messenger" data-name="messenger">Messenger</a>
+              </li>
+              <li class="nav-item">
+                <a class="logout-btn" href="/logout">Logout</a>
+              </li>
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Dropdown
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark">
+                  <li><a class="dropdown-item" href="#">Action</a></li>
+                  <li><a class="dropdown-item" href="#">Another action</a></li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li><a class="dropdown-item" href="#">Something else here</a></li>
+                </ul>
+              </li>
+            </ul>
+            <form class="d-flex mt-3" role="search">
+              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+              <button class="btn btn-success" type="submit">Search</button>
+            </form>
+          </div>
+        </div>
+      </div>
+        `
+    }
+
+    cb();
+}
 
 // Check url endpoint for each link that is clicked.
 function handleNav() {
@@ -129,13 +291,13 @@ function handleNav() {
 }
 
 
-// Split URL to access last parameter.
-let url = window.location.href.split("/");
 function checkLink(event) {
     // update on each click
     event.preventDefault() // prevent page reload.
-    hidePages(); // Hide all pages.
-    showPage(this.dataset.name) // show specific page. I.e. Homepage, login, register. The page name is stored as data attribute in HTML thus this.dataset.name.
+    // Handle login by adding event listener to login button.
+    if (!!this.dataset.name) {
+        showPage(this.dataset.name) // show specific page. I.e. Homepage, login, register. The page name is stored as data attribute in HTML thus this.dataset.name.
+    }
 }
 
 // Function to hide all pages. Needed when chosing any page.
@@ -147,6 +309,9 @@ function hidePages() {
 
 // Show specific page based on name.
 function showPage(name) {
+    hidePages(); // Hide all pages.
+    body.style.overflow = "visible"
+
     // Select page div.
     let page = document.getElementById(name)
 
@@ -165,7 +330,6 @@ function showPage(name) {
     // Update url variable globally after updating client url.
     url = window.location.href.split("/");
 
-
     if (!!content) {
         content.forEach(object => {
             if (object.Endpoint == name) {
@@ -173,6 +337,9 @@ function showPage(name) {
             }
         })
     }
+
+    // Change nav bar content
+    NavbarContent(eventListeners);
 }
 
 //   Function to get cookie based on name.
@@ -200,7 +367,7 @@ async function displayPosts(callBack) {
         postDiv.className = "postDiv";
         homepage.appendChild(postDiv);
 
-        let POSTBODY = `
+        let postBody = `
         <div class="card gedf-card" id="post-${post.id}">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
@@ -230,7 +397,7 @@ async function displayPosts(callBack) {
 
                     </div>
                     <div class="card-body">
-                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>10 min ago</div>
+                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
                         <p class="inlinecategory">
                           <span class="bold">Post type: </span>${post.category_2}
                         </p>
@@ -240,7 +407,7 @@ async function displayPosts(callBack) {
                         </p>
 
                         <p class="card-text">
-                            ${post.content}
+                            ${removeTags(post.content)}
                         </p>
                     </div>
                     <div class="card-footer">
@@ -260,40 +427,7 @@ async function displayPosts(callBack) {
 
         `
 
-        let postBody = `
-        <div class="posts" id="post-${post.id}">
-            <div class="usercat">
-            <div>
-            <h2><a href="" class="userpost">${post.username}</a></h2>
-            </div>
-            <div class="joincattop">
-            <div class="typestyle">
-            <h2 id="typestyle">Type: ${post.category_2}</h2>
-            </div>
-            <div class="catstyle">
-            <h2 id="catstyle">Category: ${post.category}</h2>
-            </div>
-            </div>
-            </div>
-            <div class="postcontent">
-            <em> ${post.content} </em>
-
-            <div class="commentsContainer">
-                <div class="commentbox">
-                    <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
-                        <input type="text" class="commenttxtbox" name="comment" id="comment-${post.id}"/>
-                        <button onclick="Comment(event)" class="commentbttn" name="submitComment" id="cmnt-btn-${post.id}">Comment</button>
-                        <input type="hidden" name="comment-id" value="${post.id}">
-                    </form>
-                </div>
-                <a href="/" class="comment-link" id="cmnt-lnk-${post.id}">Comments</a>
-                
-                <div class="comment-section" id="cmnt-sec-${post.id}" style="display: none"></div>
-
-            </div>
-        </div>
-        `
-        postDiv.innerHTML = POSTBODY;
+        postDiv.innerHTML = postBody;
     });
 
     // Login redirect button only shows up on homepage so handle the click event.
@@ -305,10 +439,25 @@ async function displayPosts(callBack) {
     // Scroll to position after content has been loaded.
     window.scrollTo(0, localStorage.getItem("scrollPosition"));
 
+    chatApp();
 
     callBack();
+
 }
 
+
+// Remove html tags.
+function removeTags(str) {
+    if ((str === null) || (str === ''))
+        return false;
+    else
+        str = str.toString();
+
+    // Regular expression to identify HTML tags in 
+    // the input string. Replacing the identified 
+    // HTML tag with a null string.
+    return str.replace(/(<([^>]+)>)/ig, '');
+}
 
 // **********************************************************************************
 // Comment section
@@ -348,18 +497,17 @@ function OpenCommentSection(e) {
         })
 
         // Get text area.
-        let textArea = document.getElementById(`comment-${slicedId}`)
+        let textArea = document.getElementById(`comment-${slicedId}`);
 
-
-        if (textArea.value != "") {
+        if (textArea.value !== "") {
             // Create new div to put a new comment.
             let commentDiv = document.createElement("div")
 
             // Get current user.
-            let username = document.getElementById("username")
+            let username = localStorage.getItem("username");
 
             // Append username and comment.
-            commentDiv.append(username.innerHTML + ": " + textArea.value)
+            commentDiv.append(username + ": " + textArea.value)
 
             commentSection.append(commentDiv)
         }
@@ -405,6 +553,34 @@ async function sendJsonToBackend(endpoint, arg1, arg2, arg3) {
                 }),
             });
             break;
+        case "users":
+            await fetch(`/api/${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    'Token': apiKey,
+                },
+                body: JSON.stringify({
+                    username: arg1,
+                    password: arg2,
+                }),
+            });
+            break;
+        case "logout":
+            await fetch(`/${endpoint}`, {
+                method: "POST",
+            });
+            break;
+        case "new":
+            await fetch(`/${endpoint}`, {
+                method: "POST",
+                body: JSON.stringify({
+                    category_1: arg1,
+                    category_2: arg2,
+                    content: arg3,
+                }),
+            });
+            break;
         default:
             break;
     }
@@ -415,35 +591,43 @@ function Comment(e) {
     let slicedId = e.target.id.slice(9, e.target.id.length);
     let textArea = document.getElementById(`comment-${slicedId}`);
 
-    let username = document.getElementById("username")
+    let username = localStorage.getItem("username")
+
     // Send the comment to API.
-    sendJsonToBackend("comments", slicedId, textArea.value, username.innerText)
+    sendJsonToBackend("comments", slicedId, textArea.value, username)
 
     // Open comment section
-    OpenCommentSection()
+    OpenCommentSection(e)
 
 }
 
 
 // Add event listeners to elements added by ".innerHTML"
 function eventListeners() {
-    // HOW TO MAKE THIS DRY ?????????
+
+    handleNav()
+
     let comment_links = document.querySelectorAll(".comment-link")
     comment_links.forEach(element => {
         element.addEventListener("click", OpenCommentSection);
     });
 
-    let comment_buttons = document.querySelectorAll(".commentbttn")
-    comment_buttons.forEach(element => {
-        element.addEventListener("click", OpenCommentSection);
-    });
+    let logoutBtn = document.querySelector(".logout-btn")
+
+    if (!!logoutBtn) {
+        logoutBtn.addEventListener("click", (e) => {
+            e.preventDefault();
+            sendJsonToBackend("logout")
+            document.querySelector("#homepage").innerHTML = ""
+            document.querySelector("#messenger").innerHTML = ""
+            document.querySelector(".chatWindow").innerHTML = ""
+
+            showPage("login");
+        })
+    }
+
 }
 
-
-// Check if user is logged in.
-function loggedIn() {
-    return document.querySelector("#username") != null
-}
 
 
 // *************************************************************************
@@ -456,14 +640,15 @@ async function chatApp() {
     await fetchData("chats");
     let messengerLink = document.querySelector("#messenger-link");
 
-    messengerLink.addEventListener("click", () => {
-        hidePages();
-        showPage("messenger");
-    });
-    showUsers()
-}
+    body.style.overflow = "visible"
 
-chatApp();
+    if (!!messengerLink) {
+        messengerLink.addEventListener("click", () => {
+            showPage("messenger");
+        });
+        showUsers();
+    }
+}
 
 
 
@@ -474,14 +659,15 @@ let input = document.createElement("input");
 
 // Show online users for chat app.
 function showUsers() {
-
+    let messenger = document.querySelector("#messenger");
+    messenger.innerHTML = "";
     sessions.forEach(session => {
 
         // Long bar with username to click on.
         let div = document.createElement("div")
-        let currentUser = document.getElementById("username").innerText
+        let currentUser = localStorage.getItem("username")
         // Skip current user. Should not chat with yourself.
-        if (session.username == currentUser) {
+        if (session.username === currentUser) {
             return;
         }
 
@@ -667,7 +853,6 @@ function connectToChatserver(usersInChat) {
 
 }
 
-
 chatForm.addEventListener("submit", (ev) => {
     ev.preventDefault()
     SendMessage()
@@ -675,11 +860,10 @@ chatForm.addEventListener("submit", (ev) => {
 
 function SendMessage() {
     var msg = '{"message":"' + input.value + '", "sender":"'
-        + document.querySelector("#username").innerText + '", "received":""}';
+        + localStorage.getItem("username") + '", "received":""}';
     wSocket.send(msg);
     input.value = ""
 }
-
 
 function OnMessageReceived(evt, usersInChat) {
     var msg = JSON.parse(evt.data); // native API
@@ -698,5 +882,93 @@ function OnMessageReceived(evt, usersInChat) {
             chatscreen.append(messageCointainer)
         }
     });
+
+}
+
+
+
+// New post without refresh. This function is called in the golang file. functions.LoadContent()
+function newPost(event) {
+    event.preventDefault()
+
+    // Get the checked radio button.
+    let category_1 = document.querySelector('input[name="postType"]:checked');;
+    // Get lanugage category
+    let category_2 = document.getElementById("select-language");
+    // Get content from textarea.
+    let content = document.querySelector("#newposttxt");
+
+
+    console.log(category_1.value);
+    console.log(category_2.value);
+    console.log(content.value);
+
+    sendJsonToBackend("new", category_1.value.toString(), category_2.value.toString(), content.value.toString())
+
+    let form = document.querySelector('.newpostbody');
+
+    let newPost = `
+    <div class="card gedf-card" id="post-${"INSERT_ID"}">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mr-2">
+                                <img class="rounded-circle" width="45" src="https://picsum.photos/50/50" alt="">
+                            </div>
+                            <div class="ml-2">
+                                <div class="h5 m-0">@${localStorage.getItem("username")}</div>
+                                <div class="h7 text-muted">Insert Bio Here</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="dropdown">
+                                <button class="btn btn-link dropdown-toggle" type="button" id="gedf-drop1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <i class="fa fa-ellipsis-h"></i>
+                                </button>
+                                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="gedf-drop1">
+                                    <div class="h6 dropdown-header">Configuration</div>
+                                    <a class="dropdown-item" href="#">Save</a>
+                                    <a class="dropdown-item" href="#">Hide</a>
+                                    <a class="dropdown-item" href="#">Report</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="card-body">
+                    <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${"INSERT_TIME_POSTED"}</div>
+                    <p class="inlinecategory">
+                      <span class="bold">Post type: </span>${category_1.value}
+                    </p>
+                    &nbsp;
+                    <p class="inlinecategory">
+                      <span class="bold"> Category: </span>${category_2.value}
+                    </p>
+
+                    <p class="card-text">
+                        ${removeTags(content.value)}
+                    </p>
+                </div>
+                <div class="card-footer">
+                    <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+                    <a href="/" class="comment-link" id="cmnt-lnk-${"INSERT_ID"}"><i class="fa fa-comment"></i> Comments</a>
+                    <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
+                    <div class="commentbox">
+                        <form action="/" method="POST" class="comment-form" id="comment-form-${"INSERT_ID"}">
+                            <input type="text" class="commenttxtbox" name="comment" id="comment-${"INSERT_ID"}"/>
+                            <button onclick="Comment(event)" class="commentbttn btn btn-outline-secondary" name="submitComment" id="cmnt-btn-${"INSERT_ID"}">Comment</button>
+                            <input type="hidden" name="comment-id" value="${"INSERT_ID"}">
+                        </form>
+                        <div class="comment-section" id="cmnt-sec-${"INSERT_ID"}" style="display: none"></div>
+                    </div>
+                </div>
+                </div>
+
+    `
+
+    form.insertAdjacentHTML('afterend', newPost);
+
+
 
 }
