@@ -1,4 +1,4 @@
-// General routes/navbar handling.
+// General routes/navbar handling and login handling
 
 // Nav bar
 let registerLink = document.getElementById("registerLink");
