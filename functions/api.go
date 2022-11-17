@@ -92,6 +92,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
             </div>
         </form>
     </div>
+	<div id="posts-container"></div>
 		`,
 	}
 
