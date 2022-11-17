@@ -9,7 +9,7 @@
 html, body {
     min-height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 !important;
 }
 
 .background {
@@ -132,4 +132,30 @@ a {
 
     }
     
+}
+
+
+.movein {
+    animation: move 1s ease-in forwards;
+    animation-iteration-count: 1;
+}
+
+/* Posts */
+@keyframes move {
+    from {
+        transform: translateX(-100%)
+    }
+    to {
+        transform: translateX(0px)
+    }
+    
+}
+
+@keyframes movedown {
+    from {
+        transform: translateY(0%)
+    }
+    to {
+        transform: translateY(305px)
+    }
 }
