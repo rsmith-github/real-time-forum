@@ -9,7 +9,7 @@
 html, body {
     min-height: 100%;
     margin: 0;
-    padding: 0;
+    padding: 0 !important;
 }
 
 .background {
@@ -18,8 +18,8 @@ html, body {
     top: 0;
     left: 0;
     z-index: -10;
-    min-height: 100% !important;
-    min-width: 100% !important;
+    height: 100% !important;
+    width: 100% !important;
     background-color: black;
     
 }
@@ -119,4 +119,43 @@ a {
 .categorydd {
     padding-right: 0px !important;
     padding-left: 0px !important;
+}
+
+
+/* Responsive */ 
+
+@media (max-width: 876px) {
+
+    .background {
+        /* position: absolute; */
+        /* min-height: 100% !important; */
+
+    }
+    
+}
+
+
+.movein {
+    animation: move 1s ease-in forwards;
+    animation-iteration-count: 1;
+}
+
+/* Posts */
+@keyframes move {
+    from {
+        transform: translateX(-100%)
+    }
+    to {
+        transform: translateX(0px)
+    }
+    
+}
+
+@keyframes movedown {
+    from {
+        transform: translateY(0%)
+    }
+    to {
+        transform: translateY(305px)
+    }
 }

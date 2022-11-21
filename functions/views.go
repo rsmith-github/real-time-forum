@@ -1,6 +1,8 @@
 package functions
 
 import (
+	"encoding/json"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -135,7 +137,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			CheckErr(err2)
 			defer db.Close()
 			// r.SetBasicAuth(foundUser, foundHash)
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			// http.Redirect(w, r, "/", http.StatusSeeOther)
 		} else {
 			// message = "User details invalid."
 		}
@@ -153,10 +155,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Prevent logout function to be called on other urls.
-	if r.URL.Path != "/logout" {
-		http.NotFound(w, r)
-		return
-	}
+	// if r.URL.Path != "/logout" {
+	// 	http.NotFound(w, r)
+	// 	return
+	// }
 
 	c, err := r.Cookie("session")
 	if err != nil {
@@ -182,30 +184,41 @@ func LogoutHandler(w http.ResponseWriter, r *http.Request) {
 // Handle new posts.
 func NewPost(w http.ResponseWriter, r *http.Request) {
 
-	// Get user's cookie.
-	c, err := r.Cookie("session")
-	if err != nil {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-		return
-	}
-
-	// Check current user based off sessionUUID.
-	currentUser := GetCurrentUser(w, r, c)
-
 	// If new post submitted,
 	if r.Method == "POST" {
+		// Get user's cookie.
+		c, err := r.Cookie("session")
+		if err != nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+
+		// Check current user based off sessionUUID.
+		currentUser := GetCurrentUser(w, r, c)
+
+		// Get data from fetch api post request and store it in post struct.
+		postFromJson := Post{}
+		decoder := json.NewDecoder(r.Body)
+		postErr := decoder.Decode(&postFromJson)
+		if postErr != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Println(postFromJson)
+
+		if postErr != nil {
+			fmt.Println("error: ", postErr.Error())
+		}
+
 		// Get all of the post's info.
 		userId := currentUser.id
 		userName := currentUser.Username
-		newPost := r.FormValue("new-post")
-		category := r.FormValue("category")
-		category2 := r.FormValue("postType")
 
 		// Prevent empty posts.
-		blank := strings.TrimSpace(newPost) == ""
+		blank := strings.TrimSpace(postFromJson.Content) == ""
 		if blank == false {
 			db := OpenDB()
-			db.Exec("INSERT INTO posts(user_ID, username, content, time_posted, category, category_2) values(?,?,?,datetime('now','localtime'),?,?)", userId, userName, newPost, category, category2)
+			db.Exec("INSERT INTO posts(user_ID, username, content, time_posted, category, category_2) values(?,?,?,datetime('now','localtime'),?,?)", userId, userName, postFromJson.Content, postFromJson.Category_1, postFromJson.Category_2)
 			db.Close()
 
 		}
@@ -214,6 +227,3 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 	// Redirect to index.
 	http.Redirect(w, r, "/", http.StatusSeeOther)
 }
-
-
-
