@@ -173,3 +173,9 @@ a {
         transform: translateY(305px)
     }
 }
+
+
+textarea {
+    width: 350px;
+    resize: none;
+}

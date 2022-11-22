@@ -70,6 +70,8 @@ function Register() {
             console.log(username, email, nickname, password, confirmation);
             sendJsonToBackend("register", username, email, nickname, [password, confirmation]);
 
+            alert("registered successfully!")
+
         });
     }
 }
