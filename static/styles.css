@@ -39,8 +39,17 @@ a {
     color:steelblue;
 }
 
+.newpostbody {
+    margin-top: 40px;
+}
+
 .postDiv {
-    margin: 20px 0 20px 0;
+    margin: 20px 30px 20px 30px;
+    
+}
+
+.mr-2 {
+    margin-right: 12px;
 }
 
 .inlinecategory {
@@ -90,7 +99,8 @@ a {
 /* Login page */
 
 .container {
-
+    margin-left: auto !important;
+    margin-right: auto !important;
     margin: 100px 0 0 0 !important;
 }
 
@@ -121,6 +131,15 @@ a {
     padding-left: 0px !important;
 }
 
+.navbar-brand {
+    font-family: 'Rubik Glitch', cursive !important;
+    font-size: 2.5em !important;
+    margin-left: 0.3em !important;
+}
+
+.navbar {
+    margin-bottom: 100px !important;
+}
 
 /* Responsive */ 
 

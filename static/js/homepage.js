@@ -31,7 +31,10 @@ async function displayPosts(callBack) {
 
                     </div>
                     <div class="card-body">
-                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
+                        <p class="card-text">
+                            ${removeTags(post.content)}
+                        </p>
+                        
                         <p class="inlinecategory">
                           <span class="bold">Post type: </span>${post.category_2}
                         </p>
@@ -39,15 +42,12 @@ async function displayPosts(callBack) {
                         <p class="inlinecategory">
                           <span class="bold"> Category: </span>${post.category}
                         </p>
-
-                        <p class="card-text">
-                            ${removeTags(post.content)}
-                        </p>
+                        
+                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
+                        
                     </div>
                     <div class="card-footer">
-                        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-                        <a href="/" class="comment-link" id="cmnt-lnk-${post.id}"><i class="fa fa-comment"></i> Comments</a>
-                        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
+                        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i>Comments</a>
                         <div class="commentbox">
                             <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
                                 <input type="text" class="commenttxtbox" name="comment" id="comment-${post.id}"/>
