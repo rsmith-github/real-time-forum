@@ -22,7 +22,7 @@ func CreateSqlTables() {
 	// Initialize database.
 	db := OpenDB()
 	// Create user table if it doen't exist.
-	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
+	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `nickname` VARCHAR(64) NOT NULL UNIQUE, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
 	CheckErr(usrTblErr)
 
 	// Create sessions table if doesn't exist.

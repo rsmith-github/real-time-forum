@@ -7,9 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	uuid "github.com/satori/go.uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func LoadContent(w http.ResponseWriter, r *http.Request) {
@@ -50,19 +47,22 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		<h2 class="logintxt">Register</h2>
 		<form action="/register" method="post" class="regall">
 			<div class="formgroup" id="user">
-				<input class="user" autofocus type="text" name="username" placeholder="Username">
+				<input id="reg-username" class="form-control" autofocus type="text" name="username" placeholder="Username">
 			</div>
 			<div class="formgroup" id="email">
-				<input class="email" type="email" name="email" placeholder="Email Address">
+				<input id="reg-email" class="form-control" type="email" name="email" placeholder="Email Address">
+			</div>
+			<div class="formgroup" id="nick">
+				<input id="reg-nickname" class="form-control" type="text" name="nickname" placeholder="Nickname">
 			</div>
 			<div class="formgroup" id="pass">
-				<input class="pass" type="password" name="password" placeholder="Password">
+				<input id="reg-password" class="form-control" type="password" name="password" placeholder="Password">
 			</div>
 			<div class="formgroup" id="passconfirm">
-				<input class="passconfirm" type="password" name="confirmation" placeholder="Confirm Password">
+				<input id="reg-confirmation" class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
 			</div>
 			<div class="formgroup" id="register">
-				<input id="registerBtn" class="register" type="button" value="Register">
+				<input id="registerBtn" class="btn btn-lg btn-success btn-block" type="button" value="Register">
 			</div>
 			<div class="lowbanner">Already have an account? <a href="/login" style="color: rgb(6, 86, 235); text-decoration:underline;">Log In here.</a></div>
 		</form>
@@ -225,72 +225,4 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 		createApi("chats", w, r)
 	}
 
-}
-
-// Handle logins.
-func UsersApi(w http.ResponseWriter, r *http.Request) {
-
-	if r.Method == "POST" {
-
-		db := OpenDB()
-		defer db.Close()
-		var userToValidate User
-		decoder := json.NewDecoder(r.Body)
-		err := decoder.Decode(&userToValidate)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		// If user exists, log them in.
-		// Keep track of what was found from the above query (The JSON received once user clicks login button).
-		foundId := 0
-		foundUser := ""
-		foundHash := ""
-		// Get all the data from one user.
-		rows, err := db.Query("SELECT * FROM users WHERE username=?", userToValidate.Username)
-		CheckErr(err)
-
-		usr := QueryUser(rows, err)
-		foundId = usr.id
-		foundUser = usr.Username
-		foundHash = usr.Password
-		// foundUser = usr.Username
-
-		// Delete expired cookie based on valid username posted from form.
-		// Only relevant if user has been automatically logged out.
-		db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
-
-		// Compare password hash to password input by user.
-		pwCompareError := bcrypt.CompareHashAndPassword([]byte(foundHash), []byte(userToValidate.Password))
-
-		// If user details exist, give user a session.
-		if userToValidate.Username == foundUser && pwCompareError == nil {
-
-			// Check if session cookie exists. If not, create one, and give the user a session.
-			cookie, err := r.Cookie("session")
-			if err != nil {
-				id := uuid.NewV4()
-				cookie = &http.Cookie{
-					Name:     "session",
-					Value:    id.String(),
-					HttpOnly: true,
-					Path:     "/",
-					MaxAge:   60 * 60,
-				}
-				http.SetCookie(w, cookie)
-			}
-
-			db := OpenDB()
-			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID, username) values(?,?,?)", cookie.Value, foundId, foundUser)
-
-			createApi("users", w, r)
-
-			CheckErr(err2)
-			defer db.Close()
-		}
-
-	} /* else {
-
-		createApi("users", w, r)
-	}*/
 }

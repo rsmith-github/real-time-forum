@@ -30,7 +30,7 @@ async function fetchData(name) {
             // Fetch sessions.
             sessions = await fetch("/api/sessions", { headers })
             sessions = await sessions.json()
-            return sessions
+            // return sessions
             break;
         case "chats":
             // Fetch chats.
@@ -66,7 +66,7 @@ async function getApiKey() {
 
 
 // Send JSON data to backend "views" in order to save to database.
-async function sendJsonToBackend(endpoint, arg1, arg2, arg3) {
+async function sendJsonToBackend(endpoint, arg1, arg2, arg3, arg4) {
 
     // Get api key
     let apiKey = await getApiKey()
@@ -99,8 +99,24 @@ async function sendJsonToBackend(endpoint, arg1, arg2, arg3) {
                 }),
             });
             break;
-        case "users":
-            await fetch(`/api/${endpoint}`, {
+        case "register":
+            await fetch(`/${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    'Token': apiKey,
+                },
+                body: JSON.stringify({
+                    username: arg1,
+                    email: arg2,
+                    nickname: arg3,
+                    password: arg4[0],
+                    confirmation: arg4[1],
+                }),
+            });
+            break;
+        case "login":
+            await fetch(`/${endpoint}`, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": getCookie("csrftoken"),

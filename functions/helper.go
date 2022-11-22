@@ -2,6 +2,7 @@ package functions
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"io/ioutil"
@@ -45,14 +46,17 @@ func GetTemplates() []string {
 
 // Get user info from forms.
 func GetUser(r *http.Request) User {
-	username := r.FormValue("username")
-	email := r.FormValue("email")
-	password := r.FormValue("password")
-	user := User{}
-	user.Username = username
-	user.Email = email
-	user.Password = password
-	return user
+
+	db := OpenDB()
+	defer db.Close()
+	var userToRegister User
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&userToRegister)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return userToRegister
 }
 
 // Gets the current user based off of session UUID.
@@ -94,12 +98,13 @@ func CreateUser(newUser User) error {
 	newAuthUser := authUser{
 		username:     newUser.Username,
 		email:        newUser.Email,
+		nickname:     newUser.Nickname,
 		passwordHash: passwordHash,
 	}
 	db := OpenDB()
 
 	// Try to insert user into database.
-	_, err2 := db.Exec("INSERT INTO users(username, email, password, superuser) values(?,?,?,?)", newAuthUser.username, newAuthUser.email, newAuthUser.passwordHash, 0)
+	_, err2 := db.Exec("INSERT INTO users(username, email, nickname, password, superuser) values(?,?,?,?,?)", newAuthUser.username, newAuthUser.email, newAuthUser.nickname, newAuthUser.passwordHash, 0)
 	CheckErr(err2)
 	if err2 != nil {
 		return err2
@@ -149,17 +154,19 @@ func QueryUser(rows *sql.Rows, err error) User {
 	var id int
 	var username string
 	var email string
+	var nickname string
 	var password string
 	var superuser int
 
 	var usr User
 	// Scan all the data from that row.
 	for rows.Next() {
-		err = rows.Scan(&id, &username, &email, &password, &superuser)
+		err = rows.Scan(&id, &username, &email, &nickname, &password, &superuser)
 		temp := User{
 			id:        id,
 			Username:  username,
 			Email:     email,
+			Nickname:  nickname,
 			Password:  password,
 			Superuser: superuser,
 		}

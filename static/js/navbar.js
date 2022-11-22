@@ -4,59 +4,6 @@
 let registerLink = document.getElementById("registerLink");
 let loginLink = document.getElementById("loginLink");
 
-async function Login() {
-    let loginBtn = document.getElementById("loginBtn")
-    if (!!loginBtn) {
-        loginBtn.addEventListener("click", async () => {
-            let username = document.getElementById("username-input").value;
-            let password = document.getElementById("password-input").value;
-
-            // send data to backend
-            sendJsonToBackend("users", username, password);
-
-
-
-            localStorage.setItem("username", username.toString())
-            // Only show page if user is validated.
-            let valid = false;
-
-            let validUser;
-
-            // Keep asking for a session from the backend until user is found.
-            let count = 0;
-            while (valid === false) {
-                count++
-                sessions = await fetchData("sessions");
-                validUser = sessions.filter((session) => {
-                    return session.username === username;
-                })
-                if (validUser.length === 1) {
-                    valid = true;
-                }
-                // If taking too long, assume that the password or username was incorrect.
-                if (count >= 30) {
-                    alert("Username or password incorrect.");
-                    break;
-                }
-            }
-
-
-            if (valid === true) {
-                showPage("homepage");
-                document.querySelector("#login").innerHTML = "";
-                console.log("user validated");
-            } else {
-                // loginBtn.click();
-                console.log("user not validated on client side");
-            }
-
-
-        })
-    } else {
-        console.log("Error, login button does not exist.")
-    }
-}
-
 // Update nav bar content each time a link is clicked in login/register page.
 function NavbarContent(cb) {
     let endpoint = url[url.length - 1]
@@ -90,6 +37,7 @@ function NavbarContent(cb) {
         // Handle login after changing html. Event listener needs to be added each time after innerHTML is used.
         // https://stackoverflow.com/questions/53273768/javascript-onclick-function-only-works-once-very-simple-code
         Login();
+        Register();
 
     } else {
         navbar.innerHTML = `

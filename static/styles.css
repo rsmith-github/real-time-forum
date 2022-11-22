@@ -122,6 +122,20 @@ a {
 }
 
 
+
+
+/* Register page */
+
+#register {
+    margin-top: 5%;
+}
+
+
+
+
+
+
+
 /* Responsive */ 
 
 @media (max-width: 876px) {

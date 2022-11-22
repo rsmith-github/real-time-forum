@@ -11,7 +11,6 @@ import (
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	CreateSqlTables()
 
 	c, er := r.Cookie("session")
 	if er != nil {
@@ -54,11 +53,15 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get the user based off of the users input.
 		newUser := GetUser(r)
+		fmt.Println(newUser)
+
 		// Check if password form value matches confirmation form value.
 		if newUser.Password == "" || newUser.Username == "" || newUser.Email == "" {
 			message = "Please fill in all forms."
-		} else if newUser.Password == r.FormValue("confirmation") && message != "Please fill in all forms." {
+			fmt.Println("Please fill in all forms")
+		} else /* if newUser.Password == newUser.confirmation && message != "Please fill in all forms."*/ {
 
+			fmt.Println(newUser)
 			// Create new user, checkking for error.
 			err := CreateUser(newUser)
 
@@ -69,13 +72,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				message = "Registered successfully!"
 			}
-		} else {
-			message = "These passwords do not match."
 		}
+		// else {
+		// 	message = "These passwords do not match."
+		// }
 
 	}
 	// Slice containing all template names.
-	RenderTemplate(w, r, GetTemplates(), "index", nil)
+	RenderTemplate(w, r, GetTemplates(), "index", message)
 }
 
 // Login page
@@ -90,12 +94,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// message := ""
 
 	if r.Method == "POST" {
-		userToValidate := GetUser(r)
-		// If user exists, save the session ID and their user ID in the sessions table.
+
 		db := OpenDB()
 		defer db.Close()
+		var userToValidate User
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&userToValidate)
+		if err != nil {
+			fmt.Println(err)
+		}
 
-		// Keep track of what was found from the above query.
+		// If user exists, log them in.
+		// Keep track of what was found from the above query (The JSON received once user clicks login button).
 		foundId := 0
 		foundUser := ""
 		foundHash := ""
@@ -107,9 +117,10 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		foundId = usr.id
 		foundUser = usr.Username
 		foundHash = usr.Password
-		foundUser = usr.Username
+		// foundUser = usr.Username
 
 		// Delete expired cookie based on valid username posted from form.
+		// Only relevant if user has been automatically logged out.
 		db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
 
 		// Compare password hash to password input by user.
@@ -127,26 +138,25 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 					Value:    id.String(),
 					HttpOnly: true,
 					Path:     "/",
-					MaxAge:   60 * 20,
+					MaxAge:   60 * 60,
 				}
 				http.SetCookie(w, cookie)
 			}
 
 			db := OpenDB()
 			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID, username) values(?,?,?)", cookie.Value, foundId, foundUser)
+
 			CheckErr(err2)
 			defer db.Close()
-			// r.SetBasicAuth(foundUser, foundHash)
-			// http.Redirect(w, r, "/", http.StatusSeeOther)
+
+			w.WriteHeader(http.StatusAccepted)
+			w.Write([]byte("ok logged in!"))
 		} else {
-			// message = "User details invalid."
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("wrong password breh!"))
 		}
 
 	}
-
-	// If user's cookie expires, delete the cookie from the database.
-	// Del_C_If_Exp(cookie)
-	// Render template if get request.
 
 	RenderTemplate(w, r, GetTemplates(), "index", nil)
 
