@@ -16,6 +16,8 @@ let url = window.location.href.split("/");
 document.addEventListener(
     "DOMContentLoaded",
     async function () {
+
+
         hidePages();
         // Show page based on url parameter.
         let endpoint = url[url.length - 1]
@@ -24,6 +26,7 @@ document.addEventListener(
         }
         // Get content from api.
         await fetchData("content");
+        await fetchData("sessions");
 
         // Show page based on endpoint.
         showPage(endpoint);
@@ -35,19 +38,19 @@ document.addEventListener(
         handleNav();
 
         // Particles.js
-        Particles.init({
-            selector: '.background',
-            connectParticles: true,
-            maxParticles: 60,
-            color: "#FFFFFF"
-        });
+        // Particles.init({
+        //     selector: '.background',
+        //     connectParticles: true,
+        //     maxParticles: 60,
+        //     color: "#FFFFFF"
+        // });
 
         chatApp();
 
         // Animation end listener
         document.addEventListener("animationend", postSlideIn);
 
-
+        // console.log("textarea: ", document.querySelector("textarea"));
     }
 
 );

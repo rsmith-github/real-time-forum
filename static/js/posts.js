@@ -77,6 +77,8 @@ const postSlideIn = (e) => {
             </div>
             <div class="card-footer">
                 <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+
+                <!-- NEED TO PREVENT RELOAD OVER HERE -->
                 <a href="/" class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
                 <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                 <div class="commentbox">

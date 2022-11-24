@@ -1,77 +1,67 @@
 
-function Login() {
-    let loginBtn = document.getElementById("loginBtn")
-    if (!!loginBtn) {
-        loginBtn.addEventListener("click", () => {
-            let username = document.getElementById("username-input").value;
-            let password = document.getElementById("password-input").value;
+async function Login(e) {
 
-            // send data to backend
-            sendJsonToBackend("login", username, password);
+    e.preventDefault()
+    let username = document.getElementById("username-input").value;
+    let password = document.getElementById("password-input").value;
 
-            localStorage.setItem("username", username.toString())
-            // Only show page if user is validated.
-            let valid = false;
+    // send data to backend
+    await sendJsonToBackend("login", username, password);
 
-            let validUser;
+    await fetchData("sessions")
 
-            fetchData("sessions");
+    localStorage.setItem("username", username.toString())
 
+    // Get cookie to compare
+    let currentCookie = getCookie("session")
 
-            validUser = sessions.filter((session) => {
-                return session.username === username;
-            })
-            if (validUser.length === 1) {
-                valid = true;
-            } else {
-                // If taking too long, assume that the password or username was incorrect.
-                // alert("Username or password incorrect.");
-                console.log("Wrong password");
-            }
+    // Check valid
+    let valid = false
 
+    // if sessions exist, loop through and validate user's cookie.
+    if (!!sessions) sessions.forEach(session => {
+        if (session.sessionUUID === currentCookie) {
+            valid = true;
+            return
+        }
+    })
 
-            if (valid === true) {
-                showPage("homepage");
-                document.querySelector("#login").innerHTML = "";
-                console.log("user validated");
-            } else {
-                // loginBtn.click();
-                console.log("user not validated on client side");
-            }
-
-
-        })
+    if (!!valid) {
+        showPage("homepage")
     } else {
-        console.log("Error, login button does not exist.")
+        alert("Details invalid!!")
     }
+
+}
+
+// codegrepper Jeff le
+function getCookie(cname) {
+    const cookies = Object.fromEntries(
+        document.cookie.split(/; /).map(c => {
+            const [key, v] = c.split('=', 2);
+            return [key, decodeURIComponent(v)];
+        }),
+    );
+    return cookies[cname] || '';
 }
 
 
 function Register() {
-    let registerBtn = document.getElementById("registerBtn")
+    let username = document.getElementById("reg-username").value
+    let email = document.getElementById("reg-email").value;
+    let nickname = document.getElementById("reg-nickname").value;
+    let password = document.getElementById("reg-password").value;
+    let confirmation = document.getElementById("reg-confirmation").value;
 
-    if (!!registerBtn) {
-
-
-
-        registerBtn.addEventListener("click", () => {
-            let username = document.getElementById("reg-username").value
-            let email = document.getElementById("reg-email").value;
-            let nickname = document.getElementById("reg-nickname").value;
-            let password = document.getElementById("reg-password").value;
-            let confirmation = document.getElementById("reg-confirmation").value;
-
-            if (password !== confirmation) {
-                alert("Passwords don't match.")
-            } else if (username === "" || email === "" || nickname === "" || password === "" || confirmation === "") {
-                alert("Please fill all forms.")
-            }
-
-            console.log(username, email, nickname, password, confirmation);
-            sendJsonToBackend("register", username, email, nickname, [password, confirmation]);
-
-            alert("registered successfully!")
-
-        });
+    if (password !== confirmation) {
+        alert("Passwords don't match.")
+    } else if (username === "" || email === "" || nickname === "" || password === "" || confirmation === "") {
+        alert("Please fill all forms.")
+    } else {
+        console.log(username, email, nickname, password, confirmation);
+        sendJsonToBackend("register", username, email, nickname, [password, confirmation]);
+        alert("registered successfully!")
     }
+
+
 }

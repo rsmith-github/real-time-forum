@@ -36,9 +36,6 @@ function NavbarContent(cb) {
         `
         // Handle login after changing html. Event listener needs to be added each time after innerHTML is used.
         // https://stackoverflow.com/questions/53273768/javascript-onclick-function-only-works-once-very-simple-code
-        Login();
-        Register();
-
     } else {
         navbar.innerHTML = `
         <div class="container-fluid">
@@ -73,6 +70,7 @@ function NavbarContent(cb) {
         `
     }
 
+
     cb();
 }
 
@@ -101,7 +99,10 @@ function hidePages() {
 }
 
 // Show specific page based on name.
-function showPage(name) {
+async function showPage(name) {
+    await fetchData("sessions");
+
+    // console.log("login form: ", document.querySelector("#login-form"));
     hidePages(); // Hide all pages.
     body.style.overflow = "visible"
 

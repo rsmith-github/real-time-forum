@@ -92,7 +92,7 @@ func CreateUser(newUser User) error {
 	if err != nil {
 		return err
 	}
-	CheckErr(err)
+	CheckErr(err, "-------LINE 95")
 
 	// Create the authenticated user with password hash.
 	newAuthUser := authUser{
@@ -105,7 +105,7 @@ func CreateUser(newUser User) error {
 
 	// Try to insert user into database.
 	_, err2 := db.Exec("INSERT INTO users(username, email, nickname, password, superuser) values(?,?,?,?,?)", newAuthUser.username, newAuthUser.email, newAuthUser.nickname, newAuthUser.passwordHash, 0)
-	CheckErr(err2)
+	CheckErr(err2, "-------LINE 108")
 	if err2 != nil {
 		return err2
 	}
@@ -120,8 +120,9 @@ func getPasswordHash(password string) (string, error) {
 	return string(hash), err
 }
 
-func CheckErr(err error) {
+func CheckErr(err error, line string) {
 	if err != nil {
+		fmt.Print(line)
 		fmt.Println(err.Error())
 		log.SetFlags(log.LstdFlags | log.Lshortfile)
 	}
@@ -142,7 +143,7 @@ func QuerySession(rows *sql.Rows, err error) Session {
 			username:    *&username,
 		}
 		// currentUser = &username
-		CheckErr(err)
+		CheckErr(err, "-------LINE 146")
 		sess = temp
 	}
 	rows.Close() //good habit to close
@@ -171,7 +172,7 @@ func QueryUser(rows *sql.Rows, err error) User {
 			Superuser: superuser,
 		}
 		// currentUser = &username
-		CheckErr(err)
+		CheckErr(err, "-------LINE 175")
 		usr = temp
 	}
 	rows.Close() //good habit to close
@@ -205,7 +206,7 @@ func CheckSessionQueryPosts(w http.ResponseWriter, r *http.Request) (map[string]
 	// If index page, get all posts from all users.
 	if r.URL.Path == "/" {
 		rows, err = db.Query(`SELECT * FROM posts ORDER BY id DESC;`)
-		CheckErr(err)
+		CheckErr(err, "-------LINE 209")
 		// Get all posts.
 		posts = GetAllPosts(rows, err)
 	}
@@ -230,7 +231,7 @@ func CheckSessionQueryPosts(w http.ResponseWriter, r *http.Request) (map[string]
 		}
 
 		rows, err = db.Query(`SELECT * FROM posts where category=? ORDER BY id DESC;`, selectedCat)
-		CheckErr(err)
+		CheckErr(err, "-------LINE 234")
 		// Get all posts.
 		posts = GetAllPosts(rows, err)
 	}

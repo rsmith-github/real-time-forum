@@ -22,7 +22,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 						<h3 class="panel-title">Please sign in</h3>
 					 </div>
 					  <div class="panel-body">
-						<form accept-charset="UTF-8" action="/login" method="post" class="formall">
+						<form id="login-form" accept-charset="UTF-8" action="/login" method="post" class="formall">
 						<fieldset>
 							  <div class="form-group" id="user">
 								<input autofocus class="form-control" id="username-input" placeholder="Username / Nickname" name="username" type="text">
@@ -30,7 +30,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 							<div class="form-group" id="pass">
 								<input class="form-control" id="password-input" placeholder="Password" name="password" type="password" value="">
 							</div>
-							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" value="Login">
+							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" onclick="Login(event)" value="Login">
 						</fieldset>
 						  </form>
 					</div>
@@ -62,7 +62,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 				<input id="reg-confirmation" class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
 			</div>
 			<div class="formgroup" id="register">
-				<input id="registerBtn" class="btn btn-lg btn-success btn-block" type="button" value="Register">
+				<input  onclick="Register(event)" id="registerBtn" class="btn btn-lg btn-success btn-block" type="button" value="Register">
 			</div>
 			<div class="lowbanner">Already have an account? <a href="/login" style="color: rgb(6, 86, 235); text-decoration:underline;">Log In here.</a></div>
 		</form>
@@ -145,7 +145,7 @@ func CommentsApi(writer http.ResponseWriter, request *http.Request) {
 			var _, commentError = db.Exec(`INSERT INTO comments(username, comment, post_ID) values(?,?,?)`, comment.Username, comment.Comment, conv)
 			if commentError != nil {
 				fmt.Println(commentError.Error())
-				CheckErr(commentError)
+				CheckErr(commentError, "-------Line 148 api.go")
 				// ReturnCode500(writer, request)
 				return
 			}
@@ -158,15 +158,15 @@ func CommentsApi(writer http.ResponseWriter, request *http.Request) {
 }
 
 func createApi(table string, writer http.ResponseWriter, request *http.Request) {
-	if request.Method == "GET" {
-		// var listOfApiData []interface{}
-		// Built query string.
-		str := "SELECT * FROM " + table + ";"
-		jsn := ExecuteSQL(str)
+	// if request.Method == "GET" {
+	// var listOfApiData []interface{}
+	// Built query string.
+	str := "SELECT * FROM " + table + ";"
+	jsn := ExecuteSQL(str)
 
-		// Secure endpoint
-		writer.Write(jsn)
-	}
+	// Secure endpoint
+	writer.Write(jsn)
+	// }
 }
 
 func ChatsApi(w http.ResponseWriter, r *http.Request) {
@@ -205,17 +205,21 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 		// Check if room already exists.
 		flag := 0
 		for _, el := range listOfStrings {
-			if strings.Index(el, chat.User1) != -1 && strings.Index(el, chat.User2) != -1 {
+			users := strings.Split(el, "~")
+			if users[0] == chat.User1 && users[1] == chat.User2 || users[0] == chat.User2 && users[1] == chat.User1 {
 				flag = 1
 			}
 		}
+		fmt.Printf("\n")
+
+		fmt.Println("flag: ", flag)
 
 		// If room does not exist, create it.
 		if flag == 0 {
 			var _, chatError = db.Exec(`INSERT INTO chats(user1, user2) values(?,?)`, chat.User1, chat.User2)
 			if chatError != nil {
 				fmt.Println(chatError.Error())
-				CheckErr(chatError)
+				CheckErr(chatError, "-------Line 218 api.go")
 				// ReturnCode500(writer, request)
 				return
 			}

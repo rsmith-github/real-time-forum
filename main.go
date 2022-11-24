@@ -88,7 +88,7 @@ func main() {
 	// http.HandleFunc("/api/users", functions.UsersApi)
 	http.HandleFunc("/api/chats", functions.ChatsApi)
 	http.Handle("/api/allposts", ValidateJWT(functions.PostsApi))
-	http.Handle("/api/sessions", ValidateJWT(functions.SessionsApi))
+	http.HandleFunc("/api/sessions", functions.SessionsApi)
 	http.Handle("/api/comments", ValidateJWT(functions.CommentsApi))
 	http.HandleFunc("/jwt", GetJwt)
 

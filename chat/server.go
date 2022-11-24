@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"real-time-forum/functions"
-	"time"
 )
 
 // Run starts a new chat server with 4 chat rooms, listening on port 8080
@@ -52,8 +51,8 @@ func RunRoutine() {
 		}
 
 		// Don't need to be calling so many times
-		time.Sleep(1 * time.Second)
-		
+		// time.Sleep(1 * time.Second)
+
 		// fmt.Println(listOfStrings)
 		for _, name := range listOfStrings {
 

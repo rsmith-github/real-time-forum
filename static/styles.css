@@ -179,3 +179,38 @@ textarea {
     width: 350px;
     resize: none;
 }
+
+
+
+
+
+
+.custom-element {
+    height: 80% !important;
+    width: 50%;
+    background-color: rgb(112, 112, 112);
+    padding: 0;
+    margin: 10px 0px 20px 10px;
+    animation: flow 1s ease-in forwards;
+}
+
+@keyframes flow {
+    from {
+        transform: translateX(-100%)
+    }
+    to {
+        transform: translateX(0px)
+    }
+    
+}
+
+
+
+
+
+
+
+
+
+
+

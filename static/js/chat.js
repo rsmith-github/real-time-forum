@@ -28,6 +28,12 @@ let input = document.createElement("input");
 
 // Show online users for chat app.
 function showUsers() {
+
+    // Unblur page.
+    messengerPage.style.opacity = "100%";
+    messengerPage.style.pointerEvents = "auto";
+
+    
     let messenger = document.querySelector("#messenger");
     messenger.innerHTML = "";
     sessions.forEach(session => {
@@ -52,6 +58,7 @@ function showUsers() {
         div.style.marginBottom = "5px";
         messengerPage.append(div);
 
+
         // Show chat box on click
         div.addEventListener("click", () => {
 
@@ -63,7 +70,7 @@ function showUsers() {
 
                 chatWindow.style.display = "block";
 
-                connectToChatserver([currentUser, session.username]);
+                // connectToChatserver([currentUser, session.username]);
 
                 // Blur background page.
                 messengerPage.style.opacity = "0.5"
@@ -75,7 +82,7 @@ function showUsers() {
 }
 
 // Show chat window pop up with id of user-user
-function showChatWindow(id) {
+async function showChatWindow(id) {
 
 
     // Get users in chat
@@ -94,12 +101,16 @@ function showChatWindow(id) {
     // Set correct id
     chatWindow.id = `window: ${id}`
 
+
+    await sendJsonToBackend("chats", usersInChat[0], usersInChat[1])
+    await fetchData("chats")
+
     connectToChatserver(usersInChat);
 
     // Auto focus message form.
     input.focus();
 
-    sendJsonToBackend("chats", usersInChat[0], usersInChat[1])
+
 
 }
 
@@ -181,16 +192,16 @@ var ServiceLocation = "ws://" + document.location.host + "/chat/";
 
 
 
-function connectToChatserver(usersInChat) {
+async function connectToChatserver(usersInChat) {
     console.log("connected: " + usersInChat[0] + " and " + usersInChat[1]);
 
-    fetchData(chats);
+    // await fetchData("chats");
 
     console.log("All chats: ", chats);
 
     let chatExists = false;
 
-    console.log("array: ", usersInChat);
+    console.log("usersInChat: ", usersInChat);
 
     if (!!chats) {
         // Check f chat between the two users already exists.
@@ -202,8 +213,8 @@ function connectToChatserver(usersInChat) {
         })
     }
 
-    // console.log(chatExists);
 
+    console.log(chatExists);
     // If chat between the two users already exists, connect to the one that already exists.
     if (chatExists === true) {
         wSocket = new WebSocket(ServiceLocation + usersInChat[0] + "~" + usersInChat[1]);

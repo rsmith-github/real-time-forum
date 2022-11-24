@@ -3,6 +3,7 @@ package functions
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -101,7 +102,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&userToValidate)
 		if err != nil {
-			fmt.Println(err)
+			fmt.Println(err, "-----line 105 views.go")
 		}
 
 		// If user exists, log them in.
@@ -111,7 +112,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		foundHash := ""
 		// Get all the data from one user.
 		rows, err := db.Query("SELECT * FROM users WHERE username=?", userToValidate.Username)
-		CheckErr(err)
+		CheckErr(err, "line 115")
 
 		usr := QueryUser(rows, err)
 		foundId = usr.id
@@ -121,7 +122,11 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Delete expired cookie based on valid username posted from form.
 		// Only relevant if user has been automatically logged out.
-		db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
+		// AT THE MOMENT THE USER THAT'S LOGGED IN IS GETTING LOGGED OUT IF SOMEONE TYPES THE WRONG PASSWORD.
+		_, delErr := db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
+		if delErr != nil {
+			log.Fatal(delErr.Error())
+		}
 
 		// Compare password hash to password input by user.
 		pwCompareError := bcrypt.CompareHashAndPassword([]byte(foundHash), []byte(userToValidate.Password))
@@ -134,26 +139,36 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				id := uuid.NewV4()
 				cookie = &http.Cookie{
-					Name:     "session",
-					Value:    id.String(),
-					HttpOnly: true,
-					Path:     "/",
-					MaxAge:   60 * 60,
+					Name:  "session",
+					Value: id.String(),
+
+					// Ideally these cookies should be http only and secure but verifying the user
+					// on the client side will be difficult.
+					// HttpOnly: false,
+					// Secure:   false,
+					Path:   "/",
+					MaxAge: 60 * 24,
 				}
 				http.SetCookie(w, cookie)
 			}
 
-			db := OpenDB()
+			// db := OpenDB()
 			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID, username) values(?,?,?)", cookie.Value, foundId, foundUser)
 
-			CheckErr(err2)
-			defer db.Close()
+			if err2 != nil {
+				db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
+				CheckErr(err2, "views.go line 155")
+				log.Fatal(err2)
+			}
+			db.Close()
 
 			w.WriteHeader(http.StatusAccepted)
-			w.Write([]byte("ok logged in!"))
+			fmt.Println("Logged in")
+			fmt.Println()
 		} else {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("wrong password breh!"))
+			fmt.Println("wrong password!!")
+			fmt.Println()
+
 		}
 
 	}
