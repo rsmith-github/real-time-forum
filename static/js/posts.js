@@ -8,7 +8,7 @@ function newPost(event) {
     if (content.value !== "") {
         // Make animation.
         let allPostsContainer = document.getElementById("posts-container");
-        allPostsContainer.style.animation = "movedown 1s ease";
+        allPostsContainer.style.animation = "movedown 0.7s ease";
     } else {
         alert("DONT LEAVE THE FUCKING FORM EMPTY YOU TWAT")
     }
@@ -77,9 +77,7 @@ const postSlideIn = (e) => {
             </div>
             <div class="card-footer">
                 <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-
-                <!-- NEED TO PREVENT RELOAD OVER HERE -->
-                <a href="/" class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
+                <a href="/" onclick="OpenCommentSection(event)"class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
                 <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                 <div class="commentbox">
                     <form action="/" method="POST" class="comment-form" id="comment-form-${id}">

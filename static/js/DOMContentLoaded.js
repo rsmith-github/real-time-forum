@@ -38,19 +38,20 @@ document.addEventListener(
         handleNav();
 
         // Particles.js
-        // Particles.init({
-        //     selector: '.background',
-        //     connectParticles: true,
-        //     maxParticles: 60,
-        //     color: "#FFFFFF"
-        // });
-
-        chatApp();
+        Particles.init({
+            selector: '.background',
+            connectParticles: true,
+            maxParticles: 60,
+            color: "#FFFFFF"
+        });
 
         // Animation end listener
         document.addEventListener("animationend", postSlideIn);
 
         // console.log("textarea: ", document.querySelector("textarea"));
+        await showUsers()
+
+
     }
 
 );

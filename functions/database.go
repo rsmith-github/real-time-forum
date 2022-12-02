@@ -22,7 +22,7 @@ func CreateSqlTables() {
 	// Initialize database.
 	db := OpenDB()
 	// Create user table if it doen't exist.
-	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `nickname` VARCHAR(64) NOT NULL UNIQUE, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
+	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `nickname` VARCHAR(64) NOT NULL UNIQUE, `age` INTEGER, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
 	CheckErr(usrTblErr, "-------Error creating table")
 
 	// Create sessions table if doesn't exist.
@@ -73,6 +73,7 @@ func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
 }
 
 // Function that queryies database and returns list of bytes to unmarshal.
+// https://stackoverflow.com/questions/43367505/function-in-go-to-execute-select-query-on-database-and-return-json-output
 func ExecuteSQL(queryStr string) []byte {
 	db := OpenDB()
 	defer db.Close()

@@ -1,5 +1,5 @@
 #homepage, #messenger {
-    padding: 5% 0 0 0.6%;
+    padding: 80px 0 0 0.6%;
     display: block;
     min-width: 100%;
 
@@ -49,6 +49,11 @@ a {
 .bold {
     font-weight: bolder;
 }
+
+.page {
+    padding-right: 10px !important;
+}
+
 
 
 /* Logout button */
@@ -132,7 +137,10 @@ a {
 
 
 
-
+textarea {
+    width: 350px;
+    resize: none;
+}
 
 
 
@@ -147,10 +155,24 @@ a {
     }
     
 }
+@media (max-width: 258px) {
 
+    #homepage, #messenger {
+        padding: 120px 0 0 0.6%;
+        display: block;
+        min-width: 100%;
+    
+    }
+    
+    
+}
+
+
+
+/* Animations */
 
 .movein {
-    animation: move 1s ease-in forwards;
+    animation: move 0.5s ease-in forwards;
     animation-iteration-count: 1;
 }
 
@@ -172,36 +194,6 @@ a {
     to {
         transform: translateY(305px)
     }
-}
-
-
-textarea {
-    width: 350px;
-    resize: none;
-}
-
-
-
-
-
-
-.custom-element {
-    height: 80% !important;
-    width: 50%;
-    background-color: rgb(112, 112, 112);
-    padding: 0;
-    margin: 10px 0px 20px 10px;
-    animation: flow 1s ease-in forwards;
-}
-
-@keyframes flow {
-    from {
-        transform: translateX(-100%)
-    }
-    to {
-        transform: translateX(0px)
-    }
-    
 }
 
 

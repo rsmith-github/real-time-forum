@@ -70,8 +70,11 @@ function NavbarContent(cb) {
         `
     }
 
-
     cb();
+
+
+
+
 }
 
 // Check url endpoint for each link that is clicked.
@@ -79,6 +82,7 @@ function handleNav() {
     document.querySelectorAll(".nav-link").forEach(link => {
         link.addEventListener("click", checkLink)
     });
+
 }
 
 
@@ -89,6 +93,7 @@ function checkLink(event) {
     if (!!this.dataset.name) {
         showPage(this.dataset.name) // show specific page. I.e. Homepage, login, register. The page name is stored as data attribute in HTML thus this.dataset.name.
     }
+
 }
 
 // Function to hide all pages. Needed when chosing any page.
@@ -100,7 +105,7 @@ function hidePages() {
 
 // Show specific page based on name.
 async function showPage(name) {
-    await fetchData("sessions");
+    // await fetchData("sessions");
 
     // console.log("login form: ", document.querySelector("#login-form"));
     hidePages(); // Hide all pages.
@@ -119,6 +124,11 @@ async function showPage(name) {
     } else {
         //                                        ^
         history.pushState({ name: name }, "", `${name}`);
+    }
+
+    if (name === "messenger") {
+        chatApp();
+
     }
 
     // Update url variable globally after updating client url.

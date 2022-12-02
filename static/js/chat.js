@@ -5,20 +5,24 @@
 
 // Display chat app on bottom right of the screen
 async function chatApp() {
+
     await fetchData("sessions");
-    await fetchData("chats");
     let messengerLink = document.querySelector("#messenger-link");
+
+
 
     body.style.overflow = "visible"
 
     if (!!messengerLink) {
-        messengerLink.addEventListener("click", () => {
+        messengerLink.addEventListener("click", async () => {
+
+            await fetchData("sessions");
+            await fetchData("chats");
             showPage("messenger");
+            showUsers();
         });
-        showUsers();
     }
 }
-
 
 
 let chatWindow = document.querySelector(".chatWindow");
@@ -26,17 +30,28 @@ let messengerPage = document.getElementById("messenger")
 let chatForm = document.createElement("form");
 let input = document.createElement("input");
 
-// Show online users for chat app.
-function showUsers() {
+// let chatDivs;
 
+// Show online users for chat app.
+async function showUsers() {
+    await fetchData("chats")
+
+    console.log("wubbalubbadubdub");
     // Unblur page.
     messengerPage.style.opacity = "100%";
     messengerPage.style.pointerEvents = "auto";
 
-    
+
     let messenger = document.querySelector("#messenger");
     messenger.innerHTML = "";
+
+    // Sort alphabetically.
+    sessions.sort((a, b) => {
+        return a.username.localeCompare(b.username);
+    })
     sessions.forEach(session => {
+
+
 
         // Long bar with username to click on.
         let div = document.createElement("div")
@@ -46,18 +61,23 @@ function showUsers() {
             return;
         }
 
+        // connectToChatserver([session.username, currentUser]);
+
         div.className = "chatRoom"
         // Id is user displayed and current user.
         div.id = `${currentUser}<->${session.username}`
 
         div.innerHTML = `
-        <h2>${session.username}</h2>
-        <em>Click to chat</em>
+        <h2 style="color:black">${session.username}</h2>
+        <em style="color:black">Click to chat</em>
         `;
-        div.style.border = "1px solid green";
+
+        div.style.backgroundColor = "rgba(255,255,255,0.8)";
+        div.style.borderRadius = "10px";
+        div.style.padding = "1.5%"
+
         div.style.marginBottom = "5px";
         messengerPage.append(div);
-
 
         // Show chat box on click
         div.addEventListener("click", () => {
@@ -66,24 +86,25 @@ function showUsers() {
             if (chatWindow.querySelector("button") == null) {
                 showChatWindow(div.id);
 
+
+
             } else {
 
                 chatWindow.style.display = "block";
 
-                // connectToChatserver([currentUser, session.username]);
 
                 // Blur background page.
                 messengerPage.style.opacity = "0.5"
                 messengerPage.style.pointerEvents = "none";
             }
         });
+
     });
 
 }
 
 // Show chat window pop up with id of user-user
 async function showChatWindow(id) {
-
 
     // Get users in chat
     let usersInChat = id.split("<->");
@@ -105,7 +126,9 @@ async function showChatWindow(id) {
     await sendJsonToBackend("chats", usersInChat[0], usersInChat[1])
     await fetchData("chats")
 
-    connectToChatserver(usersInChat);
+
+    connectToChatserver([usersInChat[0], usersInChat[1]]);
+
 
     // Auto focus message form.
     input.focus();
@@ -135,7 +158,7 @@ function chatWindowStyles(id) {
         messengerPage.style.pointerEvents = "auto";
         chatWindow.innerHTML = "";
         chatWindow.style.display = "none";
-        leaveChat();
+        // leaveChat();
         return;
     })
 
@@ -168,6 +191,8 @@ function chatWindowStyles(id) {
     let sendMsgButton = document.createElement("button");
     sendMsgButton.innerText = "Send"
 
+    // add data attribute
+    chatForm.dataset.chatId = id;
 
     if (chatForm.childElementCount === 1) {
         chatForm.appendChild(sendMsgButton);
@@ -205,7 +230,6 @@ async function connectToChatserver(usersInChat) {
 
     if (!!chats) {
         // Check f chat between the two users already exists.
-
         chats.forEach((chat) => {
             if (chat.user1 === usersInChat[0] && chat.user2 === usersInChat[1]) {
                 chatExists = true;
@@ -214,7 +238,7 @@ async function connectToChatserver(usersInChat) {
     }
 
 
-    console.log(chatExists);
+    console.log("Chat exists: ", chatExists);
     // If chat between the two users already exists, connect to the one that already exists.
     if (chatExists === true) {
         wSocket = new WebSocket(ServiceLocation + usersInChat[0] + "~" + usersInChat[1]);
@@ -224,23 +248,43 @@ async function connectToChatserver(usersInChat) {
     }
 
 
-
-
-
     wSocket.addEventListener("message", (ev) => {
         OnMessageReceived(ev, usersInChat);
     })
 
+    console.log(wSocket);
+
 }
+
+
 
 chatForm.addEventListener("submit", (ev) => {
     ev.preventDefault()
-    SendMessage()
+    SendMessage(ev.target)
 })
 
-function SendMessage() {
+function SendMessage(target) {
+
+    // This id needs to be revesed so we can show an update when message is sent.
+    let idToReverse = target.dataset.chatId
+
+    let split = idToReverse.split("<->")
+
+
+    // chatDivs = document.querySelectorAll(".chatRoom")
+
+    // chatDivs.forEach((element) => {
+    //     element.style.backgroundColor = "red"
+    // })
+
+    // Get element with reverse order id to show update.
+    let reversed = split[1] + "<->" + split[0]
+
+    // console.log(reversed);
+    // reversed.style.backgroundColor = "red";
+
     var msg = '{"message":"' + input.value + '", "sender":"'
-        + localStorage.getItem("username") + '", "received":""}';
+        + localStorage.getItem("username") + `", "receiver":"${split[1]}"}`;
     wSocket.send(msg);
     input.value = ""
 }
@@ -252,6 +296,16 @@ function OnMessageReceived(evt, usersInChat) {
     let messageCointainer = document.createElement("div");
     let messageHTML = '<p>' + msg.sender + ':' + msg.message + '</p>';
     messageCointainer.innerHTML = messageHTML;
+
+
+    // Message received notification
+    let chatrooms = document.querySelectorAll(".chatRoom");
+    chatrooms.forEach(chatroom => {
+        if (chatroom.id === usersInChat[0] + "<->" + usersInChat[1] && usersInChat[0] !== msg.sender) {
+            chatroom.style.backgroundColor = "red";
+        }
+    });
+
 
 
     // Append message to correct chat.

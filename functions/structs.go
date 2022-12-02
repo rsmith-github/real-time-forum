@@ -7,6 +7,7 @@ type User struct {
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Nickname  string `json:"nickname"`
+	Age       int    `json:"age"`
 	Password  string `json:"password"`
 	Superuser int    `json:"superuser"`
 }
@@ -15,6 +16,7 @@ type authUser struct {
 	username     string
 	email        string
 	nickname     string
+	age          int
 	passwordHash string
 }
 

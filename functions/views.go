@@ -147,7 +147,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 					// HttpOnly: false,
 					// Secure:   false,
 					Path:   "/",
-					MaxAge: 60 * 24,
+					MaxAge: 60 * 1440,
 				}
 				http.SetCookie(w, cookie)
 			}

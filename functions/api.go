@@ -55,6 +55,9 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 			<div class="formgroup" id="nick">
 				<input id="reg-nickname" class="form-control" type="text" name="nickname" placeholder="Nickname">
 			</div>
+			<div class="formgroup" id="age">
+				<input id="reg-age" class="form-control" type="text" name="age" placeholder="Age">
+			</div>
 			<div class="formgroup" id="pass">
 				<input id="reg-password" class="form-control" type="password" name="password" placeholder="Password">
 			</div>
@@ -164,6 +167,8 @@ func createApi(table string, writer http.ResponseWriter, request *http.Request) 
 	str := "SELECT * FROM " + table + ";"
 	jsn := ExecuteSQL(str)
 
+	// Make sure content type is json not plain text.
+	writer.Header().Set("Content-Type", "application/json")
 	// Secure endpoint
 	writer.Write(jsn)
 	// }

@@ -16,7 +16,6 @@ async function fetchData(name) {
 
     switch (name) {
         case "allposts":
-
             // Fetch postss
             posts = await fetch('/api/allposts', { headers });
             posts = await posts.json();
@@ -110,8 +109,9 @@ async function sendJsonToBackend(endpoint, arg1, arg2, arg3, arg4) {
                     username: arg1,
                     email: arg2,
                     nickname: arg3,
-                    password: arg4[0],
-                    confirmation: arg4[1],
+                    age: arg4[0],
+                    password: arg4[1],
+                    confirmation: arg4[2],
                 }),
             });
             break;

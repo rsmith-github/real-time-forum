@@ -6,25 +6,6 @@ import (
 	"real-time-forum/functions"
 )
 
-// Run starts a new chat server with 4 chat rooms, listening on port 8080
-func Run() {
-	// nums := make(chan int) // Declare a unbuffered channel
-	// wg.Add(1)
-	// go responseSize("https://www.golangprograms.com", nums)
-	// fmt.Println(<-nums) // Read the value from unbuffered channel
-	// wg.Wait()
-	// close(nums) // Closes the channel
-	// rooms := make(chan []string)
-	// for _, name := range <-rooms {
-
-	// 	room := NewRoom(name)
-
-	// 	http.Handle("/chat/"+name, room)
-
-	// 	go room.Run()
-	// }
-}
-
 // Get all possible rooms in from database.
 func RunRoutine() {
 
@@ -34,10 +15,13 @@ func RunRoutine() {
 
 	// Solving error "panic: http: multiple registrations for /chat/123~kanye-west"
 	registered := map[string]string{}
+
+	// Get all chats from database. They would have been updated through fetch API with http POST.
+	var listOfBytes []byte
+
+	// Concurrently check for rooms that exist in database.
 	for {
 
-		// Get all chats from database. They would have been updated through fetch API with http POST.
-		var listOfBytes []byte
 		listOfBytes = functions.ExecuteSQL("SELECT * FROM chats;")
 
 		// Unmarshal data from database.

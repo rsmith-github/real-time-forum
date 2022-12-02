@@ -99,12 +99,13 @@ func CreateUser(newUser User) error {
 		username:     newUser.Username,
 		email:        newUser.Email,
 		nickname:     newUser.Nickname,
+		age:          newUser.Age,
 		passwordHash: passwordHash,
 	}
 	db := OpenDB()
 
 	// Try to insert user into database.
-	_, err2 := db.Exec("INSERT INTO users(username, email, nickname, password, superuser) values(?,?,?,?,?)", newAuthUser.username, newAuthUser.email, newAuthUser.nickname, newAuthUser.passwordHash, 0)
+	_, err2 := db.Exec("INSERT INTO users(username, email, nickname, age, password, superuser) values(?,?,?,?,?,?)", newAuthUser.username, newAuthUser.email, newAuthUser.nickname, newAuthUser.age, newAuthUser.passwordHash, 0)
 	CheckErr(err2, "-------LINE 108")
 	if err2 != nil {
 		return err2
@@ -158,16 +159,18 @@ func QueryUser(rows *sql.Rows, err error) User {
 	var nickname string
 	var password string
 	var superuser int
+	var age int
 
 	var usr User
 	// Scan all the data from that row.
 	for rows.Next() {
-		err = rows.Scan(&id, &username, &email, &nickname, &password, &superuser)
+		err = rows.Scan(&id, &username, &email, &nickname, &age, &password, &superuser)
 		temp := User{
 			id:        id,
 			Username:  username,
 			Email:     email,
 			Nickname:  nickname,
+			Age:       age,
 			Password:  password,
 			Superuser: superuser,
 		}

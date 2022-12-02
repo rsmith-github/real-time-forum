@@ -50,16 +50,17 @@ function Register() {
     let username = document.getElementById("reg-username").value
     let email = document.getElementById("reg-email").value;
     let nickname = document.getElementById("reg-nickname").value;
+    let age = document.getElementById("reg-age").value;
     let password = document.getElementById("reg-password").value;
     let confirmation = document.getElementById("reg-confirmation").value;
 
     if (password !== confirmation) {
         alert("Passwords don't match.")
-    } else if (username === "" || email === "" || nickname === "" || password === "" || confirmation === "") {
+    } else if (username === "" || email === "" || nickname === "" || age === "" || password === "" || confirmation === "") {
         alert("Please fill all forms.")
     } else {
         console.log(username, email, nickname, password, confirmation);
-        sendJsonToBackend("register", username, email, nickname, [password, confirmation]);
+        sendJsonToBackend("register", username, email, nickname, [Number(age), password, confirmation]);
         alert("registered successfully!")
     }
 
