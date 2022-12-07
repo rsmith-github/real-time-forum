@@ -138,39 +138,96 @@ async function showChatWindow(id) {
 
 
 async function filterMessages(usersInChat, id) {
+    // Counters for range of messages
+    let count = 0;
+    let limit = 10;
     await fetchData("messages")
+    // messages = messages.reverse()
 
 
     let chatScreen = document.getElementById("chatScreen:" + id)
 
-    messages.forEach(message => {
-        if (usersInChat.includes(message.sender) && usersInChat.includes(message.receiver)) {
+    let messagesLength = messages.length;
+    let messageInChatCount = 0;
+
+    let chatRoomMessages = messages.filter((message) => {
+        return usersInChat.includes(message.sender) && usersInChat.includes(message.receiver)
+    })
+
+    chatRoomMessages.reverse()
+    chatRoomMessages.forEach((message, index) => {
+        if (usersInChat.includes(message.sender) && usersInChat.includes(message.receiver) && count < 10) {
             let messageCointainer = document.createElement("div");
-            let messageHTML
+            let messageHTML;
             if (message.sender == localStorage.getItem("username")) {
                 messageCointainer.style.display = "flex";
                 messageCointainer.style.flexDirection = "column";
-                messageCointainer.style.justifyContent = "flex-start"
-                messageCointainer.style.alignItems = "flex-end"
+                messageCointainer.style.justifyContent = "flex-start";
+                messageCointainer.style.alignItems = "flex-end";
                 messageHTML = '<div style="margin-right: 10px">' + '<p style="margin-bottom: 0; ">' + '<span style="color: orange">' + message.sender + "</span>" + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>' + '</div>';
-
             } else {
                 messageHTML = '<p style="margin-bottom: 0">' + message.sender + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>';
-
             }
             messageCointainer.innerHTML = messageHTML;
-            chatScreen.append(messageCointainer)
+            chatScreen.prepend(messageCointainer)
+            // Increase count
+            count++;
+            messageInChatCount++;
+        } else if (usersInChat.includes(message.sender) && usersInChat.includes(message.receiver)) {
+            messageInChatCount++;
         }
     })
-
-
     scrollToBottom(chatScreen)
-
+    nextTen(chatScreen, chatRoomMessages, count, limit)
 }
 
 function scrollToBottom(element) {
     element.scrollTop = element.scrollHeight;
 }
+
+
+let lastIndex;
+function nextTen(chatScreen, chatRoomMessages, count, limit) {
+    // Counters for range of messages
+    // console.log("specific messages: ", messageInChatCount);
+    // When top of chatscreen is reached, load another 10 messages.
+    limit += 10;
+    console.log(count)
+
+    // Keep track of index to know when to stop scrolling down after loading new chats.
+    chatScreen.addEventListener("scroll", () => {
+        if (chatScreen.scrollTop === 0) {
+            console.log("topppp");
+            chatRoomMessages.forEach((message, index) => {
+                if (index >= count && index < limit) {
+                    console.log(count);
+                    let messageCointainer = document.createElement("div");
+                    let messageHTML;
+                    if (message.sender == localStorage.getItem("username")) {
+                        messageCointainer.style.display = "flex";
+                        messageCointainer.style.flexDirection = "column";
+                        messageCointainer.style.justifyContent = "flex-start";
+                        messageCointainer.style.alignItems = "flex-end";
+                        messageHTML = '<div style="margin-right: 10px">' + '<p style="margin-bottom: 0; ">' + '<span style="color: orange">' + message.sender + "</span>" + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>' + '</div>';
+                    } else {
+                        messageHTML = '<p style="margin-bottom: 0">' + message.sender + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>';
+                    }
+                    messageCointainer.innerHTML = messageHTML;
+                    chatScreen.prepend(messageCointainer);
+                    // Increase count
+                    count++;
+                    lastIndex = index;
+                }
+            })
+            limit += 10;
+            if (lastIndex !== chatRoomMessages.length - 1 && chatRoomMessages.length > lastIndex) {
+                chatScreen.scrollTop += 350;
+            }
+        }
+    })
+}
+
+
 
 function chatWindowStyles(id) {
     // Styling
@@ -322,8 +379,8 @@ function OnMessageReceived(evt, usersInChat) {
     if (msg.sender === localStorage.getItem("username")) {
         messageCointainer.style.display = "flex";
         messageCointainer.style.flexDirection = "column";
-        messageCointainer.style.justifyContent = "flex-start"
-        messageCointainer.style.alignItems = "flex-end"
+        messageCointainer.style.justifyContent = "flex-start";
+        messageCointainer.style.alignItems = "flex-end";
         messageHTML = '<div style="margin-right: 10px">' + '<p style="margin-bottom: 0; ">' + '<span style="color: orange">' + msg.sender + "</span>" + ': ' + msg.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + time + '</p>' + '</div>';
     } else {
         messageHTML = '<p style="margin-bottom: 0">' + msg.sender + ': ' + msg.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + time + '</p>';
