@@ -126,10 +126,8 @@ async function showPage(name) {
         history.pushState({ name: name }, "", `${name}`);
     }
 
-    if (name === "messenger") {
-        chatApp();
+    // chatApp();
 
-    }
 
     // Update url variable globally after updating client url.
     url = window.location.href.split("/");

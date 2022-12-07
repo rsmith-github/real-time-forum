@@ -51,6 +51,8 @@ document.addEventListener(
         // console.log("textarea: ", document.querySelector("textarea"));
         await showUsers()
 
+        await chatApp()
+
 
     }
 

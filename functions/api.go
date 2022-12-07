@@ -217,7 +217,7 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 		}
 		fmt.Printf("\n")
 
-		fmt.Println("flag: ", flag)
+		// fmt.Println("flag: ", flag)
 
 		// If room does not exist, create it.
 		if flag == 0 {
@@ -234,4 +234,8 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 		createApi("chats", w, r)
 	}
 
+}
+
+func MessagesApi(w http.ResponseWriter, r *http.Request) {
+	createApi("messages", w, r)
 }

@@ -41,6 +41,10 @@ func CreateSqlTables() {
 	var _, commentError = db.Exec("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64), `comment` TEXT NOT NULL, `post_ID` INTEGER NOT NULL )")
 	CheckErr(commentError, "-------Error creating table")
 
+	// Create messages table if not exists
+	var _, msgErr = db.Exec("CREATE TABLE IF NOT EXISTS `messages` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sender` VARCHAR(64), `receiver` VARCHAR(64), `message` TEXT, `time` TEXT NOT NULL )")
+	CheckErr(msgErr, "-------Error creating table")
+
 	db.Close()
 }
 

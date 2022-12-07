@@ -94,6 +94,7 @@ func main() {
 
 	// Api endpoints
 	http.HandleFunc("/api/content", functions.LoadContent)
+	http.HandleFunc("/api/messages", functions.MessagesApi)
 
 	// Serve files within static and images.
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

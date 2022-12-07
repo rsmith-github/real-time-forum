@@ -6,6 +6,7 @@ let posts = [];
 let comments = [];
 let sessions = [];
 let chats = [];
+let messages = [];
 async function fetchData(name) {
     // Get api key
     let apiKey = await getApiKey()
@@ -35,6 +36,11 @@ async function fetchData(name) {
             // Fetch chats.
             chats = await fetch("/api/chats", { headers })
             chats = await chats.json()
+            break;
+        case "messages":
+            // Fetch chats.
+            messages = await fetch("/api/messages", { headers })
+            messages = await messages.json()
             break;
         default:
             // Fetch html content for each page in the single page app.

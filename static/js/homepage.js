@@ -73,7 +73,7 @@ async function displayPosts(callBack) {
     // Scroll to position after content has been loaded.
     window.scrollTo(0, localStorage.getItem("scrollPosition"));
 
-    // chatApp();
+    chatApp();
 
     callBack();
 

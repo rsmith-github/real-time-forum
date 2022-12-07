@@ -6,9 +6,10 @@ import (
 
 // Message represents a chat message
 type Message struct {
-	Message string `json:"message"`
-	Sender  string `json:"sender"`
-	Created string `json:"created"`
+	Message  string `json:"message"`
+	Sender   string `json:"sender"`
+	Receiver string `json:"receiver"`
+	Created  string `json:"created"`
 }
 
 // FromJSON created a new Message struct from given JSON

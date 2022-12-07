@@ -43,7 +43,10 @@ const postSlideIn = (e) => {
         // Save data to sqlite db.
         sendJsonToBackend("new", category_1.value.toString(), category_2.value.toString(), content.value.toString())
 
-
+        // Create new date object and format it.
+        let today = new Date();
+        let formatted = formatTime([today.getHours(), today.getMinutes(), today.getSeconds()])
+        let time = today.toISOString().split('T')[0] + " " + formatted[0] + ":" + formatted[1] + ":" + formatted[2];
         // All the HTML for a new post.
         let newPost = `
 
@@ -62,7 +65,7 @@ const postSlideIn = (e) => {
 
             </div>
             <div class="card-body">
-                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${"INSERT_TIME_POSTED"}</div>
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
                 <p class="inlinecategory">
                   <span class="bold">Post type: </span>${category_1.value}
                 </p>

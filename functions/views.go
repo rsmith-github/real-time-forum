@@ -229,7 +229,7 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 
-		fmt.Println(postFromJson)
+		// fmt.Println(postFromJson)
 
 		if postErr != nil {
 			fmt.Println("error: ", postErr.Error())
