@@ -155,28 +155,7 @@ async function filterMessages(usersInChat, id) {
     })
 
     chatRoomMessages.reverse()
-    chatRoomMessages.forEach((message, index) => {
-        if (usersInChat.includes(message.sender) && usersInChat.includes(message.receiver) && count < 10) {
-            let messageCointainer = document.createElement("div");
-            let messageHTML;
-            if (message.sender == localStorage.getItem("username")) {
-                messageCointainer.style.display = "flex";
-                messageCointainer.style.flexDirection = "column";
-                messageCointainer.style.justifyContent = "flex-start";
-                messageCointainer.style.alignItems = "flex-end";
-                messageHTML = '<div style="margin-right: 10px">' + '<p style="margin-bottom: 0; ">' + '<span style="color: orange">' + message.sender + "</span>" + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>' + '</div>';
-            } else {
-                messageHTML = '<p style="margin-bottom: 0">' + message.sender + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>';
-            }
-            messageCointainer.innerHTML = messageHTML;
-            chatScreen.prepend(messageCointainer)
-            // Increase count
-            count++;
-            messageInChatCount++;
-        } else if (usersInChat.includes(message.sender) && usersInChat.includes(message.receiver)) {
-            messageInChatCount++;
-        }
-    })
+
     scrollToBottom(chatScreen)
     nextTen(chatScreen, chatRoomMessages, count, limit)
 }
@@ -185,46 +164,60 @@ function scrollToBottom(element) {
     element.scrollTop = element.scrollHeight;
 }
 
+// https://www.youtube.com/watch?v=F2zF8fu7aG0&t=215s&ab_channel=TheCodeCreative
+const debounce = (fn, delay) => {
+    let timer
+    return function (...args) {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+            fn(...args)
+        }, delay)
+    }
+}
+
+
+let count = 0
+let limit = 10
+let loadChats = (chatScreen, chatRoomMessages, lastIndex) => {
+    if (chatScreen.scrollTop === 0) {
+        chatRoomMessages.forEach((message, index) => {
+            if (index >= count && index < limit) {
+                let messageCointainer = document.createElement("div");
+                let messageHTML;
+                if (message.sender == localStorage.getItem("username")) {
+                    messageCointainer.style.display = "flex";
+                    messageCointainer.style.flexDirection = "column";
+                    messageCointainer.style.justifyContent = "flex-start";
+                    messageCointainer.style.alignItems = "flex-end";
+                    messageHTML = '<div style="margin-right: 10px">' + '<p style="margin-bottom: 0; ">' + '<span style="color: orange">' + message.sender + "</span>" + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>' + '</div>';
+                } else {
+                    messageHTML = '<p style="margin-bottom: 0">' + message.sender + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>';
+                }
+                messageCointainer.innerHTML = messageHTML;
+                chatScreen.prepend(messageCointainer);
+                // Increase count
+                count++;
+
+                lastIndex = index;
+            }
+        })
+        limit += 10;
+
+        if (lastIndex !== chatRoomMessages.length - 1 && chatRoomMessages.length > lastIndex) {
+            chatScreen.scrollTop += chatScreen.offsetHeight;
+        }
+    }
+}
+
+loadChats = debounce(loadChats, 500)
 
 let lastIndex;
-function nextTen(chatScreen, chatRoomMessages, count, limit) {
-    // Counters for range of messages
-    // console.log("specific messages: ", messageInChatCount);
-    // When top of chatscreen is reached, load another 10 messages.
-    limit += 10;
-    console.log(count)
-
-    // Keep track of index to know when to stop scrolling down after loading new chats.
-    chatScreen.addEventListener("scroll", () => {
-        if (chatScreen.scrollTop === 0) {
-            console.log("topppp");
-            chatRoomMessages.forEach((message, index) => {
-                if (index >= count && index < limit) {
-                    console.log(count);
-                    let messageCointainer = document.createElement("div");
-                    let messageHTML;
-                    if (message.sender == localStorage.getItem("username")) {
-                        messageCointainer.style.display = "flex";
-                        messageCointainer.style.flexDirection = "column";
-                        messageCointainer.style.justifyContent = "flex-start";
-                        messageCointainer.style.alignItems = "flex-end";
-                        messageHTML = '<div style="margin-right: 10px">' + '<p style="margin-bottom: 0; ">' + '<span style="color: orange">' + message.sender + "</span>" + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>' + '</div>';
-                    } else {
-                        messageHTML = '<p style="margin-bottom: 0">' + message.sender + ': ' + message.message + '</p>' + '<p style="font-size: 10px; margin-bottom: 1rem">' + message.time + '</p>';
-                    }
-                    messageCointainer.innerHTML = messageHTML;
-                    chatScreen.prepend(messageCointainer);
-                    // Increase count
-                    count++;
-                    lastIndex = index;
-                }
-            })
-            limit += 10;
-            if (lastIndex !== chatRoomMessages.length - 1 && chatRoomMessages.length > lastIndex) {
-                chatScreen.scrollTop += 350;
-            }
-        }
-    })
+function nextTen(chatScreen, chatRoomMessages) {
+    if (chatScreen.style.overflow == "auto") {
+        loadChats(chatScreen, chatRoomMessages, lastIndex);
+    }
+    // Debounce loading ten chats at a time when scrolling. Debounce function i declared above.
+    chatScreen.addEventListener("scroll", () => loadChats(chatScreen, chatRoomMessages, lastIndex))
 }
 
 
@@ -250,6 +243,8 @@ function chatWindowStyles(id) {
         messengerPage.style.pointerEvents = "auto";
         chatWindow.innerHTML = "";
         chatWindow.style.display = "none";
+        count = 0
+        limit = 10
         leaveChat();
         return;
     })
