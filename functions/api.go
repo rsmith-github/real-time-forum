@@ -19,21 +19,30 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Content: `
 		<div class="container">
 		<div class="row vertical-offset-100">
-			<div class="col-md-4 col-md-offset-4">
+			<div class="form-style col-md-4 col-md-offset-4">
 				<div class="panel panel-default">
+					<div class="panel-welcome">
+						<h2 class="panel-welcome-title">Welcome to RTF</h2>
+					</div>
 					  <div class="panel-heading">
-						<h3 class="panel-title">Please sign in</h3>
+						<h3 class="panel-title">Log in</h3>
 					 </div>
 					  <div class="panel-body">
 						<form accept-charset="UTF-8" action="/login" method="post" class="formall">
 						<fieldset>
 							  <div class="form-group" id="user">
+							  <i class="login-icon fas fa-user"></i>
 								<input autofocus class="form-control" id="username-input" placeholder="Username / Nickname" name="username" type="text">
 							</div>
 							<div class="form-group" id="pass">
+							<i class="login-icon fas fa-lock"></i>
 								<input class="form-control" id="password-input" placeholder="Password" name="password" type="password" value="">
 							</div>
 							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" value="Login">
+							<div class="signup-div">
+								<div class="signup-cta">Don't have an account?</div>
+								<div class="signup-link"><a class="nav-link" data-name="register" id="signup-link" href="localhost:8080/register">Register here.</a></div>
+							</div
 						</fieldset>
 						  </form>
 					</div>
@@ -47,25 +56,46 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Endpoint: "register",
 		Content: `
 		<div class="regform" id="form2">
-		<h2 class="logintxt">Register</h2>
-		<form action="/register" method="post" class="regall">
-			<div class="formgroup" id="user">
-				<input class="user" autofocus type="text" name="username" placeholder="Username">
+		<div class="row vertical-offset-100">
+			<div class="form-style col-md-4 col-md-offset-4">
+				<div class="panel panel-default">
+					<div class="panel-welcome">
+						<h2 class="logintxt">Register</h2>
+					</div>
+					<div class="panel-heading">
+						<h3 class="panel-title">Create your account</h3>
+					</div>
+					<div class="panel-body">
+						<form action="/register" method="post" class="regall">
+						<fieldset>
+							<div class="formgroup" id="user">
+								<i class="login-icon fas fa-user"></i>
+								<input class="user form-control" autofocus type="text" name="username" placeholder="Username">
+							</div>
+							<div class="formgroup" id="email">
+							<i class="login-icon fas fa-at"></i>
+							<input class="email form-control" type="email" name="email" placeholder="Email Address">
+							</div>
+							<div class="formgroup secndpass" id="pass">
+								<i class="login-icon fas fa-lock"></i>
+								<input class="pass form-control" type="password" name="password" placeholder="Password">
+							</div>
+							<div class="formgroup" id="passconfirm">
+								<i class="login-icon fas fa-check-double"></i>
+								<input class="passconfirm form-control" type="password" name="confirmation" placeholder="Confirm Password">
+							</div>
+							<div class="formgroup" id="register">
+								<input onclick="Register(event)" id="registerBtn" class="register btn" type="button" value="Register">
+							</div>
+							<div class="signup-div">
+								<div class="signup-cta">Already have an account? <a class="nav-link" href="/login" id="signup-link">Log In here.</a></div>
+							</div>
+						</fieldset>
+						</form>
+					</div>
+				</div>
 			</div>
-			<div class="formgroup" id="email">
-				<input class="email" type="email" name="email" placeholder="Email Address">
-			</div>
-			<div class="formgroup" id="pass">
-				<input class="pass" type="password" name="password" placeholder="Password">
-			</div>
-			<div class="formgroup" id="passconfirm">
-				<input class="passconfirm" type="password" name="confirmation" placeholder="Confirm Password">
-			</div>
-			<div class="formgroup" id="register">
-				<input id="registerBtn" class="register" type="button" value="Register">
-			</div>
-			<div class="lowbanner">Already have an account? <a href="/login" style="color: rgb(6, 86, 235); text-decoration:underline;">Log In here.</a></div>
-		</form>
+		</div>
 		</div>`,
 	}
 	homePage := DOMcontent{
