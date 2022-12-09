@@ -28,6 +28,17 @@ async function Login(e) {
 
     if (!!valid) {
         showPage("homepage")
+
+        // let currentUser = localStorage.getItem("username");
+        // if (!!sessions) {
+        //     sessions.forEach(session => {
+        //         if (currentUser !== session.username) {
+        //             connectToChatserver([currentUser, session.username]);
+        //         }
+        //     })
+        // }
+
+
     } else {
         alert("Details invalid!!")
     }

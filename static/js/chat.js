@@ -61,7 +61,8 @@ async function showUsers() {
                 return;
             }
 
-            // connectToChatserver([currentUser, session.username]);
+            // Connect to chat for notifications.
+            connectToChatserver([currentUser, session.username], true);
 
             div.className = "chatRoom"
             // Id is user displayed and current user.
@@ -85,6 +86,8 @@ async function showUsers() {
 
                 if (chatWindow.querySelector("button") == null) {
                     showChatWindow(div.id);
+                    // Set chatroom to read status color.
+                    div.style.backgroundColor = "rgba(255, 255, 255, 0.8)"
 
                 } else {
 
@@ -156,8 +159,8 @@ async function filterMessages(usersInChat, id) {
 
     chatRoomMessages.reverse()
 
-    scrollToBottom(chatScreen)
     nextTen(chatScreen, chatRoomMessages, count, limit)
+    scrollToBottom(chatScreen)
 }
 
 function scrollToBottom(element) {
@@ -209,7 +212,7 @@ let loadChats = (chatScreen, chatRoomMessages, lastIndex) => {
     }
 }
 
-loadChats = debounce(loadChats, 500)
+loadChats = debounce(loadChats, 350)
 
 let lastIndex;
 function nextTen(chatScreen, chatRoomMessages) {
@@ -219,8 +222,6 @@ function nextTen(chatScreen, chatRoomMessages) {
     // Debounce loading ten chats at a time when scrolling. Debounce function i declared above.
     chatScreen.addEventListener("scroll", () => loadChats(chatScreen, chatRoomMessages, lastIndex))
 }
-
-
 
 function chatWindowStyles(id) {
     // Styling
@@ -297,7 +298,7 @@ function leaveChat() {
     wSocket.close();
 }
 
-async function connectToChatserver(usersInChat) {
+async function connectToChatserver(usersInChat, notification = false) {
     var ServiceLocation = "ws://" + document.location.host + "/chat/";
 
     console.log("connected: " + usersInChat[0] + " and " + usersInChat[1]);
@@ -330,16 +331,22 @@ async function connectToChatserver(usersInChat) {
     }
 
 
-    wSocket.addEventListener("message", (ev) => {
-        OnMessageReceived(ev, usersInChat);
-    })
 
-    chatForm.addEventListener("submit", (ev) => {
-        ev.preventDefault()
-        SendMessage(ev.target)
-    })
+    if (notification === false) {
+        wSocket.addEventListener("message", (ev) => {
+            OnMessageReceived(ev, usersInChat, notification);
+        })
+        chatForm.addEventListener("submit", (ev) => {
+            ev.preventDefault()
+            SendMessage(ev.target)
+        })
+    } else {
+        wSocket.addEventListener("message", (ev) => {
+            OnMessageReceived(ev, usersInChat, notification);
+        })
+
+    }
 }
-
 
 
 
@@ -359,9 +366,20 @@ function SendMessage(target) {
     input.value = ""
 }
 
-function OnMessageReceived(evt, usersInChat) {
+function OnMessageReceived(evt, usersInChat, notification) {
 
     var msg = JSON.parse(evt.data); // native API
+
+    if (notification === true) {
+        // Message received notification
+        let chatrooms = document.querySelectorAll(".chatRoom");
+        chatrooms.forEach(chatroom => {
+            if (chatroom.id === msg.receiver + "<->" + msg.sender) {
+                chatroom.style.backgroundColor = "red";
+            }
+        });
+        return
+    }
 
     let messageCointainer = document.createElement("div");
     let messageHTML;
@@ -382,14 +400,6 @@ function OnMessageReceived(evt, usersInChat) {
     }
     messageCointainer.innerHTML = messageHTML;
 
-    // Message received notification
-    let chatrooms = document.querySelectorAll(".chatRoom");
-    chatrooms.forEach(chatroom => {
-        if (chatroom.id === msg.receiver + "<->" + msg.sender) {
-            chatroom.style.backgroundColor = "red";
-        }
-    });
-
     // Append message to correct chat.
     let chatScreens = document.querySelectorAll(".chatScreen")
 
@@ -401,6 +411,7 @@ function OnMessageReceived(evt, usersInChat) {
     });
 
 }
+
 
 function formatTime(hoursMinutesSeconds) {
 

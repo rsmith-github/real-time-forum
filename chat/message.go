@@ -10,6 +10,7 @@ type Message struct {
 	Sender   string `json:"sender"`
 	Receiver string `json:"receiver"`
 	Created  string `json:"created"`
+	Status   string `json:"status"`
 }
 
 // FromJSON created a new Message struct from given JSON

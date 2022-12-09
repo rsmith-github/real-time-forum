@@ -12,7 +12,7 @@ function NavbarContent(cb) {
     if (endpoint === "login" || endpoint === "register") {
         navbar.innerHTML = `
             <div class="container-fluid">
-            <a class="navbar-brand" href="/">Real Time Forum</a>
+            <a class="navbar-brand nav-link" href="/" data-name="login">Real Time Forum</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasDarkNavbar" aria-controls="offcanvasDarkNavbar">
             <span class="navbar-toggler-icon"></span>
             </button>
