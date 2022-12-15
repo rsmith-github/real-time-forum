@@ -1,8 +1,25 @@
-#homepage, #messenger {
+#homepage {
     padding: 5% 0 0 0.6%;
     display: block;
     min-width: 100%;
     margin-top: 70px;
+    display: flex !important;
+    justify-content: flex-end !important;
+}
+
+.mess-com {
+    color: #f4c98d;
+}
+
+#chatrm {
+    position: fixed;
+    bottom: 18em;
+    left: 4em;
+    border: solid 2px white;
+}
+
+.chatrm-txt {
+    color: #f4c98d;
 }
 
 
@@ -41,8 +58,7 @@ a {
 }
 
 .postDiv {
-    margin: 20px 30px 20px 30px;
-    
+    margin: 28px 0px 28px 0px;
 }
 
 .catandpost {
@@ -56,6 +72,11 @@ a {
     display: flex;
     justify-content: space-between;
     margin-left: 59px;
+}
+
+.newpost {
+    left: 4em;
+    position: fixed;
 }
 
 .newposttxt {
@@ -277,9 +298,15 @@ a {
 }
 
 /* Posts */
+
+#posts-container {
+    margin-right: 8% !important;
+    width: 32em !important;
+}
+
 @keyframes move {
     from {
-        transform: translateX(-100%)
+        transform: translateX(120%)
     }
     to {
         transform: translateX(0px)

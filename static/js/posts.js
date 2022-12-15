@@ -10,7 +10,7 @@ function newPost(event) {
         let allPostsContainer = document.getElementById("posts-container");
         allPostsContainer.style.animation = "movedown 1s ease";
     } else {
-        alert("DONT LEAVE THE FUCKING FORM EMPTY YOU TWAT")
+        alert("This form cannot be empty. Type your post and try again!")
     }
 
 }
@@ -37,6 +37,7 @@ const postSlideIn = (e) => {
         card.classList.add("card");
         card.classList.add("gedf-card");
         card.style.marginTop = "20px";
+        card.style.width = "32em"
         card.id = `post-${id}`
 
 
@@ -62,23 +63,20 @@ const postSlideIn = (e) => {
 
             </div>
             <div class="card-body">
-                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${"INSERT_TIME_POSTED"}</div>
-                <p class="inlinecategory">
-                  <span class="bold">Post type: </span>${category_1.value}
-                </p>
-                &nbsp;
-                <p class="inlinecategory">
-                  <span class="bold"> Category: </span>${category_2.value}
-                </p>
-
                 <p class="card-text">
                     ${removeTags(content.value)}
                 </p>
+                <p class="inlinecategory">
+                <span class="bold">Post type: </span>${category_1.value}
+                </p>
+                &nbsp;
+                <p class="inlinecategory">
+                <span class="bold"> Category: </span>${category_2.value}
+                </p>
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${"INSERT_TIME_POSTED"}</div>
             </div>
             <div class="card-footer">
-                <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
                 <a href="/" class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
-                <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                 <div class="commentbox">
                     <form action="/" method="POST" class="comment-form" id="comment-form-${id}">
                         <input type="text" class="commenttxtbox" name="comment" id="comment-${id}"/>
