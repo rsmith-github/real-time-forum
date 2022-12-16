@@ -54,7 +54,7 @@ function NavbarContent(cb) {
                 <a class="nav-link" aria-current="page" href="/" data-name="homepage">Home</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" id="messenger-link" href="/messenger" data-name="messenger">Messenger</a>
+                <a class="nav-link" id="profile-link" href="/profile" data-name="profile">My Profile</a>
               </li>
               <li class="nav-item">
                 <a class="logout-btn" href="/logout">Logout</a>
@@ -87,8 +87,9 @@ function handleNav() {
 
 
 function checkLink(event) {
+    event.stopPropagation();
     // update on each click
-    event.preventDefault() // prevent page reload.
+    event.preventDefault(); // prevent page reload.
     // Handle login by adding event listener to login button.
     if (!!this.dataset.name) {
         showPage(this.dataset.name) // show specific page. I.e. Homepage, login, register. The page name is stored as data attribute in HTML thus this.dataset.name.
@@ -105,7 +106,6 @@ function hidePages() {
 
 // Show specific page based on name.
 async function showPage(name) {
-    // await fetchData("sessions");
 
     // console.log("login form: ", document.querySelector("#login-form"));
     hidePages(); // Hide all pages.
@@ -117,13 +117,26 @@ async function showPage(name) {
     // Display div which will be populated with HTML from /api/content.
     page.style.display = "block";
 
+    let messengerWindow = document.getElementById("messenger")
+
     // Add to url history
-    if (name == "homepage") {
+    if (name === "homepage") {
+        await connectForNotifications()
         history.pushState({ name: name }, "", `${"/"}`);
+        messengerWindow.style.display = "flex";
         displayPosts(eventListeners);
     } else {
         //                                        ^
         history.pushState({ name: name }, "", `${name}`);
+    }
+
+    if (name === "login" || name === "register") {
+        messengerWindow.style.display = "none";
+    }
+
+    if (name === "profile") {
+        messengerWindow.style.display = "flex";
+        showMyPosts(eventListeners)
     }
 
     // chatApp();
@@ -136,6 +149,11 @@ async function showPage(name) {
         content.forEach(object => {
             if (object.Endpoint == name) {
                 page.innerHTML = object.Content
+                if (name === "homepage") {
+                    let notifs = document.createElement("div");
+                    notifs.id = "notifications"
+                    page.prepend(notifs)
+                }
             }
         })
     }
@@ -169,13 +187,20 @@ function eventListeners() {
     if (!!logoutBtn) {
         logoutBtn.addEventListener("click", (e) => {
             e.preventDefault();
+
+            if (!!wSocket) {
+                leaveChat();
+            }
+
+            count = 0;
+            limit = 10
             sendJsonToBackend("logout")
             document.querySelector("#homepage").innerHTML = ""
-            document.querySelector("#messenger").innerHTML = ""
+            document.querySelector("#profile").innerHTML = ""
             document.querySelector(".chatWindow").innerHTML = ""
 
             showPage("login");
         })
     }
-
+    return
 }

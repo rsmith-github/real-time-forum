@@ -164,7 +164,14 @@ func createApi(table string, writer http.ResponseWriter, request *http.Request) 
 	// if request.Method == "GET" {
 	// var listOfApiData []interface{}
 	// Built query string.
-	str := "SELECT * FROM " + table + ";"
+
+	var str string
+	if table == "users" {
+		str = "SELECT username, nickname, age FROM " + table + ";"
+	} else {
+		str = "SELECT * FROM " + table + ";"
+	}
+
 	jsn := ExecuteSQL(str)
 
 	// Make sure content type is json not plain text.
@@ -238,4 +245,9 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 
 func MessagesApi(w http.ResponseWriter, r *http.Request) {
 	createApi("messages", w, r)
+}
+
+func UsersApi(w http.ResponseWriter, r *http.Request) {
+	createApi("users", w, r)
+
 }

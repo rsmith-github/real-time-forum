@@ -10,7 +10,7 @@ function newPost(event) {
         let allPostsContainer = document.getElementById("posts-container");
         allPostsContainer.style.animation = "movedown 0.7s ease";
     } else {
-        alert("DONT LEAVE THE FUCKING FORM EMPTY YOU TWAT")
+        alert("DONT LEAVE THE FORM EMPTY YOU TWAT")
     }
 
 }

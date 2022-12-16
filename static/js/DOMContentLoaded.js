@@ -17,6 +17,7 @@ document.addEventListener(
     "DOMContentLoaded",
     async function () {
 
+        checkUnread();
 
         hidePages();
         // Show page based on url parameter.
@@ -27,6 +28,8 @@ document.addEventListener(
         // Get content from api.
         await fetchData("content");
         await fetchData("sessions");
+        await fetchData("allposts");
+
 
         // Show page based on endpoint.
         showPage(endpoint);
@@ -49,15 +52,28 @@ document.addEventListener(
         document.addEventListener("animationend", postSlideIn);
 
         // console.log("textarea: ", document.querySelector("textarea"));
-        await showUsers()
 
-        await chatApp()
-
-
+        if (endpoint !== "login" && endpoint !== "register") await showUsers();
     }
 
 );
 
+
 window.onpopstate = function (event) {
     showPage(event.state.name)
+}
+
+
+// Check all messages 
+function checkUnread() {
+    messages.reverse()
+
+    messages.forEach((message) => {
+        if (message.reciever === localStorage.getItem("username")) {
+            let chatToChangeColor = document.getElementById(`${message.receiver} + "<->" + ${message.sender}`);
+            console.log(chatToChangeColor);
+            chatToChangeColor.style.backgroundColor = "green"
+        }
+    });
+
 }

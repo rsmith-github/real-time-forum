@@ -4,25 +4,27 @@
 
 
 // Display chat app on bottom right of the screen
-async function chatApp() {
+// async function chatApp() {
 
-    await fetchData("sessions");
-    let messengerLink = document.querySelector("#messenger-link");
+//     await fetchData("sessions");
+//     // let messengerLink = document.querySelector("#messenger-link");
 
+//     await fetchData("sessions");
+//     await fetchData("chats");
+//     showUsers();
 
+//     body.style.overflow = "visible"
 
-    body.style.overflow = "visible"
-
-    if (!!messengerLink) {
-        messengerLink.addEventListener("click", async (e) => {
-            e.stopImmediatePropagation()
-            await fetchData("sessions");
-            await fetchData("chats");
-            showPage("messenger");
-            showUsers();
-        });
-    }
-}
+//     // if (!!messengerLink) {
+//     //     messengerLink.addEventListener("click", async (e) => {
+//     //         e.stopImmediatePropagation()
+//     //         await fetchData("sessions");
+//     //         await fetchData("chats");
+//     //         showPage("profile");
+//     //         showUsers();
+//     //     });
+//     // }
+// }
 
 
 let chatWindow = document.querySelector(".chatWindow");
@@ -33,75 +35,155 @@ let input = document.createElement("input");
 // let chatDivs;
 
 // Show online users for chat app.
-async function showUsers() {
+// sortTop variable is just to make sure the chat is red after receiving a new message.
+async function showUsers(sortTop) {
+
     await fetchData("chats")
     await fetchData("sessions")
+    await fetchData("messages")
 
-    // Unblur page.
+    // Unblur page.    
     messengerPage.style.opacity = "100%";
     messengerPage.style.pointerEvents = "auto";
 
+    // Style messenger page
+    messengerPage.innerHTML = "";
 
-    let messenger = document.querySelector("#messenger");
-    messenger.innerHTML = "";
+    // Create button to refresh chats
+    let refreshChats = document.createElement("button")
+    refreshChats.style.display = "flex";
+    refreshChats.style.justifyContent = "center";
+    refreshChats.style.backgroundColor = "transparent";
+    refreshChats.style.backgroundRepeat = "no-repeat";
+    // refreshChats.style.border = "none";
+    refreshChats.style.borderRadius = "50px";
+    refreshChats.style.marginBottom = "10px";
+    refreshChats.innerHTML = "<img src='static/refresh.png' style='width: 40px'></img>"
+    refreshChats.style.width = "20%"
 
-    if (!!sessions) {
-        // Sort alphabetically.
-        sessions.sort((a, b) => {
-            return a.username.localeCompare(b.username);
-        })
+
+    // Append button to chat page.
+    messengerPage.append(refreshChats)
+
+    await fetchData("messages");
+
+    // if (!!sessions) {
 
 
-        sessions.forEach(session => {
-            // Long bar with username to click on.
-            let div = document.createElement("div")
-            let currentUser = localStorage.getItem("username")
-            // Skip current user. Should not chat with yourself.
-            if (session.username === currentUser) {
-                return;
+    // Latest chats info
+    let latestInfo = []
+
+    // if (!!sortTop) {
+    //     console.log(sortTop);
+    //     // https://stackoverflow.com/questions/23921683/javascript-move-an-item-of-an-array-to-the-front
+    //     sessions.sort(function (x, y) { return sortTop.includes(x.username) ? -1 : sortTop.includes(y.username) ? 1 : 0; });
+    // } else {
+    let msgsLen = messages.length - 1
+    let currentUser = localStorage.getItem("username")
+    // Get the latest message for each chat between current user and other existing users in order to sort sessions list.
+    for (let i = msgsLen; i > 0; i--) {
+        let latestMessageCase_1 = messages[i].receiver === currentUser && !latestInfo.some(ob => ob.receiver === currentUser && ob.sender === messages[i].sender) && !latestInfo.some(ob => ob.receiver === messages[i].sender && ob.sender === currentUser)
+        let latestMessageCase_2 = messages[i].sender === currentUser && !latestInfo.some(ob => ob.receiver === currentUser && ob.sender === messages[i].receiver) && !latestInfo.some(ob => ob.receiver === messages[i].receiver && ob.sender === currentUser)
+        if (latestMessageCase_1 || latestMessageCase_2) {
+            let latestDataObj = {
+                receiver: messages[i].receiver,
+                sender: messages[i].sender,
+                time: messages[i].time,
             }
+            latestInfo.push(latestDataObj)
+        }
+    }
 
-            // Connect to chat for notifications.
-            connectToChatserver([currentUser, session.username], true);
+    console.log(latestInfo);
 
-            div.className = "chatRoom"
-            // Id is user displayed and current user.
-            div.id = `${currentUser}<->${session.username}`
+    // Next Steps:
+    // Get list of users who don't have any messages
 
-            div.innerHTML = `
-            <h2 style="color:black">${session.username}</h2>
-            <em style="color:black">Click to chat</em>
+    // Sort the new list alphabeitcally.
+
+    // Concatenate to latestinfo list.
+    
+
+    // Sort alphabetically.
+    // sessions.sort((a, b) => {
+    //     return a.username.localeCompare(b.username);
+    // })
+    // }
+
+
+
+    let currUser = localStorage.getItem("username");
+    latestInfo.forEach(chat => {
+
+        // Get the user to display
+        let userToDisplay;
+        if (chat.receiver === currUser) {
+            userToDisplay = chat.sender
+        } else if (chat.sender === currUser) {
+            userToDisplay = chat.receiver
+        }
+
+        // Long bar with username to click on.
+        let div = document.createElement("div")
+        // Skip current user. Should not chat with yourself.
+        if (userToDisplay === currUser) {
+            return;
+        }
+
+        // Connect to chat for notifications.
+        // connectToChatserver([currentUser, session.username], true);
+
+        div.className = "chatRoom"
+        // Id is user displayed and current user.
+        div.id = `${currUser}<->${userToDisplay}`
+
+        div.innerHTML = `
+            <h2 style="color:white">${userToDisplay}</h2>
+            <em style="color:white">Click to chat</em>
             `;
 
-            div.style.backgroundColor = "rgba(255,255,255,0.8)";
-            div.style.borderRadius = "10px";
-            div.style.padding = "1.5%"
+        div.style.backgroundColor = "rgba(0,0,0,0.8)";
+        div.style.borderRadius = "10px";
+        div.style.padding = "1.5%"
+        div.style.width = "100%"
 
-            div.style.marginBottom = "5px";
-            messengerPage.append(div);
+        if (div.id === sortTop) {
+            div.style.backgroundColor = "red";
+        }
 
-            // Show chat box on click
-            div.addEventListener("click", () => {
-
-
-                if (chatWindow.querySelector("button") == null) {
-                    showChatWindow(div.id);
-                    // Set chatroom to read status color.
-                    div.style.backgroundColor = "rgba(255, 255, 255, 0.8)"
-
-                } else {
-
-                    chatWindow.style.display = "block";
+        div.style.marginBottom = "5px";
+        messengerPage.append(div);
 
 
-                    // Blur background page.
-                    messengerPage.style.opacity = "0.5"
-                    messengerPage.style.pointerEvents = "none";
-                }
-            });
 
+        // Show chat box on click
+        div.addEventListener("click", () => {
+
+
+            if (chatWindow.querySelector("button") == null) {
+                showChatWindow(div.id);
+                // Set chatroom to read status color.
+                div.style.backgroundColor = "rgba(0, 0, 0, 0.8)"
+
+            } else {
+
+                chatWindow.style.display = "block";
+
+                // Blur background page.
+                // messengerPage.style.opacity = "0.5"
+                messengerPage.style.pointerEvents = "none";
+            }
         });
-    }
+
+    });
+    // }
+
+    refreshChats.addEventListener("click", () => {
+        showUsers();
+    })
+
+
+
 }
 
 // Show chat window pop up with id of user-user
@@ -121,7 +203,7 @@ async function showChatWindow(id) {
     chatWindowStyles(id);
 
     // Filter and display messages
-    filterMessages(usersInChat, id)
+    await filterMessages(usersInChat, id)
 
     // Set correct id
     chatWindow.id = `window: ${id}`
@@ -149,9 +231,6 @@ async function filterMessages(usersInChat, id) {
 
 
     let chatScreen = document.getElementById("chatScreen:" + id)
-
-    let messagesLength = messages.length;
-    let messageInChatCount = 0;
 
     let chatRoomMessages = messages.filter((message) => {
         return usersInChat.includes(message.sender) && usersInChat.includes(message.receiver)
@@ -230,7 +309,8 @@ function chatWindowStyles(id) {
     chatWindow.style.display = "block";
     chatWindow.style.padding = "25px 0px 0px 50px"
     chatWindow.style.width = "50%";
-    chatWindow.style.position = "absolute";
+    chatWindow.style.position = "fixed";
+    chatWindow.style.zIndex = 1;
     chatWindow.style.filter = "drop-shadow(0px 0px 10px #AAAAAA)";
 
     // Create close chatbox button.
@@ -240,7 +320,7 @@ function chatWindowStyles(id) {
     close.style.left = "95%"
     close.style.top = "2%"
     close.addEventListener("click", () => {
-        messengerPage.style.opacity = "1"
+        messengerPage.style.filter = ""
         messengerPage.style.pointerEvents = "auto";
         chatWindow.innerHTML = "";
         chatWindow.style.display = "none";
@@ -253,7 +333,7 @@ function chatWindowStyles(id) {
     chatWindow.append(close)
 
     // Blur background page.
-    messengerPage.style.opacity = "0.5"
+    messengerPage.style.filter = "blur(2px)"
     messengerPage.style.pointerEvents = "none";
 
 
@@ -296,6 +376,7 @@ let wSocket;
 
 function leaveChat() {
     wSocket.close();
+    connectForNotifications()
 }
 
 async function connectToChatserver(usersInChat, notification = false) {
@@ -303,7 +384,7 @@ async function connectToChatserver(usersInChat, notification = false) {
 
     console.log("connected: " + usersInChat[0] + " and " + usersInChat[1]);
 
-    // await fetchData("chats");
+    await fetchData("chats");
 
     // console.log("All chats: ", chats);
 
@@ -337,6 +418,7 @@ async function connectToChatserver(usersInChat, notification = false) {
             OnMessageReceived(ev, usersInChat, notification);
         })
         chatForm.addEventListener("submit", (ev) => {
+            ev.stopPropagation();
             ev.preventDefault()
             SendMessage(ev.target)
         })
@@ -358,7 +440,7 @@ function SendMessage(target) {
     let split = idToReverse.split("<->")
 
     var msg = '{"message":"' + input.value + '", "sender":"'
-        + localStorage.getItem("username") + `", "receiver":"${split[1]}"}`;
+        + localStorage.getItem("username") + `", "receiver":"${split[1]}", "status":"unread"}`;
 
     if (input.value !== "") {
         wSocket.send(msg);
@@ -370,19 +452,44 @@ function OnMessageReceived(evt, usersInChat, notification) {
 
     var msg = JSON.parse(evt.data); // native API
 
+
     if (notification === true) {
         // Message received notification
         let chatrooms = document.querySelectorAll(".chatRoom");
-        chatrooms.forEach(chatroom => {
+        console.log(chatrooms);
+        chatrooms.forEach((chatroom) => {
             if (chatroom.id === msg.receiver + "<->" + msg.sender) {
                 chatroom.style.backgroundColor = "red";
+
+
+                showUsers(chatroom.id);
+
+
+                /*
+                if (!!notification) {
+                    let notifBar = document.createElement("div")
+                    notifBar.classList.add("alert")
+                    notifBar.classList.add("alert-info")
+                    notifBar.role = "alert"
+                    notifBar.style.display = "flex"
+                    notifBar.style.justifyContent = "space-between"
+                    notifBar.innerHTML = `
+                            You received a message from ${msg.sender}!
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    `
+                    document.getElementById("homepage").prepend(notifBar)
+                }
+                */
             }
         });
+
         return
     }
 
     let messageCointainer = document.createElement("div");
     let messageHTML;
+
+
     // Create new date and format it.
     let today = new Date();
     let formatted = formatTime([today.getHours(), today.getMinutes(), today.getSeconds()])
@@ -420,4 +527,12 @@ function formatTime(hoursMinutesSeconds) {
         return time;
     })
     return formatted
+}
+
+async function connectForNotifications() {
+    await fetchData("sessions")
+    let username = localStorage.getItem("username");
+    sessions.forEach(session => {
+        if (username !== session.username) connectToChatserver([username, session.username], true);
+    })
 }

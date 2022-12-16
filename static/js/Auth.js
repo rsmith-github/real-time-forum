@@ -21,19 +21,21 @@ async function Login(e) {
     // if sessions exist, loop through and validate user's cookie.
     if (!!sessions) sessions.forEach(session => {
         if (session.sessionUUID === currentCookie) {
+            // Connect to chat for notifications.
             valid = true;
             return
         }
     })
 
     if (!!valid) {
+
         showPage("homepage")
 
         // let currentUser = localStorage.getItem("username");
         // if (!!sessions) {
-        //     sessions.forEach(session => {
+        //     users.forEach(session => {
         //         if (currentUser !== session.username) {
-        //             connectToChatserver([currentUser, session.username]);
+        //             connectToChatserver([currentUser, session.username], true);
         //         }
         //     })
         // }

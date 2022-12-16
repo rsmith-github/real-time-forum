@@ -1,10 +1,29 @@
-#homepage, #messenger {
+/* messenger */
+
+#messenger {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    bottom: 10px;
+    right: 20px;
+    height: 300px;
+    width: 400px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    border-radius: 15px;
+    background-color:grey;
+    padding: 20px;
+    box-shadow: -10px 10px 5px rgba(0,0,0,0.2);
+}
+
+/* Basics (body etc) */
+#homepage, #profile {
     padding: 80px 0 0 0.6%;
     display: block;
     min-width: 100%;
 
 }
-
 
 html, body {
     min-height: 100%;
@@ -52,7 +71,12 @@ a {
 
 .page {
     padding-right: 10px !important;
+    padding: 80px 0 0 0.6%;
+    display: block;
+    min-width: 100%;
 }
+
+
 
 
 
@@ -143,6 +167,16 @@ textarea {
 }
 
 
+/* profile */
+
+
+/* Notifications */
+
+#notifications {
+    height: 20px;
+    
+}
+
 
 /* Responsive */ 
 
@@ -157,7 +191,7 @@ textarea {
 }
 @media (max-width: 258px) {
 
-    #homepage, #messenger {
+    #homepage {
         padding: 120px 0 0 0.6%;
         display: block;
         min-width: 100%;

@@ -1,20 +1,26 @@
-// Posts and homepage HTML.
 
-let comment_sections = [];
-// Get posts from API and put them in the homepage.
-let homepage = document.getElementById("homepage");
-async function displayPosts(callBack) {
-    await fetchData("allposts");
-    await fetchData("comments");
-    posts = posts.reverse();
 
+function showMyPosts() {
+    let username = localStorage.getItem('username')
+
+
+    if (posts.length === 0) {
+        console.log("posts empty");
+        return
+    }
     posts.forEach(post => {
+        if (post.username !== username) return;
+
         let postDiv = document.createElement('div');
         postDiv.className = "postDiv";
-        let allPostsContainer = document.getElementById("posts-container");
-        allPostsContainer.appendChild(postDiv);
+        let allPostsContainer = document.getElementById("profile-allposts");
+
+        if (!!allPostsContainer) {
+            allPostsContainer.appendChild(postDiv);
+        }
 
         let postBody = `
+
         <div class="card gedf-card" id="post-${post.id}">
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
@@ -63,31 +69,4 @@ async function displayPosts(callBack) {
         postDiv.innerHTML = postBody;
     });
 
-    // Login redirect button only shows up on homepage so handle the click event.
-    let redirectBtn = document.getElementById("loginredirect")
-    if (redirectBtn != null) {
-        redirectBtn.addEventListener("click", checkLink)
-    }
-
-    // Scroll to position after content has been loaded.
-    window.scrollTo(0, localStorage.getItem("scrollPosition"));
-
-    // showUsers();
-
-    callBack();
-
-}
-
-
-// Remove html tags.
-function removeTags(str) {
-    if ((str === null) || (str === ''))
-        return false;
-    else
-        str = str.toString();
-
-    // Regular expression to identify HTML tags in 
-    // the input string. Replacing the identified 
-    // HTML tag with a null string.
-    return str.replace(/(<([^>]+)>)/ig, '');
 }

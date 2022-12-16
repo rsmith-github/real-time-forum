@@ -11,17 +11,27 @@
 </head>
 <body>
     <nav class="navbar navbar-dark bg-dark fixed-top"></nav>
-    
     <div id="login" class="page"></div>
     <div id="register" class="page"></div>
+    
     <main>
         <div id="homepage" class="page"></div>
-        <div id="messenger" class="page"></div>
+        <div id="profile" class="page">
+            <div id="profile-picture">
+                <img class="rounded-circle" width="150" src="https://picsum.photos/150/150" alt="Profile Picture">
+            </div>
+            <h2>My posts</h2>
+            <div id="profile-allposts"></div>
+        </div>
         <div class="chatWindow card page"></div>
     </main>
-
+    <div id="messenger"></div>
+    <div id="messenger-closed"></div>
+    <a style="display: none;" href="https://www.flaticon.com/free-icons/refresh" title="refresh icons">Refresh icons created by mavadee - Flaticon</a>
+    
     
     <canvas class="background"></canvas>
+    <script type="text/javascript" src="static/js/profile.js"></script>
     <script type="text/javascript" src="static/js/chat.js"></script>
     <script type="text/javascript" src="static/js/Auth.js"></script>
     <script type="text/javascript" src="static/js/APIhelper.js"></script>

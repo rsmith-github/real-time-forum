@@ -7,6 +7,7 @@ let comments = [];
 let sessions = [];
 let chats = [];
 let messages = [];
+let users = [];
 async function fetchData(name) {
     // Get api key
     let apiKey = await getApiKey()
@@ -16,6 +17,11 @@ async function fetchData(name) {
     };
 
     switch (name) {
+        case "users":
+            // Fetch postss
+            users = await fetch('/api/users', { headers });
+            users = await users.json();
+            break;
         case "allposts":
             // Fetch postss
             posts = await fetch('/api/allposts', { headers });

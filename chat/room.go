@@ -112,7 +112,7 @@ func (r *Room) Run() {
 			defer db.Close()
 
 			// Insert message to database.
-			var _, chatError = db.Exec(`INSERT INTO messages(sender, receiver, message, time) values(?,?,?, datetime('now','localtime'))`, data.Sender, data.Receiver, data.Message)
+			var _, chatError = db.Exec(`INSERT INTO messages(sender, receiver, message, time, status) values(?,?,?, datetime('now','localtime'), ?)`, data.Sender, data.Receiver, data.Message, data.Status)
 			if chatError != nil {
 				fmt.Println(chatError.Error())
 				functions.CheckErr(chatError, "-------Line 116 room.go")
@@ -121,15 +121,12 @@ func (r *Room) Run() {
 
 			// Loop over all the clients in room
 			for client := range r.clients {
-				// if strings.Contains(client.room.topic, data.Sender) && strings.Contains(client.room.topic, data.Receiver) {
 				select {
 				case client.send <- msg:
-					fmt.Println(client)
 				default:
 					delete(r.clients, client)
 					close(client.send)
 				}
-				// }
 			}
 		}
 	}
