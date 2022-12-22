@@ -29,7 +29,8 @@ async function Login(e) {
 
     if (!!valid) {
 
-        showPage("homepage")
+        showPage("homepage");
+        showUsers();
 
         // let currentUser = localStorage.getItem("username");
         // if (!!sessions) {
@@ -39,7 +40,6 @@ async function Login(e) {
         //         }
         //     })
         // }
-
 
     } else {
         alert("Details invalid!!")

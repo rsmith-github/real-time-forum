@@ -3,32 +3,9 @@
 // Chat app front end
 
 
-// Display chat app on bottom right of the screen
-// async function chatApp() {
-
-//     await fetchData("sessions");
-//     // let messengerLink = document.querySelector("#messenger-link");
-
-//     await fetchData("sessions");
-//     await fetchData("chats");
-//     showUsers();
-
-//     body.style.overflow = "visible"
-
-//     // if (!!messengerLink) {
-//     //     messengerLink.addEventListener("click", async (e) => {
-//     //         e.stopImmediatePropagation()
-//     //         await fetchData("sessions");
-//     //         await fetchData("chats");
-//     //         showPage("profile");
-//     //         showUsers();
-//     //     });
-//     // }
-// }
-
-
+// Some variables linked to front end.
 let chatWindow = document.querySelector(".chatWindow");
-let messengerPage = document.getElementById("messenger")
+let messengerPage = document.getElementById("messenger");
 let chatForm = document.createElement("form");
 let input = document.createElement("input");
 
@@ -65,17 +42,14 @@ async function showUsers(sortTop) {
     // Append button to chat page.
     messengerPage.append(refreshChats)
 
+    // Get all the data from messages.
     await fetchData("messages");
-
-    // if (!!sessions) {
-
 
     // Latest chats info
     let latestInfo = []
 
     // if (!!sortTop) {
-    //     console.log(sortTop);
-    //     // https://stackoverflow.com/questions/23921683/javascript-move-an-item-of-an-array-to-the-front
+    //     https://stackoverflow.com/questions/23921683/javascript-move-an-item-of-an-array-to-the-front
     //     sessions.sort(function (x, y) { return sortTop.includes(x.username) ? -1 : sortTop.includes(y.username) ? 1 : 0; });
     // } else {
     let msgsLen = messages.length - 1
@@ -97,30 +71,47 @@ async function showUsers(sortTop) {
     console.log(latestInfo);
 
     // Next Steps:
+    // https://stackoverflow.com/questions/8217419/how-to-determine-if-javascript-array-contains-an-object-with-an-attribute-that-e
+
+
+
+    await fetchData("users")
+
+    // Store users with no messages. Need new list to sort alphabetically.
+    let noMessages = [];
     // Get list of users who don't have any messages
+    users.forEach(user => {
+        if (latestInfo.some(message => message.sender === user.username) || latestInfo.some(message => message.receiver === user.username)) {
+            return
+        }
+        let emptyMessageObject = {
+            noMessagesUName: user.username,
+        }
+        noMessages.push(emptyMessageObject)
+    })
+
 
     // Sort the new list alphabeitcally.
+    noMessages.sort((a, b) => {
+        return a.noMessagesUName.localeCompare(b.noMessagesUName);
+    })
 
     // Concatenate to latestinfo list.
-    
-
-    // Sort alphabetically.
-    // sessions.sort((a, b) => {
-    //     return a.username.localeCompare(b.username);
-    // })
-    // }
+    latestInfo = latestInfo.concat(noMessages)
 
 
 
     let currUser = localStorage.getItem("username");
     latestInfo.forEach(chat => {
 
-        // Get the user to display
+        // Get the user to display. Never display current user.
         let userToDisplay;
         if (chat.receiver === currUser) {
-            userToDisplay = chat.sender
+            userToDisplay = chat.sender;
         } else if (chat.sender === currUser) {
-            userToDisplay = chat.receiver
+            userToDisplay = chat.receiver;
+        } else {
+            userToDisplay = chat.noMessagesUName;
         }
 
         // Long bar with username to click on.
@@ -134,15 +125,28 @@ async function showUsers(sortTop) {
         // connectToChatserver([currentUser, session.username], true);
 
         div.className = "chatRoom"
-        // Id is user displayed and current user.
+        // Id is current user and other user that is !== current user..
         div.id = `${currUser}<->${userToDisplay}`
 
-        div.innerHTML = `
-            <h2 style="color:white">${userToDisplay}</h2>
-            <em style="color:white">Click to chat</em>
-            `;
+        // Display user data in messenger "page."
+        if (sessions.find(session => session.username === userToDisplay)) {
+            div.style.backgroundColor = "rgba(0,0,0,0.8)";
+            div.innerHTML = `
+                <div class="userStatusContainer">
+                    <h2 style="color:white">${userToDisplay}</h2><span class="dot-online"></span><span id="user-online">online</span>
+                </div>
+                <em style="color:white; font-size: 12px">Click to chat</em>
+                `;
+        } else {
+            div.style.backgroundColor = "rgba(100,100,100,0.8)";
+            div.innerHTML = `
+                <div class="userStatusContainer">
+                    <h2 style="color:white">${userToDisplay}</h2><span class="dot-offline"></span><span id="user-offline" >offline</span>
+                </div>
+                <em style="color:white; font-size: 12px">Click to send message</em>
+                `;
+        }
 
-        div.style.backgroundColor = "rgba(0,0,0,0.8)";
         div.style.borderRadius = "10px";
         div.style.padding = "1.5%"
         div.style.width = "100%"
@@ -163,7 +167,7 @@ async function showUsers(sortTop) {
             if (chatWindow.querySelector("button") == null) {
                 showChatWindow(div.id);
                 // Set chatroom to read status color.
-                div.style.backgroundColor = "rgba(0, 0, 0, 0.8)"
+                if (div.style.backgroundColor === "red") div.style.backgroundColor = "rgba(0, 0, 0, 0.8)";
 
             } else {
 
@@ -176,14 +180,13 @@ async function showUsers(sortTop) {
         });
 
     });
-    // }
 
     refreshChats.addEventListener("click", () => {
         showUsers();
     })
 
 
-
+    // show offline users
 }
 
 // Show chat window pop up with id of user-user
@@ -209,6 +212,7 @@ async function showChatWindow(id) {
     chatWindow.id = `window: ${id}`
 
 
+    // Add a new chat to the sqlite database.
     await sendJsonToBackend("chats", usersInChat[0], usersInChat[1])
     await fetchData("chats")
 
@@ -483,8 +487,12 @@ function OnMessageReceived(evt, usersInChat, notification) {
             }
         });
 
+
+
         return
     }
+
+    // showUsers();
 
     let messageCointainer = document.createElement("div");
     let messageHTML;

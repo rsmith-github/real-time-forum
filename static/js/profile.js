@@ -1,5 +1,5 @@
 
-
+// Show posts on profile page.
 function showMyPosts() {
     let username = localStorage.getItem('username')
 
