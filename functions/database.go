@@ -22,24 +22,28 @@ func CreateSqlTables() {
 	// Initialize database.
 	db := OpenDB()
 	// Create user table if it doen't exist.
-	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
-	CheckErr(usrTblErr)
+	var _, usrTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `users` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64) NULL UNIQUE, `email` VARCHAR(64) NOT NULL UNIQUE, `nickname` VARCHAR(64) NOT NULL UNIQUE, `age` INTEGER, `password` VARCHAR(255) NOT NULL, `superuser` INTEGER NOT NULL)")
+	CheckErr(usrTblErr, "-------Error creating table")
 
 	// Create sessions table if doesn't exist.
 	var _, sessTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `sessions` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sessionUUID` VARCHAR(255) NOT NULL UNIQUE, `userID` VARCHAR(64) NOT NULL UNIQUE, `username` VARCHAR(255) NOT NULL UNIQUE)")
-	CheckErr(sessTblErr)
+	CheckErr(sessTblErr, "-------Error creating table")
 
 	// Create sessions table if doesn't exist.
 	var _, chatsTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `chats` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user1` VARCHAR(255) NOT NULL, `user2` VARCHAR(255) NOT NULL)")
-	CheckErr(chatsTblErr)
+	CheckErr(chatsTblErr, "-------Error creating table")
 
 	// Create posts table if doesn't exist.
 	var _, postTblErr = db.Exec("CREATE TABLE IF NOT EXISTS `posts` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `user_ID` VARCHAR(64) NOT NULL, `username` VARCHAR(64) NOT NULL, `content` TEXT NOT NULL, `time_posted` TEXT NOT NULL, `category` VARCHAR(64), `category_2` VARCHAR(64))")
-	CheckErr(postTblErr)
+	CheckErr(postTblErr, "-------Error creating table")
 
 	// Create comments table if not exists
 	var _, commentError = db.Exec("CREATE TABLE IF NOT EXISTS `comments` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `username` VARCHAR(64), `comment` TEXT NOT NULL, `post_ID` INTEGER NOT NULL )")
-	CheckErr(commentError)
+	CheckErr(commentError, "-------Error creating table")
+
+	// Create messages table if not exists
+	var _, msgErr = db.Exec("CREATE TABLE IF NOT EXISTS `messages` (`id` INTEGER PRIMARY KEY AUTOINCREMENT, `sender` VARCHAR(64), `receiver` VARCHAR(64), `message` TEXT, `time` TEXT NOT NULL, `status` VARCHAR(64))")
+	CheckErr(msgErr, "-------Error creating table")
 
 	db.Close()
 }
@@ -65,7 +69,7 @@ func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
 			"category_2":  category_2,
 		})
 		// currentUser = &username
-		CheckErr(err)
+		CheckErr(err, "-------Line 68 database.go")
 	}
 	rows.Close() //good habit to close
 
@@ -73,6 +77,7 @@ func GetAllPosts(rows *sql.Rows, err error) []map[string]interface{} {
 }
 
 // Function that queryies database and returns list of bytes to unmarshal.
+// https://stackoverflow.com/questions/43367505/function-in-go-to-execute-select-query-on-database-and-return-json-output
 func ExecuteSQL(queryStr string) []byte {
 	db := OpenDB()
 	defer db.Close()

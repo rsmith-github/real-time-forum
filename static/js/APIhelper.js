@@ -6,6 +6,8 @@ let posts = [];
 let comments = [];
 let sessions = [];
 let chats = [];
+let messages = [];
+let users = [];
 async function fetchData(name) {
     // Get api key
     let apiKey = await getApiKey()
@@ -15,8 +17,12 @@ async function fetchData(name) {
     };
 
     switch (name) {
+        case "users":
+            // Fetch postss
+            users = await fetch('/api/users', { headers });
+            users = await users.json();
+            break;
         case "allposts":
-
             // Fetch postss
             posts = await fetch('/api/allposts', { headers });
             posts = await posts.json();
@@ -30,12 +36,17 @@ async function fetchData(name) {
             // Fetch sessions.
             sessions = await fetch("/api/sessions", { headers })
             sessions = await sessions.json()
-            return sessions
+            // return sessions
             break;
         case "chats":
             // Fetch chats.
             chats = await fetch("/api/chats", { headers })
             chats = await chats.json()
+            break;
+        case "messages":
+            // Fetch chats.
+            messages = await fetch("/api/messages", { headers })
+            messages = await messages.json()
             break;
         default:
             // Fetch html content for each page in the single page app.
@@ -66,7 +77,7 @@ async function getApiKey() {
 
 
 // Send JSON data to backend "views" in order to save to database.
-async function sendJsonToBackend(endpoint, arg1, arg2, arg3) {
+async function sendJsonToBackend(endpoint, arg1, arg2, arg3, arg4) {
 
     // Get api key
     let apiKey = await getApiKey()
@@ -99,8 +110,25 @@ async function sendJsonToBackend(endpoint, arg1, arg2, arg3) {
                 }),
             });
             break;
-        case "users":
-            await fetch(`/api/${endpoint}`, {
+        case "register":
+            await fetch(`/${endpoint}`, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": getCookie("csrftoken"),
+                    'Token': apiKey,
+                },
+                body: JSON.stringify({
+                    username: arg1,
+                    email: arg2,
+                    nickname: arg3,
+                    age: arg4[0],
+                    password: arg4[1],
+                    confirmation: arg4[2],
+                }),
+            });
+            break;
+        case "login":
+            await fetch(`/${endpoint}`, {
                 method: "POST",
                 headers: {
                     "X-CSRFToken": getCookie("csrftoken"),

@@ -8,9 +8,9 @@ function newPost(event) {
     if (content.value !== "") {
         // Make animation.
         let allPostsContainer = document.getElementById("posts-container");
-        allPostsContainer.style.animation = "movedown 1s ease";
+        allPostsContainer.style.animation = "movedown 0.7s ease";
     } else {
-        alert("DONT LEAVE THE FUCKING FORM EMPTY YOU TWAT")
+        alert("DONT LEAVE THE FORM EMPTY YOU TWAT")
     }
 
 }
@@ -43,7 +43,10 @@ const postSlideIn = (e) => {
         // Save data to sqlite db.
         sendJsonToBackend("new", category_1.value.toString(), category_2.value.toString(), content.value.toString())
 
-
+        // Create new date object and format it.
+        let today = new Date();
+        let formatted = formatTime([today.getHours(), today.getMinutes(), today.getSeconds()])
+        let time = today.toISOString().split('T')[0] + " " + formatted[0] + ":" + formatted[1] + ":" + formatted[2];
         // All the HTML for a new post.
         let newPost = `
 
@@ -62,7 +65,7 @@ const postSlideIn = (e) => {
 
             </div>
             <div class="card-body">
-                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${"INSERT_TIME_POSTED"}</div>
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
                 <p class="inlinecategory">
                   <span class="bold">Post type: </span>${category_1.value}
                 </p>
@@ -77,7 +80,7 @@ const postSlideIn = (e) => {
             </div>
             <div class="card-footer">
                 <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
-                <a href="/" class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
+                <a href="/" onclick="OpenCommentSection(event)"class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
                 <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                 <div class="commentbox">
                     <form action="/" method="POST" class="comment-form" id="comment-form-${id}">
