@@ -7,9 +7,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-
-	uuid "github.com/satori/go.uuid"
-	"golang.org/x/crypto/bcrypt"
 )
 
 func LoadContent(w http.ResponseWriter, r *http.Request) {
@@ -19,30 +16,21 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Content: `
 		<div class="container">
 		<div class="row vertical-offset-100">
-			<div class="form-style col-md-4 col-md-offset-4">
+			<div class="col-md-4 col-md-offset-4">
 				<div class="panel panel-default">
-					<div class="panel-welcome">
-						<h2 class="panel-welcome-title">Welcome to RTF</h2>
-					</div>
 					  <div class="panel-heading">
-						<h3 class="panel-title">Log in</h3>
+						<h3 class="panel-title">Please sign in</h3>
 					 </div>
 					  <div class="panel-body">
-						<form accept-charset="UTF-8" action="/login" method="post" class="formall">
+						<form id="login-form" accept-charset="UTF-8" action="/login" method="post" class="formall">
 						<fieldset>
 							  <div class="form-group" id="user">
-							  <i class="login-icon fas fa-user"></i>
 								<input autofocus class="form-control" id="username-input" placeholder="Username / Nickname" name="username" type="text">
 							</div>
 							<div class="form-group" id="pass">
-							<i class="login-icon fas fa-lock"></i>
 								<input class="form-control" id="password-input" placeholder="Password" name="password" type="password" value="">
 							</div>
-							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" value="Login">
-							<div class="signup-div">
-								<div class="signup-cta">Don't have an account?</div>
-								<div class="signup-link"><a class="nav-link" data-name="register" id="signup-link" href="localhost:8080/register">Register here.</a></div>
-							</div
+							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" onclick="Login(event)" value="Login">
 						</fieldset>
 						  </form>
 					</div>
@@ -56,46 +44,31 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Endpoint: "register",
 		Content: `
 		<div class="regform" id="form2">
-		<div class="row vertical-offset-100">
-			<div class="form-style col-md-4 col-md-offset-4">
-				<div class="panel panel-default">
-					<div class="panel-welcome">
-						<h2 class="logintxt">Register</h2>
-					</div>
-					<div class="panel-heading">
-						<h3 class="panel-title">Create your account</h3>
-					</div>
-					<div class="panel-body">
-						<form action="/register" method="post" class="regall">
-						<fieldset>
-							<div class="formgroup" id="user">
-								<i class="login-icon fas fa-user"></i>
-								<input class="user form-control" autofocus type="text" name="username" placeholder="Username">
-							</div>
-							<div class="formgroup" id="email">
-							<i class="login-icon fas fa-at"></i>
-							<input class="email form-control" type="email" name="email" placeholder="Email Address">
-							</div>
-							<div class="formgroup secndpass" id="pass">
-								<i class="login-icon fas fa-lock"></i>
-								<input class="pass form-control" type="password" name="password" placeholder="Password">
-							</div>
-							<div class="formgroup" id="passconfirm">
-								<i class="login-icon fas fa-check-double"></i>
-								<input class="passconfirm form-control" type="password" name="confirmation" placeholder="Confirm Password">
-							</div>
-							<div class="formgroup" id="register">
-								<input onclick="Register(event)" id="registerBtn" class="register btn" type="button" value="Register">
-							</div>
-							<div class="signup-div">
-								<div class="signup-cta">Already have an account? <a class="nav-link" href="/login" id="signup-link">Log In here.</a></div>
-							</div>
-						</fieldset>
-						</form>
-					</div>
-				</div>
+		<h2 class="logintxt">Register</h2>
+		<form action="/register" method="post" class="regall">
+			<div class="formgroup" id="user">
+				<input id="reg-username" class="form-control" autofocus type="text" name="username" placeholder="Username">
 			</div>
-		</div>
+			<div class="formgroup" id="email">
+				<input id="reg-email" class="form-control" type="email" name="email" placeholder="Email Address">
+			</div>
+			<div class="formgroup" id="nick">
+				<input id="reg-nickname" class="form-control" type="text" name="nickname" placeholder="Nickname">
+			</div>
+			<div class="formgroup" id="age">
+				<input id="reg-age" class="form-control" type="text" name="age" placeholder="Age">
+			</div>
+			<div class="formgroup" id="pass">
+				<input id="reg-password" class="form-control" type="password" name="password" placeholder="Password">
+			</div>
+			<div class="formgroup" id="passconfirm">
+				<input id="reg-confirmation" class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
+			</div>
+			<div class="formgroup" id="register">
+				<input  onclick="Register(event)" id="registerBtn" class="btn btn-lg btn-success btn-block" type="button" value="Register">
+			</div>
+			<div class="lowbanner">Already have an account? <a href="/login" style="color: rgb(6, 86, 235); text-decoration:underline;">Log In here.</a></div>
+		</form>
 		</div>`,
 	}
 	homePage := DOMcontent{
@@ -175,7 +148,7 @@ func CommentsApi(writer http.ResponseWriter, request *http.Request) {
 			var _, commentError = db.Exec(`INSERT INTO comments(username, comment, post_ID) values(?,?,?)`, comment.Username, comment.Comment, conv)
 			if commentError != nil {
 				fmt.Println(commentError.Error())
-				CheckErr(commentError)
+				CheckErr(commentError, "-------Line 148 api.go")
 				// ReturnCode500(writer, request)
 				return
 			}
@@ -188,15 +161,24 @@ func CommentsApi(writer http.ResponseWriter, request *http.Request) {
 }
 
 func createApi(table string, writer http.ResponseWriter, request *http.Request) {
-	if request.Method == "GET" {
-		// var listOfApiData []interface{}
-		// Built query string.
-		str := "SELECT * FROM " + table + ";"
-		jsn := ExecuteSQL(str)
+	// if request.Method == "GET" {
+	// var listOfApiData []interface{}
+	// Built query string.
 
-		// Secure endpoint
-		writer.Write(jsn)
+	var str string
+	if table == "users" {
+		str = "SELECT username, nickname, age FROM " + table + ";"
+	} else {
+		str = "SELECT * FROM " + table + ";"
 	}
+
+	jsn := ExecuteSQL(str)
+
+	// Make sure content type is json not plain text.
+	writer.Header().Set("Content-Type", "application/json")
+	// Secure endpoint
+	writer.Write(jsn)
+	// }
 }
 
 func ChatsApi(w http.ResponseWriter, r *http.Request) {
@@ -235,17 +217,21 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 		// Check if room already exists.
 		flag := 0
 		for _, el := range listOfStrings {
-			if strings.Index(el, chat.User1) != -1 && strings.Index(el, chat.User2) != -1 {
+			users := strings.Split(el, "~")
+			if users[0] == chat.User1 && users[1] == chat.User2 || users[0] == chat.User2 && users[1] == chat.User1 {
 				flag = 1
 			}
 		}
+		fmt.Printf("\n")
+
+		// fmt.Println("flag: ", flag)
 
 		// If room does not exist, create it.
 		if flag == 0 {
 			var _, chatError = db.Exec(`INSERT INTO chats(user1, user2) values(?,?)`, chat.User1, chat.User2)
 			if chatError != nil {
 				fmt.Println(chatError.Error())
-				CheckErr(chatError)
+				CheckErr(chatError, "-------Line 218 api.go")
 				// ReturnCode500(writer, request)
 				return
 			}
@@ -257,70 +243,11 @@ func ChatsApi(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Handle logins.
+func MessagesApi(w http.ResponseWriter, r *http.Request) {
+	createApi("messages", w, r)
+}
+
 func UsersApi(w http.ResponseWriter, r *http.Request) {
+	createApi("users", w, r)
 
-	if r.Method == "POST" {
-
-		db := OpenDB()
-		defer db.Close()
-		var userToValidate User
-		decoder := json.NewDecoder(r.Body)
-		err := decoder.Decode(&userToValidate)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		// If user exists, log them in.
-		// Keep track of what was found from the above query (The JSON received once user clicks login button).
-		foundId := 0
-		foundUser := ""
-		foundHash := ""
-		// Get all the data from one user.
-		rows, err := db.Query("SELECT * FROM users WHERE username=?", userToValidate.Username)
-		CheckErr(err)
-
-		usr := QueryUser(rows, err)
-		foundId = usr.id
-		foundUser = usr.Username
-		foundHash = usr.Password
-		// foundUser = usr.Username
-
-		// Delete expired cookie based on valid username posted from form.
-		// Only relevant if user has been automatically logged out.
-		db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
-
-		// Compare password hash to password input by user.
-		pwCompareError := bcrypt.CompareHashAndPassword([]byte(foundHash), []byte(userToValidate.Password))
-
-		// If user details exist, give user a session.
-		if userToValidate.Username == foundUser && pwCompareError == nil {
-
-			// Check if session cookie exists. If not, create one, and give the user a session.
-			cookie, err := r.Cookie("session")
-			if err != nil {
-				id := uuid.NewV4()
-				cookie = &http.Cookie{
-					Name:     "session",
-					Value:    id.String(),
-					HttpOnly: true,
-					Path:     "/",
-					MaxAge:   60 * 60,
-				}
-				http.SetCookie(w, cookie)
-			}
-
-			db := OpenDB()
-			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID, username) values(?,?,?)", cookie.Value, foundId, foundUser)
-
-			createApi("users", w, r)
-
-			CheckErr(err2)
-			defer db.Close()
-		}
-
-	} /* else {
-
-		createApi("users", w, r)
-	}*/
 }
