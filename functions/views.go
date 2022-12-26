@@ -3,6 +3,7 @@ package functions
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strings"
 
@@ -11,7 +12,6 @@ import (
 )
 
 func IndexHandler(w http.ResponseWriter, r *http.Request) {
-	CreateSqlTables()
 
 	c, er := r.Cookie("session")
 	if er != nil {
@@ -54,11 +54,15 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get the user based off of the users input.
 		newUser := GetUser(r)
+		fmt.Println(newUser)
+
 		// Check if password form value matches confirmation form value.
 		if newUser.Password == "" || newUser.Username == "" || newUser.Email == "" {
 			message = "Please fill in all forms."
-		} else if newUser.Password == r.FormValue("confirmation") && message != "Please fill in all forms." {
+			fmt.Println("Please fill in all forms")
+		} else /* if newUser.Password == newUser.confirmation && message != "Please fill in all forms."*/ {
 
+			fmt.Println(newUser)
 			// Create new user, checkking for error.
 			err := CreateUser(newUser)
 
@@ -69,13 +73,14 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				message = "Registered successfully!"
 			}
-		} else {
-			message = "These passwords do not match."
 		}
+		// else {
+		// 	message = "These passwords do not match."
+		// }
 
 	}
 	// Slice containing all template names.
-	RenderTemplate(w, r, GetTemplates(), "index", nil)
+	RenderTemplate(w, r, GetTemplates(), "index", message)
 }
 
 // Login page
@@ -90,27 +95,38 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	// message := ""
 
 	if r.Method == "POST" {
-		userToValidate := GetUser(r)
-		// If user exists, save the session ID and their user ID in the sessions table.
+
 		db := OpenDB()
 		defer db.Close()
+		var userToValidate User
+		decoder := json.NewDecoder(r.Body)
+		err := decoder.Decode(&userToValidate)
+		if err != nil {
+			fmt.Println(err, "-----line 105 views.go")
+		}
 
-		// Keep track of what was found from the above query.
+		// If user exists, log them in.
+		// Keep track of what was found from the above query (The JSON received once user clicks login button).
 		foundId := 0
 		foundUser := ""
 		foundHash := ""
 		// Get all the data from one user.
 		rows, err := db.Query("SELECT * FROM users WHERE username=?", userToValidate.Username)
-		CheckErr(err)
+		CheckErr(err, "line 115")
 
 		usr := QueryUser(rows, err)
 		foundId = usr.id
 		foundUser = usr.Username
 		foundHash = usr.Password
-		foundUser = usr.Username
+		// foundUser = usr.Username
 
 		// Delete expired cookie based on valid username posted from form.
-		db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
+		// Only relevant if user has been automatically logged out.
+		// AT THE MOMENT THE USER THAT'S LOGGED IN IS GETTING LOGGED OUT IF SOMEONE TYPES THE WRONG PASSWORD.
+		_, delErr := db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
+		if delErr != nil {
+			log.Fatal(delErr.Error())
+		}
 
 		// Compare password hash to password input by user.
 		pwCompareError := bcrypt.CompareHashAndPassword([]byte(foundHash), []byte(userToValidate.Password))
@@ -123,30 +139,39 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			if err != nil {
 				id := uuid.NewV4()
 				cookie = &http.Cookie{
-					Name:     "session",
-					Value:    id.String(),
-					HttpOnly: true,
-					Path:     "/",
-					MaxAge:   60 * 20,
+					Name:  "session",
+					Value: id.String(),
+
+					// Ideally these cookies should be http only and secure but verifying the user
+					// on the client side will be difficult.
+					// HttpOnly: false,
+					// Secure:   false,
+					Path:   "/",
+					MaxAge: 60 * 1440,
 				}
 				http.SetCookie(w, cookie)
 			}
 
-			db := OpenDB()
+			// db := OpenDB()
 			_, err2 := db.Exec("INSERT INTO sessions(sessionUUID, userID, username) values(?,?,?)", cookie.Value, foundId, foundUser)
-			CheckErr(err2)
-			defer db.Close()
-			// r.SetBasicAuth(foundUser, foundHash)
-			// http.Redirect(w, r, "/", http.StatusSeeOther)
+
+			if err2 != nil {
+				db.Exec("DELETE FROM sessions WHERE userID=?", foundId)
+				CheckErr(err2, "views.go line 155")
+				log.Fatal(err2)
+			}
+			db.Close()
+
+			w.WriteHeader(http.StatusAccepted)
+			fmt.Println("Logged in")
+			fmt.Println()
 		} else {
-			// message = "User details invalid."
+			fmt.Println("wrong password!!")
+			fmt.Println()
+
 		}
 
 	}
-
-	// If user's cookie expires, delete the cookie from the database.
-	// Del_C_If_Exp(cookie)
-	// Render template if get request.
 
 	RenderTemplate(w, r, GetTemplates(), "index", nil)
 
@@ -204,7 +229,7 @@ func NewPost(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err)
 		}
 
-		fmt.Println(postFromJson)
+		// fmt.Println(postFromJson)
 
 		if postErr != nil {
 			fmt.Println("error: ", postErr.Error())

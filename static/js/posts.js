@@ -8,9 +8,9 @@ function newPost(event) {
     if (content.value !== "") {
         // Make animation.
         let allPostsContainer = document.getElementById("posts-container");
-        allPostsContainer.style.animation = "movedown 1s ease";
+        allPostsContainer.style.animation = "movedown 0.7s ease";
     } else {
-        alert("This form cannot be empty. Type your post and try again!")
+        alert("DONT LEAVE THE FORM EMPTY YOU TWAT")
     }
 
 }
@@ -37,14 +37,16 @@ const postSlideIn = (e) => {
         card.classList.add("card");
         card.classList.add("gedf-card");
         card.style.marginTop = "20px";
-        card.style.width = "32em"
         card.id = `post-${id}`
 
 
         // Save data to sqlite db.
         sendJsonToBackend("new", category_1.value.toString(), category_2.value.toString(), content.value.toString())
 
-
+        // Create new date object and format it.
+        let today = new Date();
+        let formatted = formatTime([today.getHours(), today.getMinutes(), today.getSeconds()])
+        let time = today.toISOString().split('T')[0] + " " + formatted[0] + ":" + formatted[1] + ":" + formatted[2];
         // All the HTML for a new post.
         let newPost = `
 
@@ -63,20 +65,23 @@ const postSlideIn = (e) => {
 
             </div>
             <div class="card-body">
-                <p class="card-text">
-                    ${removeTags(content.value)}
-                </p>
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
                 <p class="inlinecategory">
-                <span class="bold">Post type: </span>${category_1.value}
+                  <span class="bold">Post type: </span>${category_1.value}
                 </p>
                 &nbsp;
                 <p class="inlinecategory">
-                <span class="bold"> Category: </span>${category_2.value}
+                  <span class="bold"> Category: </span>${category_2.value}
                 </p>
-                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${"INSERT_TIME_POSTED"}</div>
+
+                <p class="card-text">
+                    ${removeTags(content.value)}
+                </p>
             </div>
             <div class="card-footer">
-                <a href="/" class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
+                <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
+                <a href="/" onclick="OpenCommentSection(event)"class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
+                <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                 <div class="commentbox">
                     <form action="/" method="POST" class="comment-form" id="comment-form-${id}">
                         <input type="text" class="commenttxtbox" name="comment" id="comment-${id}"/>

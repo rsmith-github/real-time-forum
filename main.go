@@ -76,6 +76,8 @@ func GetJwt(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
+	// Create tabless
+	functions.CreateSqlTables()
 
 	// Endpoint handlers
 	http.HandleFunc("/", functions.IndexHandler)
@@ -86,12 +88,13 @@ func main() {
 	http.HandleFunc("/api/users", functions.UsersApi)
 	http.HandleFunc("/api/chats", functions.ChatsApi)
 	http.Handle("/api/allposts", ValidateJWT(functions.PostsApi))
-	http.Handle("/api/sessions", ValidateJWT(functions.SessionsApi))
+	http.HandleFunc("/api/sessions", functions.SessionsApi)
 	http.Handle("/api/comments", ValidateJWT(functions.CommentsApi))
 	http.HandleFunc("/jwt", GetJwt)
 
 	// Api endpoints
 	http.HandleFunc("/api/content", functions.LoadContent)
+	http.HandleFunc("/api/messages", functions.MessagesApi)
 
 	// Serve files within static and images.
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))

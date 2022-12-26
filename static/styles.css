@@ -3,15 +3,66 @@
     display: block;
     min-width: 100%;
     margin-top: 70px;
-    display: flex !important;
-    justify-content: flex-end !important;
+    justify-content: flex-end;
 }
+
+/* messenger */
+
+#messenger {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    position: fixed;
+    bottom: 10px;
+    left: 20px;
+    height: 350px;
+    width: 600px;
+    border-radius: 15px;
+    background-color:grey;
+    padding: 20px 30px 20px 20px;
+    overflow: auto;
+    box-shadow: -10px 10px 5px rgba(0,0,0,0.2);
+
+    /* hide scroll bar */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+    
+}
+
+/* https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-being-able-to-scroll */
+#messenger::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+.userStatusContainer {
+    display: flex;
+    align-items: flex-end;
+    color: white;
+}
+h2 {
+    margin-bottom: 0px !important;
+}
+
+.dot-online, .dot-offline{
+    height: 5px;
+    width: 5px;
+    background-color: rgb(0, 210, 196);
+    border-radius: 50%;
+    display: inline-block;
+    margin-bottom: 7.5px;
+    margin-left: 5px;
+    margin-right: 2px;
+}
+.dot-offline {
+    background-color: rgb(223, 0, 0);
+}
+
 
 .mess-com {
     color: #f4c98d;
 }
 
-#chatrm {
+/* #chatrm {
     position: fixed;
     bottom: 18em;
     left: 4em;
@@ -20,7 +71,7 @@
 
 .chatrm-txt {
     color: #f4c98d;
-}
+} */
 
 
 html, body {
@@ -134,7 +185,18 @@ a {
 }
 
 /* Login page */
-.regform,
+
+#register {
+    justify-content: center;
+}
+
+#register, .container {
+    position: relative;
+    -ms-transform: translate(0%, 15%);
+    transform: translate(0%, 20%);
+}
+
+
 .container {
     position: relative;
     -ms-transform: translate(0%, 32%);
