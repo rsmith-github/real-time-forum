@@ -4,13 +4,15 @@
 function newPost(event) {
     event.preventDefault()
 
+
     let content = document.querySelector("#newposttxt");
     if (content.value !== "") {
         // Make animation.
         let allPostsContainer = document.getElementById("posts-container");
+        allPostsContainer.scrollTop = 0;
         allPostsContainer.style.animation = "movedown 0.7s ease";
     } else {
-        alert("DONT LEAVE THE FORM EMPTY YOU TWAT")
+        alert("PLEASE FILL IN ALL FIELDS")
     }
 
 }

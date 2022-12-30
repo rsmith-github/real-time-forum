@@ -71,7 +71,7 @@ function checkUnread() {
     messages.forEach((message) => {
         if (message.reciever === localStorage.getItem("username")) {
             let chatToChangeColor = document.getElementById(`${message.receiver} + "<->" + ${message.sender}`);
-            console.log(chatToChangeColor);
+            console.log("chatToChangeColor: ", chatToChangeColor);
             chatToChangeColor.style.backgroundColor = "green"
         }
     });

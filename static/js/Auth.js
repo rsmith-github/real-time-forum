@@ -27,10 +27,14 @@ async function Login(e) {
         }
     })
 
+
     if (!!valid) {
 
         showPage("homepage");
+        // await connectForNotifications()
         showUsers();
+
+
 
         // let currentUser = localStorage.getItem("username");
         // if (!!sessions) {

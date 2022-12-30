@@ -11,6 +11,8 @@ let input = document.createElement("input");
 
 // let chatDivs;
 
+// Create button to refresh chats
+let refreshChats = document.createElement("button")
 // Show online users for chat app.
 // sortTop variable is just to make sure the chat is red after receiving a new message.
 async function showUsers(sortTop) {
@@ -26,8 +28,6 @@ async function showUsers(sortTop) {
     // Style messenger page
     messengerPage.innerHTML = "";
 
-    // Create button to refresh chats
-    let refreshChats = document.createElement("button")
     refreshChats.style.display = "flex";
     refreshChats.style.justifyContent = "center";
     refreshChats.style.backgroundColor = "transparent";
@@ -68,7 +68,7 @@ async function showUsers(sortTop) {
         }
     }
 
-    // console.log(latestInfo);
+    console.log(latestInfo);
 
     // Next Steps:
     // https://stackoverflow.com/questions/8217419/how-to-determine-if-javascript-array-contains-an-object-with-an-attribute-that-e
@@ -181,13 +181,11 @@ async function showUsers(sortTop) {
 
     });
 
-    refreshChats.addEventListener("click", () => {
-        showUsers();
-    })
 
-
-    // show offline users
 }
+refreshChats.addEventListener("click", () => {
+    showUsers();
+})
 
 // Show chat window pop up with id of user-user
 async function showChatWindow(id) {
@@ -211,9 +209,11 @@ async function showChatWindow(id) {
     // Set correct id
     chatWindow.id = `window: ${id}`
 
+
     // Add a new chat to the sqlite database.
     await sendJsonToBackend("chats", usersInChat[0], usersInChat[1])
     await fetchData("chats")
+
 
     connectToChatserver([usersInChat[0], usersInChat[1]]);
 
@@ -378,7 +378,7 @@ let wSocket;
 
 function leaveChat() {
     wSocket.close();
-    connectForNotifications()
+    // connectForNotifications()
 }
 
 async function connectToChatserver(usersInChat, notification = false) {
@@ -416,22 +416,27 @@ async function connectToChatserver(usersInChat, notification = false) {
 
 
     if (notification === false) {
-        wSocket.addEventListener("message", (ev) => {
-            OnMessageReceived(ev, usersInChat, notification);
-        })
+        wSocket.removeEventListener("message", OnMessageReceived)
+        wSocket.addEventListener("message", OnMessageReceived.bind(null, usersInChat, notification))
         chatForm.addEventListener("submit", (ev) => {
             ev.stopPropagation();
             ev.preventDefault()
             SendMessage(ev.target)
         })
     } else {
-        wSocket.addEventListener("message", (ev) => {
-            OnMessageReceived(ev, usersInChat, notification);
-        })
+        wSocket.removeEventListener("message", OnMessageReceived)
+        wSocket.addEventListener("message", OnMessageReceived.bind(null, usersInChat, notification))
+
 
     }
 }
 
+
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+        refreshChats.click()
+    }
+})
 
 
 function SendMessage(target) {
@@ -450,18 +455,21 @@ function SendMessage(target) {
     input.value = ""
 }
 
-function OnMessageReceived(evt, usersInChat, notification) {
+function OnMessageReceived(usersInChat, notification, evt) {
 
     var msg = JSON.parse(evt.data); // native API
+
+
+    evt.stopPropagation()
 
 
     if (notification === true) {
         // Message received notification
         let chatrooms = document.querySelectorAll(".chatRoom");
-        console.log(chatrooms);
         chatrooms.forEach((chatroom) => {
             if (chatroom.id === msg.receiver + "<->" + msg.sender) {
-                chatroom.style.backgroundColor = "red";
+                // refreshChats.click()
+                // chatroom.style.backgroundColor = "red";
 
 
                 showUsers(chatroom.id);
@@ -536,9 +544,9 @@ function formatTime(hoursMinutesSeconds) {
 }
 
 async function connectForNotifications() {
-    await fetchData("sessions")
+    await fetchData("users")
     let username = localStorage.getItem("username");
-    sessions.forEach(session => {
-        if (username !== session.username) connectToChatserver([username, session.username], true);
+    users.forEach(user => {
+        if (username !== user.username) connectToChatserver([username, user.username], true);
     })
 }

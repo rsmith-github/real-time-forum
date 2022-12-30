@@ -16,7 +16,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Content: `
 		<div class="container">
 		<div class="row vertical-offset-100">
-			<div class="form-style col-md-4 col-md-offset-4">
+			<div class="form-style">
 				<div class="panel panel-default">
 					<div class="panel-welcome">
 						<h2 class="panel-welcome-title">Welcome to RTF</h2>
@@ -54,7 +54,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Content: `
 		<div class="regform" id="form2">
 		<div class="row vertical-offset-100">
-			<div class="form-style col-md-4 col-md-offset-4">
+			<div class="form-style">
 				<div class="panel panel-default">
 					<div class="panel-welcome">
 						<h2 class="logintxt">Register</h2>
@@ -107,7 +107,7 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Endpoint: "homepage",
 		Content: `
 		<div class="newpostbody">
-        <form enctype="multipart/form-data" action="/new" method="POST" class="newpostall">
+        <form enctype="multipart/form-data" action="/new" method="POST">
             <div class="newpost" id="newpost">
                 <div class="radiospacing">
                     <label for="category_1">Question</label>

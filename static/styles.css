@@ -1,10 +1,15 @@
+
+/* * {
+    border: solid 1px red;
+} */
+
 #homepage {
     padding: 5% 0 0 0.6%;
-    display: block;
     min-width: 100%;
     margin-top: 70px;
-    justify-content: flex-end;
+    justify-content: space-between;
 }
+
 
 /* messenger */
 
@@ -12,13 +17,13 @@
     display: none;
     flex-direction: column;
     align-items: center;
-    position: fixed;
-    bottom: 10px;
+    position: absolute;
+    bottom: 63px;
     left: 20px;
-    height: 350px;
-    width: 600px;
+    height: 300px;
+    width: 450px;
     border-radius: 15px;
-    background-color:grey;
+    background-color: grey;
     padding: 20px 30px 20px 20px;
     overflow: auto;
     box-shadow: -10px 10px 5px rgba(0,0,0,0.2);
@@ -99,6 +104,16 @@ main {
     min-width: 100%;
 }
 
+/*  */
+
+.newpostbody {
+    margin: 5px 0px 20px 15px;
+    position: relative;
+    /* width: 100%; */
+}
+
+/*  */
+
 h2, h3, em, label {
     font-family: 'Chakra Petch', sans-serif;
     color: white;
@@ -127,7 +142,6 @@ a {
 
 .newpost {
     left: 4em;
-    position: fixed;
 }
 
 .newposttxt {
@@ -348,8 +362,31 @@ a {
     .background {
         /* position: absolute; */
         /* min-height: 100% !important; */
+    }
+
+    .newpostbody {
+        width: 50%;
 
     }
+
+    #messenger {
+        width: 225px;
+    }
+
+    .radiospacing {
+        width: 160px;
+        margin-left: 0px;
+    }
+
+    .newposttxt {
+        width: 235px;
+    }
+
+    .catandpost {
+        width: 203px;
+    }
+
+
     
 }
 
@@ -362,9 +399,20 @@ a {
 /* Posts */
 
 #posts-container {
-    margin-right: 8% !important;
-    width: 32em !important;
+    overflow-y: auto !important;
+    height: 85vh;
+    position: relative;
+    margin-right: 5% !important;
+    margin-left: 5%;
+    width: 100% !important;
+
+    
 }
+
+#posts-container::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
 
 @keyframes move {
     from {
