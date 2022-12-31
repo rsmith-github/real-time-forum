@@ -487,7 +487,7 @@ function OnMessageReceived(usersInChat, notification, evt) {
                             You received a message from ${msg.sender}!
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     `
-                    document.getElementById("homepage").prepend(notifBar)
+                    document.getElementById("notifications").append(notifBar)
                 }
                 */
             }

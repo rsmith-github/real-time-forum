@@ -1,8 +1,7 @@
 
 // Show posts on profile page.
-function showMyPosts() {
+function showMyPosts(cb) {
     let username = localStorage.getItem('username')
-
 
     if (posts.length === 0) {
         console.log("posts empty");
@@ -68,5 +67,7 @@ function showMyPosts() {
 
         postDiv.innerHTML = postBody;
     });
+
+    cb()
 
 }
