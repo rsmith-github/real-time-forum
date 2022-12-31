@@ -117,7 +117,9 @@ async function showPage(name) {
 
     // Add to url history
     if (name === "homepage") {
+        document.getElementById("profile-allposts").innerHTML = ""
         await connectForNotifications()
+        localStorage.setItem("lenRegisteredUsers", users.length)
         history.pushState({ name: name }, "", `${"/"}`);
         messengerWindow.style.display = "flex";
         displayPosts(eventListeners);
@@ -132,8 +134,9 @@ async function showPage(name) {
 
     if (name === "profile") {
         messengerWindow.style.display = "flex";
+        document.getElementById("posts-container").innerHTML = ""
 
-        showMyPosts()
+        showMyPosts(eventListeners)
     }
 
     // chatApp();
@@ -178,7 +181,6 @@ function eventListeners() {
     comment_links.forEach(element => {
         element.addEventListener("click", OpenCommentSection);
     });
-
     let logoutBtn = document.querySelector(".logout-btn")
 
     if (!!logoutBtn) {

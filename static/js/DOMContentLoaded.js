@@ -10,8 +10,16 @@ window.addEventListener(
 
 let body = document.querySelector("body");
 
+
+
 // Split URL to access last parameter.
 let url = window.location.href.split("/");
+
+
+// Keeping track of registered users.
+let usersLength;
+
+
 // On load event
 document.addEventListener(
     "DOMContentLoaded",
@@ -54,10 +62,23 @@ document.addEventListener(
         // console.log("textarea: ", document.querySelector("textarea"));
 
         if (endpoint !== "login" && endpoint !== "register") await showUsers();
+
+
+
     }
 
 );
 
+
+setInterval(async function () {
+    //code goes here
+    await fetchData("users")
+    if (users.length > localStorage.getItem("lenRegisteredUsers")) {
+        refreshChats.click()
+        await connectForNotifications()
+        localStorage.setItem("lenRegisteredUsers", users.length)
+    }
+}, 2000); //Time before execution
 
 window.onpopstate = function (event) {
     showPage(event.state.name)

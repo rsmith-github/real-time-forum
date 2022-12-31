@@ -18,9 +18,9 @@
     flex-direction: column;
     align-items: center;
     position: absolute;
-    bottom: 63px;
+    bottom: 10px;
     left: 20px;
-    height: 300px;
+    height: 400px;
     width: 450px;
     border-radius: 15px;
     background-color: grey;
@@ -388,6 +388,30 @@ a {
 
 
     
+}
+
+@media (max-height: 710px) {
+    #messenger {
+        bottom: 0;
+        height: 350px;
+    }
+}
+@media (max-height: 650px) {
+    #messenger {
+        bottom: 0;
+        height: 250px;
+    }
+}
+@media (max-height: 550px) {
+    #messenger {
+        bottom: 0;
+        height: 180px;
+    }
+}
+@media (max-height: 450px) {
+    #messenger {
+        display: none !important;
+    }
 }
 
 
