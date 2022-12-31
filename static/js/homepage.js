@@ -24,25 +24,23 @@ async function displayPosts(callBack) {
                                 </div>
                                 <div class="ml-2">
                                     <div class="h5 m-0">@${post.username}</div>
-                                    <div class="h7 text-muted">Insert Bio Here</div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                     <div class="card-body">
-                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
-                        <p class="inlinecategory">
-                          <span class="bold">Post type: </span>${post.category_2}
-                        </p>
-                        &nbsp;
-                        <p class="inlinecategory">
-                          <span class="bold"> Category: </span>${post.category}
-                        </p>
-
                         <p class="card-text">
                             ${removeTags(post.content)}
                         </p>
+                        <p class="inlinecategory">
+                        <span class="bold">Post type: </span>${post.category_2}
+                        </p>
+                        &nbsp;
+                        <p class="inlinecategory">
+                        <span class="bold"> Category: </span>${post.category}
+                        </p>
+                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
                     </div>
                     <div class="card-footer">
                         <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>

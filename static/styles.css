@@ -13,9 +13,9 @@
 
 #messenger {
     display: none;
+    position: fixed;
     flex-direction: column;
     align-items: center;
-    position: absolute;
     bottom: 10px;
     left: 20px;
     height: 400px;
@@ -121,6 +121,33 @@ h2, h3, em, label {
 
 a {
     color:steelblue;
+}
+
+#profile {
+    padding: 5% 0 0 0.6%;
+    min-width: 100%;
+    margin-top: 70px;
+    justify-content: space-between;
+    animation: fadein ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#profile-display {
+    margin: 5px 0px 20px 15px;
+    position: relative;
+    width: 100%;
+}
+
+#profile-picture {
+    display: flex;
+    justify-content: center;
+    padding-top: 23px;
+}
+
+.user-p-display {
+    display: flex;
+    justify-content: center;
 }
 
 .postDiv {
@@ -420,7 +447,7 @@ a {
 }
 
 /* Posts */
-
+#profile-allposts,
 #posts-container {
     overflow-y: auto !important;
     height: 85vh;

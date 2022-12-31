@@ -94,7 +94,6 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 							</div>
 							<div class="signup-div">
 								<div class="signup-cta">Already have an account? <a class="nav-link" data-name="login" href="localhost:8080/login" id="signup-link">Log In here.</a></div>
-
 							</div>
 						</fieldset>
 						</form>

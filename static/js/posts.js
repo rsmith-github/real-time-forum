@@ -60,25 +60,23 @@ const postSlideIn = (e) => {
                         </div>
                         <div class="ml-2">
                             <div class="h5 m-0">@${localStorage.getItem("username")}</div>
-                            <div class="h7 text-muted">Insert Bio Here</div>
                         </div>
                     </div>
                 </div>
 
             </div>
             <div class="card-body">
-                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
-                <p class="inlinecategory">
-                  <span class="bold">Post type: </span>${category_1.value}
-                </p>
-                &nbsp;
-                <p class="inlinecategory">
-                  <span class="bold"> Category: </span>${category_2.value}
-                </p>
-
                 <p class="card-text">
                     ${removeTags(content.value)}
                 </p>
+                <p class="inlinecategory">
+                <span class="bold">Post type: </span>${category_1.value}
+                </p>
+                &nbsp;
+                <p class="inlinecategory">
+                <span class="bold"> Category: </span>${category_2.value}
+                </p>
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
             </div>
             <div class="card-footer">
                 <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>

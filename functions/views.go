@@ -166,7 +166,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Logged in")
 			fmt.Println()
 		} else {
-			fmt.Println("wrong password!!")
+			fmt.Println("Incorrect password!")
 			fmt.Println()
 
 		}
