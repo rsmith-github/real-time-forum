@@ -93,7 +93,8 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 								<input onclick="Register(event)" id="registerBtn" class="register btn" type="button" value="Register">
 							</div>
 							<div class="signup-div">
-								<div class="signup-cta">Already have an account? <a class="nav-link" href="/login" id="signup-link">Log In here.</a></div>
+								<div class="signup-cta">Already have an account? <a class="nav-link" data-name="login" href="localhost:8080/login" id="signup-link">Log In here.</a></div>
+
 							</div>
 						</fieldset>
 						</form>

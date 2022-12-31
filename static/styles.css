@@ -1,13 +1,11 @@
-
-/* * {
-    border: solid 1px red;
-} */
-
 #homepage {
     padding: 5% 0 0 0.6%;
     min-width: 100%;
     margin-top: 70px;
     justify-content: space-between;
+    animation: fadein ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
 
@@ -27,6 +25,9 @@
     padding: 20px 30px 20px 20px;
     overflow: auto;
     box-shadow: -10px 10px 5px rgba(0,0,0,0.2);
+    animation: fadein ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 
     /* hide scroll bar */
     -ms-overflow-style: none;  /* Internet Explorer 10+ */
@@ -94,7 +95,6 @@ html, body {
     height: 100% !important;
     width: 100% !important;
     background-color: black;
-    
 }
 
 
@@ -132,7 +132,7 @@ a {
     justify-content: space-between;
     width: 406px;
 }
-/* wont change */
+
 .radiospacing {
     width: 274px;
     display: flex;
@@ -239,6 +239,9 @@ a {
     padding: 50px 35px;
     padding-left: 73px !important;
     width: 425px !important;
+    animation: fadein ease 3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
 .logintxt,
@@ -347,6 +350,9 @@ a {
 .navbar {
     background: rgba(0, 0, 0, 74%);
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    animation: fadein ease 3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
 /* don't know why it won't show. come back */
@@ -358,11 +364,6 @@ a {
 /* Responsive */ 
 
 @media (max-width: 876px) {
-
-    .background {
-        /* position: absolute; */
-        /* min-height: 100% !important; */
-    }
 
     .newpostbody {
         width: 50%;
@@ -385,8 +386,6 @@ a {
     .catandpost {
         width: 203px;
     }
-
-
     
 }
 
@@ -413,7 +412,7 @@ a {
     display: none;  /* Safari and Chrome */
 }
 
-
+/* Animations */
 @keyframes move {
     from {
         transform: translateX(120%)
@@ -431,4 +430,13 @@ a {
     to {
         transform: translateY(305px)
     }
+}
+
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+     }
 }

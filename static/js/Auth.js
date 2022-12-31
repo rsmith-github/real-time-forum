@@ -3,6 +3,7 @@ async function Login(e) {
 
     e.preventDefault()
     let username = document.getElementById("username-input").value;
+    let nickname = document.getElementById("nickname-input").value;
     let password = document.getElementById("password-input").value;
 
     // send data to backend
