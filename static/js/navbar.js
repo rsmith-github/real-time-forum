@@ -134,7 +134,7 @@ async function showPage(name) {
 
     if (name === "profile") {
         messengerWindow.style.display = "flex";
-        document.getElementById("posts-container").innerHTML = ""
+        document.getElementById("homepage").innerHTML = ""
 
         showMyPosts(eventListeners)
     }

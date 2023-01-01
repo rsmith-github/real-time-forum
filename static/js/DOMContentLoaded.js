@@ -39,6 +39,7 @@ document.addEventListener(
         await fetchData("allposts");
 
 
+        console.log(endpoint);
         // Show page based on endpoint.
         showPage(endpoint);
 
