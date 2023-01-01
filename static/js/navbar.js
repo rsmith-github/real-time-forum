@@ -117,26 +117,52 @@ async function showPage(name) {
 
     // Add to url history
     if (name === "homepage") {
-        document.getElementById("profile-allposts").innerHTML = ""
+
+        // Hide content on profile page.
+        let profileAllPosts = document.getElementById("profile-allposts");
+        if (!!profileAllPosts) profileAllPosts.innerHTML = "";
+
+        // Connect websockets to get notifications.
         await connectForNotifications()
+
+        // keep track of users registered to refresh messenger if someone new registers.
         localStorage.setItem("lenRegisteredUsers", users.length)
+
+        // Update url.
         history.pushState({ name: name }, "", `${"/"}`);
+
+        // Change height of messenger page.
+        messengerPage.classList.remove("msgr-smaller")
         messengerWindow.style.display = "flex";
+
+        // Shop posts
         displayPosts(eventListeners);
+
+        // unblur messenger page.
+        messengerPage.style.filter = ""
+        messengerPage.style.pointerEvents = "auto";
     } else {
         //                                        ^
         history.pushState({ name: name }, "", `${name}`);
     }
 
+    // Hide messenger window on login page.
     if (name === "login" || name === "register") {
         messengerWindow.style.display = "none";
     }
 
+    // Handle profile page.
     if (name === "profile") {
         messengerWindow.style.display = "flex";
-        document.getElementById("homepage").innerHTML = ""
 
-        showMyPosts(eventListeners)
+        // Hide homepage content.
+        document.getElementById("homepage").innerHTML = "";
+
+        // Resize messenger page.
+        messengerPage.classList.add("msgr-smaller")
+
+        // Show posts from current user.
+        showMyPosts(eventListeners);
     }
 
     // chatApp();
@@ -145,6 +171,7 @@ async function showPage(name) {
     // Update url variable globally after updating client url.
     url = window.location.href.split("/");
 
+    // Show html structure based on api.go
     if (!!content) {
         content.forEach(object => {
             if (object.Endpoint == name) {

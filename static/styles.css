@@ -40,6 +40,10 @@
     display: none;  /* Safari and Chrome */
 }
 
+.msgr-smaller {
+    height: 350px !important;
+}
+
 .userStatusContainer {
     display: flex;
     align-items: flex-end;
@@ -215,6 +219,8 @@ a {
 .chatWindow  {
     display: none;
     background-color: azure;
+    top: 6vw;
+    left: 25vw;
 }
 
 #chatwith {
@@ -456,10 +462,13 @@ a {
     margin-left: 5%;
     width: 100% !important;
 
+    /* hide scroll bar */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
     
 }
 
-#posts-container::-webkit-scrollbar { 
+#posts-container::-webkit-scrollbar, #profile-allposts::-webkit-scrollbar { 
     display: none;  /* Safari and Chrome */
 }
 

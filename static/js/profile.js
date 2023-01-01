@@ -1,6 +1,9 @@
 
 // Show posts on profile page.
-function showMyPosts(cb) {
+async function showMyPosts(cb) {
+
+    await fetchData("allposts")
+
     let username = localStorage.getItem('username')
 
     if (posts.length === 0) {
@@ -48,9 +51,7 @@ function showMyPosts(cb) {
                         <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
                     </div>
                     <div class="card-footer">
-                        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
                         <a href="/" class="comment-link" id="cmnt-lnk-${post.id}"><i class="fa fa-comment"></i> Comments</a>
-                        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                         <div class="commentbox">
                             <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
                                 <input type="text" class="commenttxtbox" name="comment" id="comment-${post.id}"/>

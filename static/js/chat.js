@@ -52,7 +52,10 @@ async function showUsers(sortTop) {
     //     https://stackoverflow.com/questions/23921683/javascript-move-an-item-of-an-array-to-the-front
     //     sessions.sort(function (x, y) { return sortTop.includes(x.username) ? -1 : sortTop.includes(y.username) ? 1 : 0; });
     // } else {
-    let msgsLen = messages.length - 1
+
+    let msgsLen;
+    if (!!messages && messages.length > 0) msgsLen = messages.length - 1;
+
     let currentUser = localStorage.getItem("username")
     // Get the latest message for each chat between current user and other existing users in order to sort sessions list.
     for (let i = msgsLen; i > 0; i--) {
@@ -68,12 +71,8 @@ async function showUsers(sortTop) {
         }
     }
 
-    console.log(latestInfo);
-
     // Next Steps:
     // https://stackoverflow.com/questions/8217419/how-to-determine-if-javascript-array-contains-an-object-with-an-attribute-that-e
-
-
 
     await fetchData("users")
 
@@ -163,7 +162,6 @@ async function showUsers(sortTop) {
         // Show chat box on click
         div.addEventListener("click", () => {
 
-
             if (chatWindow.querySelector("button") == null) {
                 showChatWindow(div.id);
                 // Set chatroom to read status color.
@@ -181,8 +179,23 @@ async function showUsers(sortTop) {
 
     });
 
+    // handle duplicate bug on front end.
+    let chatrooms = document.querySelectorAll(".chatRoom");
+    if (chatrooms.length > users.length - 1) {
+        let ind = 0;
+
+        chatrooms.forEach(cr => {
+            ind++;
+            if (ind > users.length - 1) {
+                cr.remove()
+            }
+        })
+        console.log("DUPLICATE ERROR HAPPENED");
+        return;
+    }
 
 }
+
 refreshChats.addEventListener("click", () => {
     showUsers();
 })
@@ -234,6 +247,7 @@ async function filterMessages(usersInChat, id) {
 
     let chatScreen = document.getElementById("chatScreen:" + id)
 
+    if (!messages) return;
     let chatRoomMessages = messages.filter((message) => {
         return usersInChat.includes(message.sender) && usersInChat.includes(message.receiver)
     })
@@ -384,7 +398,7 @@ function leaveChat() {
 async function connectToChatserver(usersInChat, notification = false) {
     var ServiceLocation = "ws://" + document.location.host + "/chat/";
 
-    console.log("connected: " + usersInChat[0] + " and " + usersInChat[1]);
+    console.log("connecting: " + usersInChat[0] + " and " + usersInChat[1]);
 
     await fetchData("chats");
 
@@ -426,8 +440,6 @@ async function connectToChatserver(usersInChat, notification = false) {
     } else {
         wSocket.removeEventListener("message", OnMessageReceived)
         wSocket.addEventListener("message", OnMessageReceived.bind(null, usersInChat, notification))
-
-
     }
 }
 
@@ -464,14 +476,16 @@ function OnMessageReceived(usersInChat, notification, evt) {
 
 
     if (notification === true) {
+
         // Message received notification
         let chatrooms = document.querySelectorAll(".chatRoom");
+
         chatrooms.forEach((chatroom) => {
             if (chatroom.id === msg.receiver + "<->" + msg.sender) {
                 // refreshChats.click()
                 // chatroom.style.backgroundColor = "red";
 
-
+                // chatroom.style.backgroundColor = "red"
                 showUsers(chatroom.id);
 
 
