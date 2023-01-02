@@ -130,8 +130,22 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 	<div id="posts-container"></div>
 		`,
 	}
+	profile := DOMcontent{
+		Endpoint: "profile",
+		Content: `
+        <div id="profile-display">
+            <div class="user-p-display">
+                <h2 class="user-posts">My posts</h2>
+            </div>
+            <div id="profile-picture">
+                <img class="rounded-circle" width="150" src="https://picsum.photos/150/150" alt="Profile Picture">
+            </div>
+        </div>
+        <div id="profile-allposts"></div>
+		`,
+	}
 
-	var jsnList = []DOMcontent{loginContent, registerContent, homePage}
+	var jsnList = []DOMcontent{loginContent, registerContent, homePage, profile}
 	var new, err = json.Marshal(jsnList)
 	if err != nil {
 		log.Fatal("Could not marshal:", err.Error())

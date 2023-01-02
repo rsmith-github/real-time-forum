@@ -17,6 +17,8 @@ async function showMyPosts(cb) {
         postDiv.className = "postDiv";
         let allPostsContainer = document.getElementById("profile-allposts");
 
+        console.log(allPostsContainer);
+
         if (!!allPostsContainer) {
             allPostsContainer.appendChild(postDiv);
         }

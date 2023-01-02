@@ -151,26 +151,12 @@ async function showPage(name) {
         messengerWindow.style.display = "none";
     }
 
-    // Handle profile page.
-    if (name === "profile") {
-        messengerWindow.style.display = "flex";
-
-        // Hide homepage content.
-        document.getElementById("homepage").innerHTML = "";
-
-        // Resize messenger page.
-        messengerPage.classList.add("msgr-smaller")
-
-        // Show posts from current user.
-        showMyPosts(eventListeners);
-    }
-
-    // chatApp();
-
 
     // Update url variable globally after updating client url.
     url = window.location.href.split("/");
 
+    await fetchData("content")
+    console.log(content);
     // Show html structure based on api.go
     if (!!content) {
         content.forEach(object => {
@@ -185,6 +171,21 @@ async function showPage(name) {
         })
     }
 
+    // Handle profile page.
+    if (name === "profile") {
+        messengerWindow.style.display = "flex";
+
+        // Hide homepage content.
+        document.getElementById("homepage").innerHTML = "";
+
+        // Resize messenger page.
+        messengerPage.classList.add("msgr-smaller")
+
+        // Show posts from current user.
+        showMyPosts(eventListeners);
+    }
+
+    
     // Change nav bar content
     NavbarContent(eventListeners);
 }
