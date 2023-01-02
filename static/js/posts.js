@@ -4,13 +4,15 @@
 function newPost(event) {
     event.preventDefault()
 
+
     let content = document.querySelector("#newposttxt");
     if (content.value !== "") {
         // Make animation.
         let allPostsContainer = document.getElementById("posts-container");
+        allPostsContainer.scrollTop = 0;
         allPostsContainer.style.animation = "movedown 0.7s ease";
     } else {
-        alert("DONT LEAVE THE FORM EMPTY YOU TWAT")
+        alert("PLEASE FILL IN ALL FIELDS")
     }
 
 }
@@ -19,6 +21,10 @@ function newPost(event) {
 // Function is called in DOMContentLoaded.js via: document.addEventListener("animationend", postSlideIn); event listener.
 const postSlideIn = (e) => {
 
+    // If animation is not for a new post, exit the function. Because postSlideIn is
+    // fired on document.animationend, which applies to all animations.
+    if (e.animationName !== "movein" && e.animationName !== "movedown") return
+
     let category_1 = document.querySelector('input[name="postType"]:checked');;
     // Get lanugage category
     let category_2 = document.getElementById("select-language");
@@ -26,6 +32,8 @@ const postSlideIn = (e) => {
     let content = document.querySelector("#newposttxt");
 
     let allPostsContainer = document.getElementById("posts-container");
+
+
     if (e.target.id === allPostsContainer.id) {
         // Get latest id number and increment it.
         let id = Number(document.querySelector(".card").id.split("-")[1]) + 1
@@ -58,30 +66,26 @@ const postSlideIn = (e) => {
                         </div>
                         <div class="ml-2">
                             <div class="h5 m-0">@${localStorage.getItem("username")}</div>
-                            <div class="h7 text-muted">Insert Bio Here</div>
                         </div>
                     </div>
                 </div>
 
             </div>
             <div class="card-body">
-                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
-                <p class="inlinecategory">
-                  <span class="bold">Post type: </span>${category_1.value}
-                </p>
-                &nbsp;
-                <p class="inlinecategory">
-                  <span class="bold"> Category: </span>${category_2.value}
-                </p>
-
                 <p class="card-text">
                     ${removeTags(content.value)}
                 </p>
+                <p class="inlinecategory">
+                <span class="bold">Post type: </span>${category_1.value}
+                </p>
+                &nbsp;
+                <p class="inlinecategory">
+                <span class="bold"> Category: </span>${category_2.value}
+                </p>
+                <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${time}</div>
             </div>
             <div class="card-footer">
-                <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
                 <a href="/" onclick="OpenCommentSection(event)"class="comment-link" id="cmnt-lnk-${id}"><i class="fa fa-comment"></i> Comments</a>
-                <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                 <div class="commentbox">
                     <form action="/" method="POST" class="comment-form" id="comment-form-${id}">
                         <input type="text" class="commenttxtbox" name="comment" id="comment-${id}"/>

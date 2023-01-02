@@ -1,7 +1,6 @@
 // Comment section
 
 function OpenCommentSection(e) {
-
     // Fech comments
     fetchData("comments")
 

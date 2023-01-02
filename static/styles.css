@@ -1,20 +1,47 @@
+#homepage {
+    padding: 5% 0 0 0.6%;
+    min-width: 100%;
+    margin-top: 70px;
+    justify-content: space-between;
+    animation: fadein ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+
 /* messenger */
 
 #messenger {
     display: none;
+    position: fixed;
     flex-direction: column;
     align-items: center;
-    position: fixed;
     bottom: 10px;
-    right: 20px;
-    height: 300px;
-    width: 400px;
-    overflow-y: auto;
-    overflow-x: hidden;
+    left: 20px;
+    height: 400px;
+    width: 450px;
     border-radius: 15px;
-    background-color:grey;
-    padding: 20px;
+    background-color: grey;
+    padding: 20px 30px 20px 20px;
+    overflow: auto;
     box-shadow: -10px 10px 5px rgba(0,0,0,0.2);
+    animation: fadein ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+
+    /* hide scroll bar */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+    
+}
+
+/* https://stackoverflow.com/questions/16670931/hide-scroll-bar-but-while-still-being-able-to-scroll */
+#messenger::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+.msgr-smaller {
+    height: 350px !important;
 }
 
 .userStatusContainer {
@@ -25,6 +52,7 @@
 h2 {
     margin-bottom: 0px !important;
 }
+
 .dot-online, .dot-offline{
     height: 5px;
     width: 5px;
@@ -38,20 +66,23 @@ h2 {
 .dot-offline {
     background-color: rgb(223, 0, 0);
 }
-#user-online {
 
+
+.mess-com {
+    color: #f4c98d;
 }
-#user-offline {
 
+/* #chatrm {
+    position: fixed;
+    bottom: 18em;
+    left: 4em;
+    border: solid 2px white;
 }
 
-/* Basics (body etc) */
-#homepage, #profile {
-    padding: 80px 0 0 0.6%;
-    display: block;
-    min-width: 100%;
+.chatrm-txt {
+    color: #f4c98d;
+} */
 
-}
 
 html, body {
     min-height: 100%;
@@ -68,7 +99,6 @@ html, body {
     height: 100% !important;
     width: 100% !important;
     background-color: black;
-    
 }
 
 
@@ -78,7 +108,18 @@ main {
     min-width: 100%;
 }
 
+/*  */
+
+.newpostbody {
+    margin: 5px 0px 20px 15px;
+    position: relative;
+    /* width: 100%; */
+}
+
+/*  */
+
 h2, h3, em, label {
+    font-family: 'Chakra Petch', sans-serif;
     color: white;
 }
 
@@ -86,8 +127,62 @@ a {
     color:steelblue;
 }
 
+#profile {
+    padding: 5% 0 0 0.6%;
+    min-width: 100%;
+    margin-top: 70px;
+    justify-content: space-between;
+    animation: fadein ease 2s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+#profile-display {
+    margin: 5px 0px 20px 15px;
+    position: relative;
+    width: 100%;
+}
+
+#profile-picture {
+    display: flex;
+    justify-content: center;
+    padding-top: 23px;
+}
+
+.user-p-display {
+    display: flex;
+    justify-content: center;
+}
+
 .postDiv {
-    margin: 20px 0 20px 0;
+    margin: 28px 0px 28px 0px;
+}
+
+.catandpost {
+    display: flex;
+    justify-content: space-between;
+    width: 406px;
+}
+
+.radiospacing {
+    width: 274px;
+    display: flex;
+    justify-content: space-between;
+    margin-left: 59px;
+}
+
+.newpost {
+    left: 4em;
+}
+
+.newposttxt {
+    border-radius: 10px;
+    width: 470px;
+    height: 100px;
+}
+
+.mr-2 {
+    margin-right: 12px;
 }
 
 .inlinecategory {
@@ -134,6 +229,8 @@ a {
 .chatWindow  {
     display: none;
     background-color: azure;
+    top: 6vw;
+    left: 25vw;
 }
 
 #chatwith {
@@ -146,11 +243,120 @@ a {
 
 /* Login page */
 
-.container {
-
-    margin: 100px 0 0 0 !important;
+#register {
+    justify-content: center;
 }
 
+#register, .container {
+    position: relative;
+    -ms-transform: translate(0%, 15%);
+    transform: translate(0%, 20%);
+}
+
+
+.container {
+    position: relative;
+    -ms-transform: translate(0%, 32%);
+    transform: translate(0%, 32%);
+}
+
+.row {
+    justify-content: center;
+}
+
+#passconfirm,
+#pass {
+    margin-bottom: 8%;
+}
+
+.secndpass {
+    margin-bottom: 0% !important;
+}
+
+.form-style {
+    background-color: rgba(255,255,255,0.13);
+    border-radius: 2%;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 40px rgba(8,7,16,0.6);
+    padding: 50px 35px;
+    padding-left: 73px !important;
+    width: 425px !important;
+    animation: fadein ease 3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
+}
+
+.logintxt,
+.panel-welcome-title {
+    font-size: 36px;
+}
+
+.panel-title {
+    font-size: 15px;
+}
+
+.login-icon {
+    position: relative;
+    top: 33px;
+    color: #f4c98d;
+}
+
+.form-control {
+    border: none !important;
+    border-bottom: 2px solid #D1D1D4 !important;
+    background: none !important;
+    padding: 10px !important;
+    padding-left: 24px !important;
+    font-weight: 700 !important;
+    width: 75% !important;
+    transition: .2s !important;
+    border-radius: 0 !important;
+    color: #fff !important;
+    position: relative;
+}
+
+.form-control:active,
+.form-control:focus,
+.form-control:hover {
+    outline: none !important;
+    border-bottom-color: #f4c98d !important;
+}
+
+#registerBtn,
+#loginBtn {
+    font-size: 16px;
+    background-color: #7a7777;
+    border: none;
+    width: 75%;
+    border-radius: 6px;
+    color: #f4c98dc9;
+    font-weight: 800;
+    transition: all 0.155s ease-in-out;
+}
+
+#registerBtn:hover,
+#loginBtn:hover {
+    box-shadow: 5px 5px 30px  #f4c98d;
+    color: #f4c98d
+}
+
+.signup-div {
+    color: #6c757d;
+    display: flex;
+    width: 75%;
+    margin-top: 5%;
+    font-size: 13px;
+}
+
+.signup-cta {
+    margin-right: 3px;
+}
+
+#signup-link {
+    color: #f4c98d;
+    text-decoration: none;
+}
 
 /* Comment section */
 .comment-form {
@@ -178,70 +384,108 @@ a {
     padding-left: 0px !important;
 }
 
-
-
-
-/* Register page */
-
-#register {
-    margin-top: 5%;
+.navbar-brand {
+    font-family: 'Chakra Petch', sans-serif !important;
+    font-size: 2.5em !important;
+    margin-left: 0.3em !important;
 }
 
-
-
-textarea {
-    width: 350px;
-    resize: none;
+.navbar {
+    background: rgba(0, 0, 0, 74%);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    animation: fadein ease 3s;
+    animation-iteration-count: 1;
+    animation-fill-mode: forwards;
 }
 
-
-/* profile */
-
-
-/* Notifications */
-
-#notifications {
-    height: 20px;
-    
+/* don't know why it won't show. come back */
+.text-bg {
+    color: #fff !important;
+    background-color: #262627 !important;
 }
-
 
 /* Responsive */ 
 
 @media (max-width: 876px) {
 
-    .background {
-        /* position: absolute; */
-        /* min-height: 100% !important; */
+    .newpostbody {
+        width: 50%;
 
+    }
+
+    #messenger {
+        width: 225px;
+    }
+
+    .radiospacing {
+        width: 160px;
+        margin-left: 0px;
+    }
+
+    .newposttxt {
+        width: 235px;
+    }
+
+    .catandpost {
+        width: 203px;
     }
     
 }
-@media (max-width: 258px) {
 
-    #homepage {
-        padding: 120px 0 0 0.6%;
-        display: block;
-        min-width: 100%;
-    
+@media (max-height: 710px) {
+    #messenger {
+        bottom: 0;
+        height: 350px;
     }
-    
-    
+}
+@media (max-height: 650px) {
+    #messenger {
+        bottom: 0;
+        height: 250px;
+    }
+}
+@media (max-height: 550px) {
+    #messenger {
+        bottom: 0;
+        height: 180px;
+    }
+}
+@media (max-height: 450px) {
+    #messenger {
+        display: none !important;
+    }
 }
 
-
-
-/* Animations */
 
 .movein {
-    animation: move 0.5s ease-in forwards;
+    animation: move 0.6s ease-in forwards;
     animation-iteration-count: 1;
 }
 
 /* Posts */
+#profile-allposts,
+#posts-container {
+    overflow-y: auto !important;
+    height: 85vh;
+    position: relative;
+    margin-right: 5% !important;
+    margin-left: 5%;
+    width: 100% !important;
+
+    /* hide scroll bar */
+    -ms-overflow-style: none;  /* Internet Explorer 10+ */
+    scrollbar-width: none;  /* Firefox */
+    
+}
+
+#posts-container::-webkit-scrollbar, #profile-allposts::-webkit-scrollbar { 
+    display: none;  /* Safari and Chrome */
+}
+
+/* Animations */
 @keyframes move {
     from {
-        transform: translateX(-100%)
+        transform: translateX(120%)
     }
     to {
         transform: translateX(0px)
@@ -258,13 +502,20 @@ textarea {
     }
 }
 
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+     }
+}
 
-
-
-
-
-
-
-
-
-
+@keyframes fadein {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+     }
+}

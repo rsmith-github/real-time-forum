@@ -60,10 +60,6 @@ function NavbarContent(cb) {
                 <a class="logout-btn" href="/logout">Logout</a>
               </li>
             </ul>
-            <form class="d-flex mt-3" role="search">
-              <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-              <button class="btn btn-success" type="submit">Search</button>
-            </form>
           </div>
         </div>
       </div>
@@ -115,36 +111,53 @@ async function showPage(name) {
     let page = document.getElementById(name)
 
     // Display div which will be populated with HTML from /api/content.
-    page.style.display = "block";
+    page.style.display = "flex";
 
     let messengerWindow = document.getElementById("messenger")
 
     // Add to url history
     if (name === "homepage") {
+
+        // Hide content on profile page.
+        let profileAllPosts = document.getElementById("profile-allposts");
+        if (!!profileAllPosts) profileAllPosts.innerHTML = "";
+
+        // Connect websockets to get notifications.
         await connectForNotifications()
+
+        // keep track of users registered to refresh messenger if someone new registers.
+        localStorage.setItem("lenRegisteredUsers", users.length)
+
+        // Update url.
         history.pushState({ name: name }, "", `${"/"}`);
+
+        // Change height of messenger page.
+        messengerPage.classList.remove("msgr-smaller")
         messengerWindow.style.display = "flex";
+
+        // Shop posts
         displayPosts(eventListeners);
+
+        // unblur messenger page.
+        messengerPage.style.filter = ""
+        messengerPage.style.pointerEvents = "auto";
     } else {
         //                                        ^
         history.pushState({ name: name }, "", `${name}`);
     }
 
+    // Hide messenger window on login page.
     if (name === "login" || name === "register") {
         messengerWindow.style.display = "none";
     }
-
-    if (name === "profile") {
-        messengerWindow.style.display = "flex";
-        showMyPosts(eventListeners)
-    }
-
-    // chatApp();
 
 
     // Update url variable globally after updating client url.
     url = window.location.href.split("/");
 
+    await fetchData("content")
+    console.log(content);
+    // Show html structure based on api.go
     if (!!content) {
         content.forEach(object => {
             if (object.Endpoint == name) {
@@ -158,6 +171,21 @@ async function showPage(name) {
         })
     }
 
+    // Handle profile page.
+    if (name === "profile") {
+        messengerWindow.style.display = "flex";
+
+        // Hide homepage content.
+        document.getElementById("homepage").innerHTML = "";
+
+        // Resize messenger page.
+        messengerPage.classList.add("msgr-smaller")
+
+        // Show posts from current user.
+        showMyPosts(eventListeners);
+    }
+
+    
     // Change nav bar content
     NavbarContent(eventListeners);
 }
@@ -181,7 +209,6 @@ function eventListeners() {
     comment_links.forEach(element => {
         element.addEventListener("click", OpenCommentSection);
     });
-
     let logoutBtn = document.querySelector(".logout-btn")
 
     if (!!logoutBtn) {

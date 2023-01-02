@@ -16,21 +16,30 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Content: `
 		<div class="container">
 		<div class="row vertical-offset-100">
-			<div class="col-md-4 col-md-offset-4">
+			<div class="form-style">
 				<div class="panel panel-default">
+					<div class="panel-welcome">
+						<h2 class="panel-welcome-title">Welcome to RTF</h2>
+					</div>
 					  <div class="panel-heading">
-						<h3 class="panel-title">Please sign in</h3>
+						<h3 class="panel-title">Log in</h3>
 					 </div>
 					  <div class="panel-body">
 						<form id="login-form" accept-charset="UTF-8" action="/login" method="post" class="formall">
 						<fieldset>
 							  <div class="form-group" id="user">
+							  <i class="login-icon fas fa-user"></i>
 								<input autofocus class="form-control" id="username-input" placeholder="Username / Nickname" name="username" type="text">
 							</div>
 							<div class="form-group" id="pass">
+							<i class="login-icon fas fa-lock"></i>
 								<input class="form-control" id="password-input" placeholder="Password" name="password" type="password" value="">
 							</div>
-							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" onclick="Login(event)" value="Login">
+							<input id="loginBtn" class="btn btn-lg btn-success btn-block" type="button" value="Login" onclick="Login(event)">
+							<div class="signup-div">
+								<div class="signup-cta">Don't have an account?</div>
+								<div class="signup-link"><a class="nav-link" data-name="register" id="signup-link" href="localhost:8080/register">Register here.</a></div>
+							</div
 						</fieldset>
 						  </form>
 					</div>
@@ -44,38 +53,61 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 		Endpoint: "register",
 		Content: `
 		<div class="regform" id="form2">
-		<h2 class="logintxt">Register</h2>
-		<form action="/register" method="post" class="regall">
-			<div class="formgroup" id="user">
-				<input id="reg-username" class="form-control" autofocus type="text" name="username" placeholder="Username">
+		<div class="row vertical-offset-100">
+			<div class="form-style">
+				<div class="panel panel-default">
+					<div class="panel-welcome">
+						<h2 class="logintxt">Register</h2>
+					</div>
+					<div class="panel-heading">
+						<h3 class="panel-title">Create your account</h3>
+					</div>
+					<div class="panel-body">
+						<form action="/register" method="post" class="regall">
+						<fieldset>
+							<div class="formgroup" id="user">
+								<i class="login-icon fas fa-user"></i>
+								<input id="reg-username" class="user form-control" autofocus type="text" name="username" placeholder="Username">
+							</div>
+							<div class="formgroup" id="email">
+							<i class="login-icon fas fa-at"></i>
+							<input id="reg-email" class="email form-control" type="email" name="email" placeholder="Email Address">
+							</div>
+							<div class="formgroup" id="nick">
+								<i class="login-icon fa fa-user-o"></i>
+								<input id="reg-nickname" class="form-control" type="text" name="nickname" placeholder="Nickname">
+							</div>
+							<div class="formgroup" id="age">
+								<i class="login-icon fa fa-sort-numeric-asc"></i>
+								<input id="reg-age" class="form-control" type="text" name="age" placeholder="Age">
+							</div>
+							<div class="formgroup secndpass" id="pass">
+								<i class="login-icon fas fa-lock"></i>
+								<input id="reg-password" class="pass form-control" type="password" name="password" placeholder="Password">
+							</div>
+							<div class="formgroup" id="passconfirm">
+								<i class="login-icon fas fa-check-double"></i>
+								<input id="reg-confirmation" class="passconfirm form-control" type="password" name="confirmation" placeholder="Confirm Password">
+							</div>
+							<div class="formgroup" id="register">
+								<input onclick="Register(event)" id="registerBtn" class="register btn" type="button" value="Register">
+							</div>
+							<div class="signup-div">
+								<div class="signup-cta">Already have an account? <a class="nav-link" data-name="login" href="localhost:8080/login" id="signup-link">Log In here.</a></div>
+							</div>
+						</fieldset>
+						</form>
+					</div>
+				</div>
 			</div>
-			<div class="formgroup" id="email">
-				<input id="reg-email" class="form-control" type="email" name="email" placeholder="Email Address">
-			</div>
-			<div class="formgroup" id="nick">
-				<input id="reg-nickname" class="form-control" type="text" name="nickname" placeholder="Nickname">
-			</div>
-			<div class="formgroup" id="age">
-				<input id="reg-age" class="form-control" type="text" name="age" placeholder="Age">
-			</div>
-			<div class="formgroup" id="pass">
-				<input id="reg-password" class="form-control" type="password" name="password" placeholder="Password">
-			</div>
-			<div class="formgroup" id="passconfirm">
-				<input id="reg-confirmation" class="form-control" type="password" name="confirmation" placeholder="Confirm Password">
-			</div>
-			<div class="formgroup" id="register">
-				<input  onclick="Register(event)" id="registerBtn" class="btn btn-lg btn-success btn-block" type="button" value="Register">
-			</div>
-			<div class="lowbanner">Already have an account? <a href="/login" style="color: rgb(6, 86, 235); text-decoration:underline;">Log In here.</a></div>
-		</form>
+		</div>
 		</div>`,
 	}
 	homePage := DOMcontent{
 		Endpoint: "homepage",
 		Content: `
 		<div class="newpostbody">
-        <form enctype="multipart/form-data" action="/new" method="POST" class="newpostall">
+        <form enctype="multipart/form-data" action="/new" method="POST">
             <div class="newpost" id="newpost">
                 <div class="radiospacing">
                     <label for="category_1">Question</label>
@@ -98,8 +130,22 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 	<div id="posts-container"></div>
 		`,
 	}
+	profile := DOMcontent{
+		Endpoint: "profile",
+		Content: `
+        <div id="profile-display">
+            <div class="user-p-display">
+                <h2 class="user-posts">My posts</h2>
+            </div>
+            <div id="profile-picture">
+                <img class="rounded-circle" width="150" src="https://picsum.photos/150/150" alt="Profile Picture">
+            </div>
+        </div>
+        <div id="profile-allposts"></div>
+		`,
+	}
 
-	var jsnList = []DOMcontent{loginContent, registerContent, homePage}
+	var jsnList = []DOMcontent{loginContent, registerContent, homePage, profile}
 	var new, err = json.Marshal(jsnList)
 	if err != nil {
 		log.Fatal("Could not marshal:", err.Error())

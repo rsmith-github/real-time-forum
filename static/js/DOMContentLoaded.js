@@ -10,8 +10,16 @@ window.addEventListener(
 
 let body = document.querySelector("body");
 
+
+
 // Split URL to access last parameter.
 let url = window.location.href.split("/");
+
+
+// Keeping track of registered users.
+let usersLength;
+
+
 // On load event
 document.addEventListener(
     "DOMContentLoaded",
@@ -31,6 +39,7 @@ document.addEventListener(
         await fetchData("allposts");
 
 
+        console.log(endpoint);
         // Show page based on endpoint.
         showPage(endpoint);
 
@@ -54,10 +63,24 @@ document.addEventListener(
         // console.log("textarea: ", document.querySelector("textarea"));
 
         if (endpoint !== "login" && endpoint !== "register") await showUsers();
+
+
+
+        if (endpoint !== "login" && endpoint !== "register") await showUsers();
     }
 
 );
 
+
+setInterval(async function () {
+    //code goes here
+    await fetchData("users")
+    if (users.length > localStorage.getItem("lenRegisteredUsers")) {
+        refreshChats.click()
+        await connectForNotifications()
+        localStorage.setItem("lenRegisteredUsers", users.length)
+    }
+}, 2000); //Time before execution
 
 window.onpopstate = function (event) {
     showPage(event.state.name)
@@ -71,7 +94,7 @@ function checkUnread() {
     messages.forEach((message) => {
         if (message.reciever === localStorage.getItem("username")) {
             let chatToChangeColor = document.getElementById(`${message.receiver} + "<->" + ${message.sender}`);
-            console.log(chatToChangeColor);
+            console.log("chatToChangeColor: ", chatToChangeColor);
             chatToChangeColor.style.backgroundColor = "green"
         }
     });

@@ -54,7 +54,6 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Get the user based off of the users input.
 		newUser := GetUser(r)
-		fmt.Println(newUser)
 
 		// Check if password form value matches confirmation form value.
 		if newUser.Password == "" || newUser.Username == "" || newUser.Email == "" {
@@ -105,20 +104,20 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println(err, "-----line 105 views.go")
 		}
 
-		// If user exists, log them in.
-		// Keep track of what was found from the above query (The JSON received once user clicks login button).
+		// Variables to keep track of what is found in the database based on user input.
 		foundId := 0
 		foundUser := ""
 		foundHash := ""
+		// foundNick := ""
 		// Get all the data from one user.
-		rows, err := db.Query("SELECT * FROM users WHERE username=?", userToValidate.Username)
+		rows, err := db.Query("SELECT * FROM users WHERE username=? OR nickname=?", userToValidate.Username, userToValidate.Username)
 		CheckErr(err, "line 115")
 
 		usr := QueryUser(rows, err)
 		foundId = usr.id
 		foundUser = usr.Username
 		foundHash = usr.Password
-		// foundUser = usr.Username
+		foundNick := usr.Nickname
 
 		// Delete expired cookie based on valid username posted from form.
 		// Only relevant if user has been automatically logged out.
@@ -132,8 +131,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		pwCompareError := bcrypt.CompareHashAndPassword([]byte(foundHash), []byte(userToValidate.Password))
 
 		// If user details exist, give user a session.
-		if userToValidate.Username == foundUser && pwCompareError == nil {
-
+		if userToValidate.Username == foundUser && pwCompareError == nil || userToValidate.Username == foundNick && pwCompareError == nil {
 			// Check if session cookie exists. If not, create one, and give the user a session.
 			cookie, err := r.Cookie("session")
 			if err != nil {
@@ -166,7 +164,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Logged in")
 			fmt.Println()
 		} else {
-			fmt.Println("wrong password!!")
+			fmt.Println("Incorrect password!")
 			fmt.Println()
 
 		}

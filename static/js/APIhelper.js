@@ -6,8 +6,8 @@ let posts = [];
 let comments = [];
 let sessions = [];
 let chats = [];
-let messages = [];
 let users = [];
+let messages = [];
 async function fetchData(name) {
     // Get api key
     let apiKey = await getApiKey()

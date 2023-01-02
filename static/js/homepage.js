@@ -24,30 +24,26 @@ async function displayPosts(callBack) {
                                 </div>
                                 <div class="ml-2">
                                     <div class="h5 m-0">@${post.username}</div>
-                                    <div class="h7 text-muted">Insert Bio Here</div>
                                 </div>
                             </div>
                         </div>
 
                     </div>
                     <div class="card-body">
-                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
-                        <p class="inlinecategory">
-                          <span class="bold">Post type: </span>${post.category_2}
-                        </p>
-                        &nbsp;
-                        <p class="inlinecategory">
-                          <span class="bold"> Category: </span>${post.category}
-                        </p>
-
                         <p class="card-text">
                             ${removeTags(post.content)}
                         </p>
+                        <p class="inlinecategory">
+                        <span class="bold">Post type: </span>${post.category_2}
+                        </p>
+                        &nbsp;
+                        <p class="inlinecategory">
+                        <span class="bold"> Category: </span>${post.category}
+                        </p>
+                        <div class="text-muted h7 mb-2"> <i class="fa fa-clock-o"></i>${post.time_posted}</div>
                     </div>
                     <div class="card-footer">
-                        <a href="#" class="card-link"><i class="fa fa-gittip"></i> Like</a>
                         <a href="/" class="comment-link" id="cmnt-lnk-${post.id}"><i class="fa fa-comment"></i> Comments</a>
-                        <a href="#" class="card-link"><i class="fa fa-mail-forward"></i> Share</a>
                         <div class="commentbox">
                             <form action="/" method="POST" class="comment-form" id="comment-form-${post.id}">
                                 <input type="text" class="commenttxtbox" name="comment" id="comment-${post.id}"/>
@@ -72,14 +68,13 @@ async function displayPosts(callBack) {
     // Scroll to position after content has been loaded.
     window.scrollTo(0, localStorage.getItem("scrollPosition"));
 
-    // showUsers();
 
     callBack();
 
 }
 
 
-// Remove html tags.
+// Remove html tags. (sanitizing user input.)
 function removeTags(str) {
     if ((str === null) || (str === ''))
         return false;
