@@ -73,6 +73,10 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 							<i class="login-icon fas fa-at"></i>
 							<input id="reg-email" class="email form-control" type="email" name="email" placeholder="Email Address">
 							</div>
+							<div class="first-last formgroup" id="names">
+								<input id="reg-first" class="form-control" type="text" name="firstname" placeholder="First Name">
+								<input id="reg-last" class="form-control" type="text" name="lastname" placeholder="Last Name">
+							</div>
 							<div class="formgroup" id="nick">
 								<i class="login-icon fa fa-user-o"></i>
 								<input id="reg-nickname" class="form-control" type="text" name="nickname" placeholder="Nickname">
@@ -80,6 +84,10 @@ func LoadContent(w http.ResponseWriter, r *http.Request) {
 							<div class="formgroup" id="age">
 								<i class="login-icon fa fa-sort-numeric-asc"></i>
 								<input id="reg-age" class="form-control" type="text" name="age" placeholder="Age">
+							</div>
+							<div class="formgroup" id="gender">
+								<i class="login-icon fa fa-transgender-alt"></i>
+								<input id="reg-gender" class="form-control" type="text" name="gender" placeholder="Gender">
 							</div>
 							<div class="formgroup secndpass" id="pass">
 								<i class="login-icon fas fa-lock"></i>
@@ -213,7 +221,7 @@ func createApi(table string, writer http.ResponseWriter, request *http.Request) 
 
 	var str string
 	if table == "users" {
-		str = "SELECT username, nickname, age FROM " + table + ";"
+		str = "SELECT username, nickname, email, age FROM " + table + ";"
 	} else {
 		str = "SELECT * FROM " + table + ";"
 	}

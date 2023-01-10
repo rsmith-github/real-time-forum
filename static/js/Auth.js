@@ -11,9 +11,9 @@ async function Login(e) {
 
     await fetchData("sessions")
 
-    // Check if nickname is valid.
+    // Check if nickname or email is valid.
     let nName_uName = users.filter(user => {
-        return user.nickname === username.toString()
+        return user.nickname === username.toString() || user.email === username.toString()
     })
 
     if (nName_uName[0]) {

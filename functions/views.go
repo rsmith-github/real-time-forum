@@ -110,7 +110,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		foundHash := ""
 		// foundNick := ""
 		// Get all the data from one user.
-		rows, err := db.Query("SELECT * FROM users WHERE username=? OR nickname=?", userToValidate.Username, userToValidate.Username)
+		rows, err := db.Query("SELECT * FROM users WHERE username=? OR nickname=? OR email=?", userToValidate.Username, userToValidate.Username, userToValidate.Username)
 		CheckErr(err, "line 115")
 
 		usr := QueryUser(rows, err)
@@ -118,6 +118,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		foundUser = usr.Username
 		foundHash = usr.Password
 		foundNick := usr.Nickname
+		foundEmail := usr.Email
 
 		// Delete expired cookie based on valid username posted from form.
 		// Only relevant if user has been automatically logged out.
@@ -131,7 +132,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		pwCompareError := bcrypt.CompareHashAndPassword([]byte(foundHash), []byte(userToValidate.Password))
 
 		// If user details exist, give user a session.
-		if userToValidate.Username == foundUser && pwCompareError == nil || userToValidate.Username == foundNick && pwCompareError == nil {
+		if userToValidate.Username == foundUser && pwCompareError == nil || userToValidate.Username == foundNick && pwCompareError == nil || userToValidate.Username == foundEmail && pwCompareError == nil {
 			// Check if session cookie exists. If not, create one, and give the user a session.
 			cookie, err := r.Cookie("session")
 			if err != nil {

@@ -250,7 +250,7 @@ a {
 #register, .container {
     position: relative;
     -ms-transform: translate(0%, 15%);
-    transform: translate(0%, 20%);
+    transform: translate(0%, 7%);
 }
 
 
@@ -397,6 +397,17 @@ a {
     animation-iteration-count: 1;
     animation-fill-mode: forwards;
 }
+
+
+/* first name and last name parent div */
+.first-last {
+    display: flex;
+    flex-direction: row;
+    width: 75%;
+    padding-top: 25px;
+}
+
+
 
 /* don't know why it won't show. come back */
 .text-bg {
