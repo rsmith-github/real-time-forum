@@ -119,7 +119,7 @@ func (r *Room) Run() {
 				return
 			}
 
-			// Loop over all the clients in room
+			// Loop over all the clients in room, and forward the message to all connected clients
 			for client := range r.clients {
 				select {
 				case client.send <- msg:

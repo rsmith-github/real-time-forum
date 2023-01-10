@@ -127,6 +127,8 @@ async function showPage(name) {
 
         // keep track of users registered to refresh messenger if someone new registers.
         localStorage.setItem("lenRegisteredUsers", users.length)
+        localStorage.setItem("lenSessions", sessions.length)
+
 
         // Update url.
         history.pushState({ name: name }, "", `${"/"}`);
@@ -156,7 +158,6 @@ async function showPage(name) {
     url = window.location.href.split("/");
 
     await fetchData("content")
-    console.log(content);
     // Show html structure based on api.go
     if (!!content) {
         content.forEach(object => {
@@ -185,7 +186,7 @@ async function showPage(name) {
         showMyPosts(eventListeners);
     }
 
-    
+
     // Change nav bar content
     NavbarContent(eventListeners);
 }
@@ -227,6 +228,8 @@ function eventListeners() {
             document.querySelector(".chatWindow").innerHTML = ""
 
             showPage("login");
+            localStorage.setItem("lenSessions", sessions.length)
+
         })
     }
     return

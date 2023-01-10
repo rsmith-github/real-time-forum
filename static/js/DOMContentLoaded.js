@@ -75,10 +75,21 @@ document.addEventListener(
 setInterval(async function () {
     //code goes here
     await fetchData("users")
+    await fetchData("sessions")
     if (users.length > localStorage.getItem("lenRegisteredUsers")) {
         refreshChats.click()
+        let newUser = users[users.length - 1]
+        let currentusr = localStorage.getItem("username")
+        if (currentusr !== newUser.username) {
+            await sendJsonToBackend("chats", currentusr.toString(), newUser.username)
+        }
         await connectForNotifications()
         localStorage.setItem("lenRegisteredUsers", users.length)
+    }
+    if (sessions.length !== Number(localStorage.getItem("lenSessions"))) {
+        refreshChats.click()
+        await connectForNotifications()
+        localStorage.setItem("lenSessions", sessions.length)
     }
 }, 2000); //Time before execution
 

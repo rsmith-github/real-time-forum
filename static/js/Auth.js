@@ -8,7 +8,7 @@ async function Login(e) {
 
     // send data to backend
     await sendJsonToBackend("login", username, password);
-    
+
     await fetchData("sessions")
 
     // Check if nickname is valid.
@@ -43,6 +43,7 @@ async function Login(e) {
         showPage("homepage");
         // await connectForNotifications()
         showUsers();
+        localStorage.setItem("lenSessions", sessions.length)
 
         // let currentUser = localStorage.getItem("username");
         // if (!!sessions) {
@@ -85,6 +86,7 @@ function Register() {
         alert("Please fill all forms.")
     } else {
         console.log(username, email, nickname, password, confirmation);
+        localStorage.setItem("username", username)
         sendJsonToBackend("register", username, email, nickname, [Number(age), password, confirmation]);
         alert("registered successfully!")
     }

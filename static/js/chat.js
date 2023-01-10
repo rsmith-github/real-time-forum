@@ -429,6 +429,7 @@ async function connectToChatserver(usersInChat, notification = false) {
 
 
 
+
     if (notification === false) {
         wSocket.removeEventListener("message", OnMessageReceived)
         wSocket.addEventListener("message", OnMessageReceived.bind(null, usersInChat, notification))
@@ -441,6 +442,7 @@ async function connectToChatserver(usersInChat, notification = false) {
         wSocket.removeEventListener("message", OnMessageReceived)
         wSocket.addEventListener("message", OnMessageReceived.bind(null, usersInChat, notification))
     }
+
 }
 
 
@@ -558,9 +560,9 @@ function formatTime(hoursMinutesSeconds) {
 }
 
 async function connectForNotifications() {
-    await fetchData("users")
+    await fetchData("sessions")
     let username = localStorage.getItem("username");
-    users.forEach(user => {
-        if (username !== user.username) connectToChatserver([username, user.username], true);
+    sessions.forEach(sess => {
+        if (username !== sess.username) connectToChatserver([username, sess.username], true);
     })
 }
